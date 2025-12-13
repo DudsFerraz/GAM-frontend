@@ -1,9 +1,9 @@
 import type { UUID } from "@/utils/global";
 
 export type RegisterInfo = {
+  displayName: string;
   email: string;
   password: string;
-  displayName: string;
 };
 
 export type RegisterResponse = {

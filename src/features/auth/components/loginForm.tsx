@@ -2,13 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { Eye, EyeOff } from 'lucide-react';
 import { AuthLayout } from './authLayout';
 import { Button, Checkbox, Input } from '@/components/ui/index';
-import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { login } from '@/features/auth/api/login';
-import { AxiosError } from 'axios';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { useLogin } from '@/features/auth/hooks/useLogin';
+import { getErrorMessage } from '@/utils/errorHandler';
+import { FormError } from '@/components/ui/formError';
 
 const loginSchema = z.object({
   email: z.email("Digite um e-mail válido"),
@@ -19,12 +20,10 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export const LoginForm = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const { mutate: doLogin, isPending } = useLogin();
 
-  // 2. Configuração do Formulário
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -34,32 +33,22 @@ export const LoginForm = () => {
     },
   });
 
-  const onSubmit = async (values: LoginFormValues) => {
-    setIsLoading(true);
-    setErrorMessage(null);
+  const onSubmit = (values: LoginFormValues) => {
+    setServerError(null);
 
-    try {
-      await login({
+    doLogin(
+      {
         email: values.email,
         password: values.password,
-      });
-
-      navigate({ to: '/home' });
-      
-    } catch (error) {
-      
-        if (error instanceof AxiosError) {
-            const mensagemDoBackend = error.response?.data?.message || "Ocorreu um erro na comunicação com o servidor.";
-            setErrorMessage(mensagemDoBackend);
-        } else if (error instanceof Error) {
-            setErrorMessage(error.message);
-        } else {
-        setErrorMessage("Ocorreu um erro inesperado.");
+        rememberMe: values.rememberMe,
+      },
+      {
+        onError: (error) => {
+          const message = getErrorMessage(error);
+          setServerError(message);
         }
-
-    } finally {
-      setIsLoading(false);
-    }
+      }
+    );
   };
 
   return (
@@ -73,17 +62,15 @@ export const LoginForm = () => {
         </p>
       </div>
 
-      {/* Mensagem de Erro Global */}
-      {errorMessage && (
-        <div className="mb-4 p-3 bg-red-100 text-red-600 text-sm rounded-md">
-          {errorMessage}
-        </div>
+      {/* Exibição de Erros */}
+      {serverError && (
+        <FormError message={serverError} />
       )}
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           
-          {/* Campo: Email */}
+          {/* Email */}
           <FormField
             control={form.control}
             name="email"
@@ -98,7 +85,7 @@ export const LoginForm = () => {
             )}
           />
 
-          {/* Campo: Senha (Com Toggle de Visibilidade) */}
+          {/* Senha */}
           <FormField
             control={form.control}
             name="password"
@@ -127,9 +114,8 @@ export const LoginForm = () => {
             )}
           />
 
-          {/* Linha: Checkbox + Esqueceu a senha */}
+          {/* Checkbox 'Lembrar de Mim' */}
           <div className="flex items-center justify-between text-sm">
-            {/* Checkbox controlado pelo React Hook Form */}
             <FormField
               control={form.control}
               name="rememberMe"
@@ -152,14 +138,13 @@ export const LoginForm = () => {
               )}
             />
             
-            {/* Link Placeholder para recuperar senha */}
-            <Link to="/auth/login" className="text-sky-500 hover:underline font-medium">
+            {/* <Link to="/auth/login" className="text-sky-500 hover:underline font-medium">
               Esqueceu a senha?
-            </Link>
+            </Link> */}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Entrando..." : "Entrar"}
+          <Button type="submit" className="w-full" disabled={isPending}>
+            {isPending ? "Entrando..." : "Entrar"}
           </Button>
         </form>
       </Form>

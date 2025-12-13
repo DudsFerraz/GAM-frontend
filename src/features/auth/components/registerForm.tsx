@@ -2,12 +2,14 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Link, useNavigate } from '@tanstack/react-router';
-import { register } from '@/features/auth/api/register';
+import { Link } from '@tanstack/react-router'; 
 import { AuthLayout } from './authLayout';
 import { Button, Input } from '@/components/ui/index';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { AxiosError } from 'axios';
+import { getErrorMessage } from '@/utils/errorHandler';
+import { FormError } from '@/components/ui/formError';
+import { useRegister } from '../hooks/useRegister';
+import { RedirectFeedback } from '@/components/ui/redirectFeedback';
 
 const registerSchema = z.object({
   displayName: z.string().min(3, "O nome deve ter pelo menos 3 caracteres"),
@@ -22,143 +24,128 @@ const registerSchema = z.object({
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
 export const RegisterForm = () => {
-  const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [showSuccessFeedback, setShowSuccessFeedback] = useState(false);
+  const { mutate: doRegister, isPending } = useRegister();
 
   const form = useForm<RegisterFormValues>({
     resolver: zodResolver(registerSchema),
-    defaultValues: {
-      displayName: "",
-      email: "",
-      password: "",
-      confirmPassword: "",
-    },
+    defaultValues: { displayName: "", email: "", password: "", confirmPassword: "" },
   });
 
-  const onSubmit = async (values: RegisterFormValues) => {
-    setIsLoading(true);
-    setErrorMessage(null);
-
-    try {
-      await register({
-        displayName: values.displayName,
-        email: values.email,
-        password: values.password,
-      });
-
-      navigate({ to: '/auth/login' });
-      
-    } catch (error) {
-
-        if (error instanceof AxiosError) {
-            const mensagemDoBackend = error.response?.data?.message || "Ocorreu um erro na comunicação com o servidor.";
-            setErrorMessage(mensagemDoBackend);
-        } else if (error instanceof Error) {
-            setErrorMessage(error.message);
-        } else {
-        setErrorMessage("Ocorreu um erro inesperado.");
-        }
-    } finally {
-      setIsLoading(false);
-    }
+  const onSubmit = (values: RegisterFormValues) => {
+    setServerError(null);
+    doRegister(
+      { displayName: values.displayName, email: values.email, password: values.password },
+      {
+        onSuccess: () => setShowSuccessFeedback(true),
+        onError: (error) => setServerError(getErrorMessage(error))
+      }
+    );
   };
 
-return (
-    // 1. Removemos todas as props de imagem e texto. Agora é só abrir e fechar a tag.
+  return (
     <AuthLayout>
       <div className="mb-8 text-center sm:text-left">
-        <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 mb-2">
+        {/* MUDANÇA 1: text-neutral-900 -> text-foreground */}
+        {/* Isso garante preto no light mode e branco no dark mode */}
+        <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
           Crie sua conta
         </h2>
-        <p className="text-xl text-neutral-600">
+        
+        {/* MUDANÇA 2: text-neutral-600 -> text-muted-foreground */}
+        {/* Um cinza médio no light, e um cinza claro no dark (legível) */}
+        <p className="text-xl text-muted-foreground">
           Preencha os dados abaixo para começar.
         </p>
       </div>
 
-      {errorMessage && (
-        <div className="mb-4 p-3 bg-red-100 text-red-600 text-sm rounded-md">
-          {errorMessage}
-        </div>
-      )}
+      {serverError && <FormError message={serverError} />}      
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-          
-          {/* Campo: Nome */}
-          <FormField
-            control={form.control}
-            name="displayName"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Nome de exibição</FormLabel>
-                <FormControl>
-                  <Input placeholder="Como você quer ser chamado?" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          {/* Campo: Email */}
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>E-mail</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="seu@email.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <div className="grid gap-5 md:grid-cols-2">
-            {/* Campo: Senha */}
+         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+            {/* Campos do formulário (Input e Label já devem usar o tema internamente se forem do shadcn) */}
             <FormField
               control={form.control}
-              name="password"
+              name="displayName"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Senha</FormLabel>
+                  <FormLabel>Nome de exibição</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input placeholder="Como você quer ser chamado?" autoComplete="name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {/* ... Outros campos (email, password) ... */}
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>E-mail</FormLabel>
+                  <FormControl>
+                    <Input type="email" placeholder="seu@email.com" autoComplete="email" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            {/* Campo: Confirmar Senha */}
-            <FormField
-              control={form.control}
-              name="confirmPassword"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Confirmar Senha</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </div>
+            <div className="grid gap-5 md:grid-cols-2">
+               {/* ... Campos de senha ... */}
+               <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Senha</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="confirmPassword"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Confirmar Senha</FormLabel>
+                    <FormControl>
+                      <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Criando conta..." : "Registrar"}
-          </Button>
-        </form>
+            <Button type="submit" className="w-full" disabled={isPending}>
+              {isPending ? "Criando conta..." : "Registrar"}
+            </Button>
+         </form>
       </Form>
 
-      <div className="mt-8 text-center text-sm text-neutral-600">
+      <div className="mt-8 text-center text-sm text-muted-foreground">
         Já tem uma conta?{' '}
-        <Link to="/auth/login" className="text-sky-500 hover:underline font-medium">
+        {/* MUDANÇA 3: text-sky-500 -> text-primary */}
+        {/* Usa a cor principal definida no tema. Hover pode usar primary/90 */}
+        <Link to="/auth/login" className="text-primary hover:underline font-medium hover:text-primary/90">
           Entrar
         </Link>
       </div>
+
+      <RedirectFeedback
+        isVisible={showSuccessFeedback}
+        title="Cadastro realizado!"
+        description="Sua conta foi criada com sucesso. Agora você já pode fazer login para acessar a plataforma."
+        buttonText="Realizar Login"
+        redirectUrl="/auth/login"
+      />
+
     </AuthLayout>
   );
 };
