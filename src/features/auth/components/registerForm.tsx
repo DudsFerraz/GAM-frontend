@@ -47,14 +47,10 @@ export const RegisterForm = () => {
   return (
     <AuthLayout>
       <div className="mb-8 text-center sm:text-left">
-        {/* MUDANÇA 1: text-neutral-900 -> text-foreground */}
-        {/* Isso garante preto no light mode e branco no dark mode */}
         <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
           Crie sua conta
         </h2>
         
-        {/* MUDANÇA 2: text-neutral-600 -> text-muted-foreground */}
-        {/* Um cinza médio no light, e um cinza claro no dark (legível) */}
         <p className="text-xl text-muted-foreground">
           Preencha os dados abaixo para começar.
         </p>
@@ -64,7 +60,6 @@ export const RegisterForm = () => {
 
       <Form {...form}>
          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
-            {/* Campos do formulário (Input e Label já devem usar o tema internamente se forem do shadcn) */}
             <FormField
               control={form.control}
               name="displayName"
@@ -78,7 +73,7 @@ export const RegisterForm = () => {
                 </FormItem>
               )}
             />
-            {/* ... Outros campos (email, password) ... */}
+
             <FormField
               control={form.control}
               name="email"
@@ -94,7 +89,6 @@ export const RegisterForm = () => {
             />
 
             <div className="grid gap-5 md:grid-cols-2">
-               {/* ... Campos de senha ... */}
                <FormField
                 control={form.control}
                 name="password"
@@ -131,8 +125,6 @@ export const RegisterForm = () => {
 
       <div className="mt-8 text-center text-sm text-muted-foreground">
         Já tem uma conta?{' '}
-        {/* MUDANÇA 3: text-sky-500 -> text-primary */}
-        {/* Usa a cor principal definida no tema. Hover pode usar primary/90 */}
         <Link to="/auth/login" className="text-primary hover:underline font-medium hover:text-primary/90">
           Entrar
         </Link>

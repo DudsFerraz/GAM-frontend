@@ -54,10 +54,15 @@ export const LoginForm = () => {
   return (
     <AuthLayout>
       <div className="mb-8 text-center sm:text-left">
-        <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-neutral-900 mb-2">
+        {/* MUDANÇA 1: Título principal */}
+        {/* De: text-neutral-900 | Para: text-foreground */}
+        <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">
           Bem-vindo de volta!
         </h2>
-        <p className="text-xl text-neutral-600">
+        
+        {/* MUDANÇA 2: Subtítulo */}
+        {/* De: text-neutral-600 | Para: text-muted-foreground */}
+        <p className="text-xl text-muted-foreground">
           Acesse sua conta para continuar.
         </p>
       </div>
@@ -101,10 +106,13 @@ export const LoginForm = () => {
                       {...field} 
                     />
                   </FormControl>
+                  {/* MUDANÇA 3: Ícone do Olho */}
+                  {/* De: text-neutral-400 hover:text-neutral-600 */}
+                  {/* Para: text-muted-foreground hover:text-foreground */}
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-neutral-400 hover:text-neutral-600 focus:outline-none"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-muted-foreground hover:text-foreground focus:outline-none transition-colors"
                   >
                     {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                   </button>
@@ -130,17 +138,13 @@ export const LoginForm = () => {
                   </FormControl>
                   <FormLabel 
                     htmlFor="remember" 
-                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-normal cursor-pointer text-neutral-700"
+                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-normal cursor-pointer"
                   >
                     Lembrar de mim
                   </FormLabel>
                 </FormItem>
               )}
             />
-            
-            {/* <Link to="/auth/login" className="text-sky-500 hover:underline font-medium">
-              Esqueceu a senha?
-            </Link> */}
           </div>
 
           <Button type="submit" className="w-full" disabled={isPending}>
@@ -149,9 +153,9 @@ export const LoginForm = () => {
         </form>
       </Form>
 
-      <div className="mt-8 text-center text-sm text-neutral-600">
+      <div className="mt-8 text-center text-sm text-muted-foreground">
         Não tem uma conta?{' '}
-        <Link to="/auth/register" className="text-sky-500 hover:underline font-medium">
+        <Link to="/auth/register" className="text-primary hover:underline font-medium hover:text-primary/90">
           Registre-se
         </Link>
       </div>

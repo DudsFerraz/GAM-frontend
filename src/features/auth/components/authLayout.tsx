@@ -1,9 +1,11 @@
+// src/features/auth/components/authLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import criancasImage from '@/assets/images/criancas_oratorio.jpeg'
 import gamImage from '@/assets/images/gam.jpg'
 import dbJovens from '@/assets/images/db_jovens.jpg'
 import dbJovensMaria from '@/assets/images/db_jovens_maria.jpg'
+import { ColorModeToggle } from '@/components/ui/colorModeToggle'
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -48,12 +50,14 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
   }, [currentSlide]);
 
   return (
-      <div className="min-h-screen w-full flex font-serif text-neutral-700">  
+      <div className="min-h-screen w-full flex font-serif bg-background text-foreground relative">  
 
-        {/* --- LADO ESQUERDO (Carrossel) --- */}
-        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-neutral-900">
+      <div className="absolute top-4 right-4 z-50">
+        <ColorModeToggle/>
+      </div>
+
+        <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-zinc-900">
           
-          {/* Imagens com efeito de Fade */}
           {slides.map((slide, index) => (
             <img
               key={index}
@@ -66,15 +70,12 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
             />
           ))}
 
-          {/* Overlay de Conteúdo */}
           <div className="relative z-10 p-12 h-full flex flex-col justify-between text-white w-full">
             
-            {/* Logo */}
             <div className="flex items-center gap-2">
               <span className="text-4xl font-heading font-bold tracking-tight">Grupo de Animação Missionária</span>
             </div>
 
-            {/* Textos do Slide Atual */}
             <div className="mb-12">
               <div key={currentSlide} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
                   <h1 className="font-heading text-4xl font-bold tracking-tight mb-4 leading-tight">
@@ -85,10 +86,8 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
                   </p>
               </div>
 
-              {/* Controles de Navegação */}
               <div className="flex items-center justify-between mt-8">
                   
-                  {/* Dots (Paginação) */}
                   <div className="flex gap-2">
                       {slides.map((_, index) => (
                       <button
@@ -108,9 +107,8 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
           </div>
         </div>
 
-        {/* --- LADO DIREITO (Formulário) --- */}
         <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 md:p-12">
-          <div className="w-full max-w-md bg-white shadow-md rounded-2xl border border-neutral-200 p-8">
+          <div className="w-full max-w-md bg-card text-card-foreground shadow-md rounded-2xl border border-border p-8">
             {children}
           </div>
         </div>

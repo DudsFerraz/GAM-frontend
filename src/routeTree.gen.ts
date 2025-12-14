@@ -9,11 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ManageRouteImport } from './routes/manage'
 import { Route as HomeRouteImport } from './routes/home'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ManageMembersRouteImport } from './routes/manage/members'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 
+const ManageRoute = ManageRouteImport.update({
+  id: '/manage',
+  path: '/manage',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
@@ -23,6 +30,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const ManageMembersRoute = ManageMembersRouteImport.update({
+  id: '/members',
+  path: '/members',
+  getParentRoute: () => ManageRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
@@ -38,37 +50,70 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
+  '/manage': typeof ManageRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/manage/members': typeof ManageMembersRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
+  '/manage': typeof ManageRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/manage/members': typeof ManageMembersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/auth': typeof AuthRouteWithChildren
   '/home': typeof HomeRoute
+  '/manage': typeof ManageRouteWithChildren
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/manage/members': typeof ManageMembersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/auth' | '/home' | '/auth/login' | '/auth/register'
+  fullPaths:
+    | '/auth'
+    | '/home'
+    | '/manage'
+    | '/auth/login'
+    | '/auth/register'
+    | '/manage/members'
   fileRoutesByTo: FileRoutesByTo
-  to: '/auth' | '/home' | '/auth/login' | '/auth/register'
-  id: '__root__' | '/auth' | '/home' | '/auth/login' | '/auth/register'
+  to:
+    | '/auth'
+    | '/home'
+    | '/manage'
+    | '/auth/login'
+    | '/auth/register'
+    | '/manage/members'
+  id:
+    | '__root__'
+    | '/auth'
+    | '/home'
+    | '/manage'
+    | '/auth/login'
+    | '/auth/register'
+    | '/manage/members'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   HomeRoute: typeof HomeRoute
+  ManageRoute: typeof ManageRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/manage': {
+      id: '/manage'
+      path: '/manage'
+      fullPath: '/manage'
+      preLoaderRoute: typeof ManageRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/home': {
       id: '/home'
       path: '/home'
@@ -82,6 +127,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/manage/members': {
+      id: '/manage/members'
+      path: '/members'
+      fullPath: '/manage/members'
+      preLoaderRoute: typeof ManageMembersRouteImport
+      parentRoute: typeof ManageRoute
     }
     '/auth/register': {
       id: '/auth/register'
@@ -112,9 +164,21 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface ManageRouteChildren {
+  ManageMembersRoute: typeof ManageMembersRoute
+}
+
+const ManageRouteChildren: ManageRouteChildren = {
+  ManageMembersRoute: ManageMembersRoute,
+}
+
+const ManageRouteWithChildren =
+  ManageRoute._addFileChildren(ManageRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   HomeRoute: HomeRoute,
+  ManageRoute: ManageRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
