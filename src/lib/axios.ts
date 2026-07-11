@@ -22,10 +22,5 @@ api.interceptors.request.use(
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
-    if (error.response?.status === 401) {
-      console.warn('Sessão expirada ou não autorizado');
-    }
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );

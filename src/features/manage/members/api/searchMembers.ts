@@ -1,5 +1,5 @@
 import { api } from '@/lib/axios';
-import type { MemberResponse } from '../types';
+import type { MemberResponse } from '@/types/api';
 import type { Page, SearchDTO, PageParams } from '@/types/api';
 
 export const searchMembers = async (

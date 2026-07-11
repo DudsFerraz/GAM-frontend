@@ -1,4 +1,5 @@
-import { createFileRoute, Outlet } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router'
+import { AppLayout } from '@/components/appLayout'
 
 export const Route = createFileRoute('/manage')({
   component: RouteComponent,
@@ -6,6 +7,6 @@ export const Route = createFileRoute('/manage')({
 
 function RouteComponent() {
   return (
-    <Outlet />
+    <AppLayout/>
   )
 }

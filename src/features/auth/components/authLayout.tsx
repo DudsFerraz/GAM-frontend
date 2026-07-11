@@ -1,4 +1,3 @@
-// src/features/auth/components/authLayout.tsx
 import React, { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import criancasImage from '@/assets/images/criancas_oratorio.jpeg'

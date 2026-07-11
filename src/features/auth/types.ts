@@ -16,5 +16,5 @@ export type LoginInfo = {
 };
 
 export type LoginResponse = {
-    token: string;
+  token: string;
 }

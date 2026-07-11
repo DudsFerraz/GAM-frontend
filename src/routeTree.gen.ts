@@ -10,20 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ManageRouteImport } from './routes/manage'
-import { Route as HomeRouteImport } from './routes/home'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ManageMembersRouteImport } from './routes/manage/members'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage/members'
 
 const ManageRoute = ManageRouteImport.update({
   id: '/manage',
   path: '/manage',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HomeRoute = HomeRouteImport.update({
-  id: '/home',
-  path: '/home',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -31,10 +27,9 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ManageMembersRoute = ManageMembersRouteImport.update({
-  id: '/members',
-  path: '/members',
-  getParentRoute: () => ManageRoute,
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
@@ -46,63 +41,76 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => AuthRoute,
 } as any)
+const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
+  id: '/home',
+  path: '/home',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedManageMembersRoute =
+  AuthenticatedManageMembersRouteImport.update({
+    id: '/manage/members',
+    path: '/manage/members',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
-  '/home': typeof HomeRoute
-  '/manage': typeof ManageRouteWithChildren
+  '/manage': typeof ManageRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/manage/members': typeof ManageMembersRoute
+  '/manage/members': typeof AuthenticatedManageMembersRoute
 }
 export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
-  '/home': typeof HomeRoute
-  '/manage': typeof ManageRouteWithChildren
+  '/manage': typeof ManageRoute
+  '/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/manage/members': typeof ManageMembersRoute
+  '/manage/members': typeof AuthenticatedManageMembersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
-  '/home': typeof HomeRoute
-  '/manage': typeof ManageRouteWithChildren
+  '/manage': typeof ManageRoute
+  '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/manage/members': typeof ManageMembersRoute
+  '/_authenticated/manage/members': typeof AuthenticatedManageMembersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/auth'
-    | '/home'
     | '/manage'
+    | '/home'
     | '/auth/login'
     | '/auth/register'
     | '/manage/members'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/auth'
-    | '/home'
     | '/manage'
+    | '/home'
     | '/auth/login'
     | '/auth/register'
     | '/manage/members'
   id:
     | '__root__'
+    | '/_authenticated'
     | '/auth'
-    | '/home'
     | '/manage'
+    | '/_authenticated/home'
     | '/auth/login'
     | '/auth/register'
-    | '/manage/members'
+    | '/_authenticated/manage/members'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
-  HomeRoute: typeof HomeRoute
-  ManageRoute: typeof ManageRouteWithChildren
+  ManageRoute: typeof ManageRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -114,13 +122,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ManageRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/home': {
-      id: '/home'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -128,12 +129,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/manage/members': {
-      id: '/manage/members'
-      path: '/members'
-      fullPath: '/manage/members'
-      preLoaderRoute: typeof ManageMembersRouteImport
-      parentRoute: typeof ManageRoute
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: ''
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
       id: '/auth/register'
@@ -149,8 +150,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
     }
+    '/_authenticated/home': {
+      id: '/_authenticated/home'
+      path: '/home'
+      fullPath: '/home'
+      preLoaderRoute: typeof AuthenticatedHomeRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage/members': {
+      id: '/_authenticated/manage/members'
+      path: '/manage/members'
+      fullPath: '/manage/members'
+      preLoaderRoute: typeof AuthenticatedManageMembersRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedManageMembersRoute: typeof AuthenticatedManageMembersRoute
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedManageMembersRoute: AuthenticatedManageMembersRoute,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
 
 interface AuthRouteChildren {
   AuthLoginRoute: typeof AuthLoginRoute
@@ -164,21 +193,10 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
-interface ManageRouteChildren {
-  ManageMembersRoute: typeof ManageMembersRoute
-}
-
-const ManageRouteChildren: ManageRouteChildren = {
-  ManageMembersRoute: ManageMembersRoute,
-}
-
-const ManageRouteWithChildren =
-  ManageRoute._addFileChildren(ManageRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
-  HomeRoute: HomeRoute,
-  ManageRoute: ManageRouteWithChildren,
+  ManageRoute: ManageRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
