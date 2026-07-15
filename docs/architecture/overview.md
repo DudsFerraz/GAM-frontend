@@ -18,9 +18,11 @@ Handwritten transport-shaped types are currently colocated with their owning fea
 
 ### Forms, UI, and features
 
-Login and registration use React Hook Form with Zod resolvers and feature-local schemas. `src/components/ui/` contains reusable Radix-based primitives, while `src/components/` contains genuinely cross-feature components. Application composition belongs to `src/app/`. Feature-specific code is organized under `src/features/account`, `src/features/auth`, and `src/features/manage/members`, with components, hooks, API calls, query keys, schemas, types, and mappings colocated where practical.
+Login and registration use React Hook Form with Zod resolvers and feature-local schemas. `src/components/ui/` contains reusable Radix-based primitives, while `src/components/` contains genuinely cross-feature components. `src/components/AsyncState.tsx` provides the shared loading, error/retry, empty, and forbidden feedback vocabulary for data-driven views. Application composition belongs to `src/app/`. Feature-specific code is organized under `src/features/account`, `src/features/auth`, and `src/features/manage/members`, with components, hooks, API calls, query keys, schemas, types, and mappings colocated where practical.
 
 The member-management route composes `ManageMembersPage` from the member feature. That page uses a feature API module, a TanStack Query hook, feature-local search/filter UI, and shared UI primitives. Its edit dialog is explicitly a placeholder, not a completed feature.
+
+The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments.
 
 ## Source directory architecture
 

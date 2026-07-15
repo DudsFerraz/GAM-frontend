@@ -216,11 +216,11 @@ export const SearchAndFilter = ({
           />
         </div>
         
-        <div className="flex gap-2">
+        <div className="grid grid-cols-2 gap-2 sm:flex">
           <Button 
             variant="outline" 
             onClick={() => { setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
-            className={cn("gap-2 border-border", isFilterOpen && "bg-secondary text-secondary-foreground")}
+            className={cn("w-full gap-2 border-border sm:w-auto", isFilterOpen && "bg-secondary text-secondary-foreground")}
           >
             <Filter className="h-4 w-4" />
             <span className="hidden sm:inline">Filtrar</span>
@@ -234,7 +234,7 @@ export const SearchAndFilter = ({
           <Button 
             variant="outline" 
             onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
-            className={cn("gap-2 border-border", isSortOpen && "bg-secondary text-secondary-foreground")}
+            className={cn("w-full gap-2 border-border sm:w-auto", isSortOpen && "bg-secondary text-secondary-foreground")}
           >
             <ArrowUpDown className="h-4 w-4" />
             <span className="hidden sm:inline">Ordenar</span>

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
-import { Home, Users, LogOut, ChevronLeft, ChevronRight,User as UserIcon,Loader2, type LucideIcon } from 'lucide-react';
+import { Home, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { useAccountInfo, useAccountPermissions } from '@/features/account';
@@ -49,7 +49,7 @@ export const SideNavigation = () => {
 
   if (isLoadingUser || (user && isLoadingPermissions)) {
     return (
-      <aside className="h-screen w-20 border-r border-border bg-background flex items-center justify-center">
+      <aside className="hidden h-screen w-20 shrink-0 items-center justify-center border-r border-border bg-background md:flex">
         <Loader2 className="h-6 w-6 animate-spin text-primary/50" />
       </aside>
     );
@@ -57,7 +57,17 @@ export const SideNavigation = () => {
 
   if (!user) return null;
 
+  const navLinks = filteredNavItems.map((item) => {
+    const isActive = currentPath === item.href;
+    return <Link key={item.label} to={item.href} className={cn('group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all', isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground')}><item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground')} /><span className="truncate">{item.label}</span></Link>;
+  });
+
   return (
+    <>
+    <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur md:hidden">
+      <div className="flex items-center gap-2"><Menu className="h-5 w-5 text-primary" /><span className="font-heading text-xl font-bold tracking-tight text-primary">GAM</span></div>
+      <div className="flex items-center gap-2">{navLinks}<button onClick={() => logout()} className="rounded-md p-2 text-destructive focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sair da conta"><LogOut className="h-4 w-4" /></button></div>
+    </div>
     <aside 
       className={cn(
         "relative flex flex-col h-screen border-r border-border bg-background text-foreground transition-all duration-300 ease-in-out z-40",
@@ -166,5 +176,6 @@ export const SideNavigation = () => {
         </button>
       </div>
     </aside>
+    </>
   );
 };

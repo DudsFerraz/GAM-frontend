@@ -8,11 +8,11 @@ import type {
   SearchDTO,
   SpecificationFilter,
 } from '../types';
-import { Loader2 } from 'lucide-react';
 import { MEMBERS_FILTER_CONFIG } from '../memberSearchConfig';
 import { Button } from '@/components/ui/Button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/Dialog';
 import { MemberCard } from '../components/MemberCard';
+import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState';
 
 //deve ser componente proprio futuramente
 const EditMemberPlaceholder = ({ member, onClose }: { member: MemberResponse | null, onClose: () => void }) => {
@@ -44,7 +44,7 @@ export const ManageMembersPage = () => {
   });
   const [selectedMember, setSelectedMember] = useState<MemberResponse | null>(null);
 
-  const { data, isLoading, isError } = useSearchMembers({
+  const { data, isLoading, isError, refetch } = useSearchMembers({
     filters: searchParams,
     pageParams: pageParams
   });
@@ -64,12 +64,12 @@ export const ManageMembersPage = () => {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-6">
+    <div className="mx-auto w-full max-w-7xl space-y-5 px-0 py-2 sm:space-y-6 sm:px-2 sm:py-4 lg:px-4">
       
       {/* Header and Search Section */}
       <div className="flex flex-col gap-2">
-        <h1 className="font-heading text-3xl font-bold tracking-tight">Gerenciar Membros</h1>
-        <p className="text-muted-foreground">Visualize e gerencie os membros do grupo.</p>
+        <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Gerenciar Membros</h1>
+        <p className="text-sm text-muted-foreground sm:text-base">Visualize e gerencie os membros do grupo.</p>
       </div>
 
       <div className="bg-card p-4 rounded-xl border border-border shadow-sm">
@@ -82,24 +82,14 @@ export const ManageMembersPage = () => {
 
       {/* Member Display Section */}
       <div className="space-y-4">
-        {isLoading && (
-          <div className="flex justify-center p-12">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          </div>
-        )}
+        {isLoading && <LoadingState />}
 
-        {isError && (
-          <div className="p-4 rounded-md bg-destructive/10 text-destructive text-sm">
-            Erro ao carregar membros. Verifique sua conexão.
-          </div>
-        )}
+        {isError && <ErrorState onRetry={() => void refetch()} description="Não foi possível carregar os membros. Verifique sua conexão." />}
 
         {!isLoading && !isError && data?.content && (
           <>
             {data.content.length === 0 ? (
-               <div className="p-8 text-center text-muted-foreground bg-card border border-border rounded-xl">
-                 Nenhum resultado encontrado.
-               </div>
+               <EmptyState />
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {data.content.map((member) => (
