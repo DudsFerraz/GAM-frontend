@@ -17,11 +17,11 @@ The default development proxy target is `http://localhost:8080`. Change `API_PRO
 | --- | --- | --- |
 | Install dependencies | `npm ci` | Verified with `npm ci --dry-run`. |
 | Run the development server | `npm run dev` | Verified; Vite starts successfully on a loopback host. |
-| Lint TypeScript/TSX | `npm run lint` | Configured, but currently fails on four existing `react-refresh/only-export-components` errors in shared UI/theme files. |
-| Build and type-check | `npm run build` | Configured, but currently fails during `tsc -b` because `src/utils/getMainRoleLabel.ts` imports missing `@/features/manage/members/types`. |
+| Lint TypeScript/TSX | `npm run lint` | Verified. |
+| Build and type-check | `npm run build` | Verified; runs `tsc -b` before producing the Vite artifact. |
 | Preview a built artifact | `npm run preview` | Configured; validate after a successful build exists. |
 | Run tests | — | No test script or test files are currently configured. |
-| Run type checking alone | — | No dedicated script; `npm run build` is the configured type-check path and currently fails as noted above. |
+| Run type checking alone | — | No dedicated script; `npm run build` is the configured type-check path. |
 
 ## Local API workflow
 

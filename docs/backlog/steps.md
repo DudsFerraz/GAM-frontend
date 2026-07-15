@@ -6,6 +6,8 @@ Pages and features must come from accepted product requirements. This document d
 
 ## 1. Stabilize the current frontend baseline
 
+**Status:** Complete. The existing TypeScript and ESLint errors are resolved, and the local lint and production-build commands pass.
+
 - Resolve the current TypeScript build error and ESLint errors.
 - Keep the existing React/Vite/TanStack base; improve it incrementally rather than rewriting the application.
 - Keep `src/routeTree.gen.ts` generated and out of manual edits.
