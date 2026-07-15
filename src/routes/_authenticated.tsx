@@ -1,6 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { AppLayout } from '@/components/appLayout'
-import { getUserIdFromToken } from '@/features/auth/util';
+import { AppLayout } from '@/app/shell'
+import { getUserIdFromToken } from '@/features/auth';
 
 export const Route = createFileRoute('/_authenticated')({
   beforeLoad: ({ location }) => {
@@ -15,9 +15,5 @@ export const Route = createFileRoute('/_authenticated')({
     }
   },
   
-  component: () => (
-    <AppLayout>
-        
-    </AppLayout>
-  ),
+  component: AppLayout,
 })

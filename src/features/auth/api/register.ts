@@ -1,4 +1,4 @@
-import { api } from '@/lib/axios';
+import { api } from '@/lib/http';
 import type { RegisterInfo, RegisterResponse } from '../types'
 
 export const register = async (info: RegisterInfo): Promise<RegisterResponse> => {

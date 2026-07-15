@@ -1,12 +1,10 @@
 import { createFileRoute } from '@tanstack/react-router'
-import { AppLayout } from '@/components/appLayout'
+import { AppLayout } from '@/app/shell'
 
 export const Route = createFileRoute('/manage')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  return (
-    <AppLayout/>
-  )
+  return <AppLayout />
 }

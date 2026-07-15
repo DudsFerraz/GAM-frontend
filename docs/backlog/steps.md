@@ -33,7 +33,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 - Add the accepted TypeScript generation workflow after step 2 is available.
 - Pin or otherwise record the supported OpenAPI version.
 - Generate transport types into a clearly identified generated location; do not manually edit them.
-- Replace handwritten transport DTOs in `src/types/api.ts` incrementally at feature/API boundaries.
+- Replace the handwritten transport DTOs currently colocated at feature/API boundaries.
 - Keep frontend-specific view models and mappings outside generated files when they add UI value.
 
 **Done when:** frontend API calls compile against generated transport types from one selected contract version.
@@ -65,7 +65,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 - Keep the root route responsible for application-wide providers and feedback only.
 - Create or refine the authenticated application shell: navigation, page outlet, responsive layout, loading boundary, error feedback, and theme behavior.
-- Keep reusable primitives in `src/components/ui/` and cross-feature composition in `src/components/`.
+- Keep reusable primitives in `src/components/ui/`, cross-feature components in `src/components/`, and application composition in `src/app/`.
 - Do not make a component shared merely because it appears twice; extract only stable, genuinely reusable behavior.
 - Define accessible loading, empty, error, confirmation, and forbidden-state patterns that feature pages can reuse.
 

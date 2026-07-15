@@ -1,4 +1,4 @@
-import { api } from '@/lib/axios';
+import { api } from '@/lib/http';
 import type { LoginInfo, LoginResponse } from '../types';
 
 export const login = async (info: LoginInfo): Promise<LoginResponse> => {

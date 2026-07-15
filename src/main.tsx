@@ -2,32 +2,23 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import './index.css'
 
-import { RouterProvider, createRouter } from '@tanstack/react-router'
-import { QueryClientProvider } from '@tanstack/react-query'
+import { RouterProvider } from '@tanstack/react-router'
 
-import { routeTree } from './routeTree.gen'
-import { queryClient } from './lib/reactQuery'
+import { AppProviders } from '@/app/providers'
+import { router } from '@/app/router'
 
-import { ThemeProvider } from "@/components/themeProvider"
-
-const router = createRouter({ routeTree })
-
-declare module '@tanstack/react-router' {
-  interface Register {
-    router: typeof router
-  }
+const rootElement = document.getElementById('root')
+if (!rootElement) {
+  throw new Error('Root element not found')
 }
 
-const rootElement = document.getElementById('root')!
 if (!rootElement.innerHTML) {
   const root = ReactDOM.createRoot(rootElement)
   root.render(
     <React.StrictMode>
-      <QueryClientProvider client={queryClient}>
-        <ThemeProvider defaultTheme='system' storageKey='vite-ui-theme'>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </QueryClientProvider>
+      <AppProviders>
+        <RouterProvider router={router} />
+      </AppProviders>
     </React.StrictMode>,
   )
 }

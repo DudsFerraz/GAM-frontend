@@ -1,4 +1,4 @@
-import type { UUID } from "@/utils/global";
+import type { UUID } from '@/types/uuid';
 
 export type RegisterInfo = {
   displayName: string;

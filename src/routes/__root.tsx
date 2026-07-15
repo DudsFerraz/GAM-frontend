@@ -1,4 +1,4 @@
-import { AxiosInterceptor } from '@/features/auth/components/axiosInterceptor'
+import { AxiosInterceptor } from '@/features/auth'
 import { createRootRoute, Outlet } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 

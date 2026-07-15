@@ -23,6 +23,14 @@ The default development proxy target is `http://localhost:8080`. Change `API_PRO
 | Run tests | — | No test script or test files are currently configured. |
 | Run type checking alone | — | No dedicated script; `npm run build` is the configured type-check path. |
 
+## Source naming
+
+- Use PascalCase for files and directories that expose React components, such as `AppLayout.tsx`, `LoginForm.tsx`, and `SearchAndFilter/`.
+- Use camelCase for functions, hooks, API operations, query-key modules, configuration modules, and other non-component source, such as `getAccount.ts`, `useAccountInfo.ts`, `searchMembers.ts`, and `queryKeys.ts`.
+- Keep conventional module files such as `index.ts` and `types.ts` lowercase.
+- Preserve TanStack Router file names and path conventions in `src/routes/`; route URL semantics take precedence over the component-file convention.
+- Use local barrels only for a module's deliberate public API. Feature internals should prefer direct imports, and `export *` barrels spanning unrelated components are not used.
+
 ## Local API workflow
 
 The supported local flow is:

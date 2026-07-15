@@ -1,9 +1,7 @@
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { searchMembers } from '../api/searchMembers';
-import type { SearchDTO, PageParams, Page } from '@/types/api';
-import type { MemberResponse } from '@/types/api';
-
-export const MEMBERS_QUERY_KEY = 'members';
+import { MEMBERS_QUERY_KEY } from '../queryKeys';
+import type { MemberResponse, Page, PageParams, SearchDTO } from '../types';
 
 type UseSearchMembersOptions = {
   filters: SearchDTO;

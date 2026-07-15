@@ -14,7 +14,7 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Tailwind CSS, Radix UI primitives, Lucide icons, and local UI components provide the UI layer.
 - Axios is the current HTTP client.
 
-The codebase is an early, pre-production implementation. It has login and registration screens, a protected route group, shared navigation/layout components, and one vertical member-search view. `src/App.tsx` is currently unused by the router. There are no repository test scripts, generated API client/types, or OpenAPI artifacts.
+The codebase is an early, pre-production implementation. It has login and registration screens, a protected route group, an application shell, and one vertical member-search view. There are no repository test scripts, generated API client/types, or OpenAPI artifacts.
 
 ## Immediate scope
 
