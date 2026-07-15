@@ -4,7 +4,7 @@ import criancasImage from '@/assets/images/criancas_oratorio.jpeg'
 import gamImage from '@/assets/images/gam.jpg'
 import dbJovens from '@/assets/images/db_jovens.jpg'
 import dbJovensMaria from '@/assets/images/db_jovens_maria.jpg'
-import { ColorModeToggle } from '@/components/ColorModeToggle'
+import { PublicNavbar } from '@/components/PublicNavbar'
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -51,9 +51,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
   return (
       <div className="min-h-screen w-full flex font-serif bg-background text-foreground relative">  
 
-      <div className="absolute top-4 right-4 z-50">
-        <ColorModeToggle/>
-      </div>
+      <PublicNavbar variant="surface" />
 
         <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-zinc-900">
           
@@ -106,7 +104,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8 md:p-12">
+        <div className="w-full lg:w-1/2 flex items-center justify-center px-4 pb-8 pt-24 sm:p-8 sm:pt-28 md:p-12 md:pt-32">
           <div className="w-full max-w-md bg-card text-card-foreground shadow-md rounded-2xl border border-border p-8">
             {children}
           </div>
