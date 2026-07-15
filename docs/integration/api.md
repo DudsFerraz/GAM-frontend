@@ -6,9 +6,13 @@ The API is served at the same public origin under `/api`. Frontend code must use
 
 For development, the browser should call the same relative paths and Vite should proxy `/api` to the local backend. The browser must not call the backend port directly through CORS.
 
-## Current implementation and gaps
+## Current implementation
 
-`src/lib/axios.ts` uses `VITE_API_URL` as its base URL. No `.env` file or Vite `server.proxy` configuration exists in this repository. Current API modules use API-relative paths such as `/auth/login`, `/account/:id`, `/role/:id/permissions`, and `/member/search`, rather than public `/api/*` paths.
+`src/lib/axios.ts` uses the fixed relative `/api` base. Feature API modules append resource paths such as `/auth/login`; browser requests therefore stay on the frontend origin under `/api/*`. `vite.config.ts` proxies `/api` to `API_PROXY_TARGET` (defaulting to `http://localhost:8080`) and removes the public `/api` prefix because the local Spring Boot application maps resources at its root. `API_PROXY_TARGET` is a server-only development value, not a `VITE_*` browser variable.
+
+`.env.example` documents the supported local target. A developer may override it in the ignored `.env` file without changing browser code or committing a machine-specific backend origin.
+
+## Current integration gaps
 
 The checked local backend currently maps plural resource roots (`/accounts`, `/roles`, and `/members`), while the frontend adapter uses singular roots for those calls. Treat this as an integration mismatch to resolve against the selected contract; do not preserve either handwritten shape as a second source of truth.
 

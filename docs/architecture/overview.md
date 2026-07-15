@@ -10,7 +10,7 @@ The current guard decodes a stored JWT to obtain an account id. This is an imple
 
 ### Server state and API calls
 
-`src/lib/reactQuery.ts` provides one TanStack Query client. Query hooks currently live both in `src/hooks/` (account and permission lookups) and alongside the member feature. Axios configuration is centralized in `src/lib/axios.ts`, while individual feature API modules call it.
+`src/lib/reactQuery.ts` provides one TanStack Query client. Query hooks currently live both in `src/hooks/` (account and permission lookups) and alongside the member feature. Axios configuration is centralized in `src/lib/axios.ts`, uses the public relative `/api` base, and is called by individual feature API modules. During local development, Vite proxies that base to the configured local backend and removes the public `/api` prefix before forwarding.
 
 `src/types/api.ts` contains handwritten transport-shaped types. They are current implementation, not an authoritative API definition. See [API integration](../integration/api.md) for the planned contract boundary.
 
@@ -30,7 +30,6 @@ The route-level member-management screen is the current example of a feature usi
 ## Planned, not yet implemented
 
 - A session-aware authentication state with bootstrap, in-memory access tokens, bounded refresh/replay, and cross-tab coordination.
-- A configured Vite development proxy for `/api`.
 - Generated TypeScript transport types from a selected, versioned backend OpenAPI artifact.
 
 ## Incremental refactoring guidance

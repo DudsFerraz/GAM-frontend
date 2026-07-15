@@ -6,7 +6,10 @@ Use a supported Node.js/npm installation and the committed `package-lock.json`.
 
 ```sh
 npm ci
+cp .env.example .env
 ```
+
+The default development proxy target is `http://localhost:8080`. Change `API_PROXY_TARGET` in the ignored `.env` only when the local backend uses another origin. This value is read by the Vite server and is not exposed to browser code.
 
 ## Commands
 
@@ -22,15 +25,13 @@ npm ci
 
 ## Local API workflow
 
-**Gap:** `vite.config.ts` currently has no `server.proxy` configuration, and no local API base configuration is committed. Therefore the supported same-origin `/api` workflow is not available yet.
-
-The accepted target is:
+The supported local flow is:
 
 ```text
 Browser -> Vite development origin -> /api/* proxy -> local backend
 ```
 
-Configure this only as part of the API/auth boundary work. Keep browser requests relative to `/api`; do not solve local development by exposing a backend host/port to the browser or enabling CORS. The shared requirement is [REQ-WEB-007](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/requirements/platform/web-delivery-and-frontend-contract.md#req-web-007-same-origin-frontend-development).
+The shared Axios client uses `/api`, and Vite forwards those requests to `API_PROXY_TARGET` after removing the public `/api` prefix. Keep browser requests relative to `/api`; do not expose the backend host/port through a `VITE_*` variable or rely on CORS. The shared requirement is [REQ-WEB-007](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/requirements/platform/web-delivery-and-frontend-contract.md#req-web-007-same-origin-frontend-development).
 
 ## Production delivery context
 

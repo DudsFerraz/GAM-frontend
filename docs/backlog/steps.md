@@ -38,6 +38,8 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 4. Create the same-origin API infrastructure
 
+**Current partial progress:** the shared client now uses `/api`, and the Vite development proxy forwards that prefix to a server-only configurable local backend target. Contract-generated endpoint alignment remains pending on steps 2 and 3.
+
 - Configure Vite to proxy relative `/api/*` requests to the local backend.
 - Configure the HTTP client to use relative `/api` paths rather than a browser-visible backend origin.
 - Align every existing API module with the generated contract, including plural resource roots where the contract specifies them.
