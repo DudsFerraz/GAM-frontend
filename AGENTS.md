@@ -19,6 +19,7 @@
 
 ## React and TypeScript practices
 
+- Decompose pages into focused components by responsibility. Extract independent sections, patterns, and interaction units into feature-local components when they may be reused or tested elsewhere; keep page files responsible for composition rather than large visual implementations.
 - Use function components and hooks. Favor composition, small focused components, and explicit props over inheritance, hidden mutable state, or oversized page components.
 - Keep state as close as possible to where it is used. Use TanStack Query for server state, React state for local interaction, and Context only for genuinely cross-cutting client state.
 - Do not mirror props or query results into state without a concrete synchronization requirement. Compute derived values during render and use effects only to synchronize with external systems.
@@ -39,6 +40,7 @@
 
 ## UI, forms, and accessibility
 
+- Every interface must be responsive from the initial implementation, adapting content, navigation, spacing, and interaction for small, medium, and large screens.
 - Reuse existing UI primitives and design tokens before adding new ones. Keep feature-specific presentation inside its feature until reuse is stable.
 - Use semantic HTML, associated labels, keyboard-accessible controls, visible focus states, and Radix accessibility behavior. Preserve accessibility when wrapping primitives.
 - Forms use React Hook Form and Zod where validation is required. Keep schemas close to the owning feature and show actionable field or submission feedback.

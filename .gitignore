@@ -28,3 +28,7 @@ dist-ssr
 .env.development
 .env.test
 .env.production
+
+
+# Development
+docs/anotations.md
