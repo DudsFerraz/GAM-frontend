@@ -45,7 +45,7 @@ Logout obtains CSRF proof as needed and calls the logout endpoint. After success
 ## Current gaps to resolve deliberately
 
 - `src/features/auth/hooks/useLogin.ts` writes the bearer token to `localStorage` or `sessionStorage`; `src/features/auth/token.ts` and `src/lib/http/client.ts` read it from persistent storage. This directly conflicts with the accepted contract.
-- Protected routing checks a decoded stored JWT before rendering. There is no `initializing` state, CSRF bootstrap, refresh call, or current-Account (`/api/accounts/me`) bootstrap.
+- Protected routing checks a decoded stored JWT before rendering. There is no `initializing` state, CSRF bootstrap, or refresh call; the current Account is still loaded through the legacy `/api/accounts/{id}` operation because `/api/accounts/me` is not implemented by the published backend contract.
 - The Axios interceptor clears persistent storage on `401`; it has no single-flight refresh, bounded replay, or cross-tab coordination. It displays a `403` error, which is appropriate as an outcome, but no resynchronization path exists.
 - Current permissions are assembled through per-role lookups. The accepted contract requires the current Account response's effective permission codes after refresh; role names remain presentation data only.
 - The current logout only clears frontend storage and navigates. It does not call server logout or notify other tabs.
