@@ -30,11 +30,13 @@
 
 ## API, authentication, and data flow
 
+- Use [`src/api/generated/gam-api.ts`](src/api/generated/gam-api.ts) as the frontend reference for backend routes, operations, request parameters, and response/transport types. Inspect it before creating or changing a feature API module; do not invent handwritten route paths or duplicate backend DTOs when the generated contract provides the shape.
+- `src/api/generated/gam-api.ts` is generated code: never edit it manually. Keep feature API calls and UI-specific mapping outside the generated file, and update the generated artifact through the repository's accepted contract-generation workflow when that workflow is available.
 - Browser code must call the shared HTTP client with resource-relative paths. The client owns the public `/api` base; never embed a production backend hostname or call a backend port directly from browser code.
 - `API_PROXY_TARGET` is server-only development configuration. Only variables prefixed with `VITE_` are available to browser code, so never use that prefix for secrets or private service origins.
 - Keep `.env` local and ignored. Update `.env.example` whenever supported environment keys change, using safe development defaults and comments without secrets.
 - Keep API calls in feature API modules, not in visual components. Use TanStack Query hooks with stable query keys, explicit loading/error/empty states, and targeted invalidation after mutations.
-- Treat backend responses and the future generated OpenAPI transport types as boundary data. Frontend view models may map them for UI needs but must not become a competing API contract.
+- Treat backend responses and the generated transport types as boundary data. Frontend view models may map them for UI needs but must not become a competing API contract.
 - Never persist access tokens in `localStorage`, `sessionStorage`, IndexedDB, or readable cookies. Follow `docs/integration/authentication.md` for session work; the backend remains the authorization authority.
 - UI permission checks control visibility and affordances only. They are not security boundaries, and role names or decoded JWT claims must not replace effective permissions from the current Account contract.
 

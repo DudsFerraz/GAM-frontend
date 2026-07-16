@@ -14,7 +14,7 @@ The current guard decodes a stored JWT to obtain an account id. This is an imple
 
 `src/lib/query/client.ts` provides one TanStack Query client. Account and permission queries live in `src/features/account/`; member queries live in `src/features/manage/members/`. Axios configuration is centralized in `src/lib/http/client.ts`, uses the public relative `/api` base, and is called by individual feature API modules. During local development, Vite proxies that base to the configured local backend and removes the public `/api` prefix before forwarding.
 
-Handwritten transport-shaped types are currently colocated with their owning feature or HTTP boundary. They remain current implementation rather than an authoritative API definition. See [API integration](../integration/api.md) for the planned contract boundary.
+Backend routes, operations, and transport types are referenced from the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Feature API modules still own the calls made with the shared Axios client, while feature-specific view models and mappings remain outside the generated file. Do not edit the generated file manually. See [API integration](../integration/api.md) for the contract boundary and current limitations.
 
 ### Forms, UI, and features
 
@@ -101,7 +101,7 @@ Do not introduce generic repositories, service layers, or domain frameworks in `
 
 ### `src/types` and `src/assets`
 
-`types` contains only types that are genuinely global and are not owned by a feature or infrastructure boundary. Transport-shaped Account and Member types currently remain with their owning features; future generated OpenAPI types will live in a clearly identified generated boundary once that workflow is accepted. `assets` contains files bundled by Vite and does not contain component or feature logic.
+`types` contains only types that are genuinely global and are not owned by a feature or infrastructure boundary. Backend transport types belong to the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts); feature-local types should describe view models or other UI concerns, not duplicate backend DTOs. `assets` contains files bundled by Vite and does not contain component or feature logic.
 
 ## Adding a new feature
 
@@ -193,7 +193,7 @@ This architecture is intentionally not a traditional Clean Architecture implemen
 ## Planned, not yet implemented
 
 - A session-aware authentication state with bootstrap, in-memory access tokens, bounded refresh/replay, and cross-tab coordination.
-- Generated TypeScript transport types from a selected, versioned backend OpenAPI artifact.
+- Formalized generation/version-selection workflow for the generated TypeScript transport types. The current generated artifact is already available at `src/api/generated/gam-api.ts`, but its repository workflow remains to be documented and accepted.
 
 ## Incremental refactoring guidance
 
