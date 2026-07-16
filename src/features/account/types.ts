@@ -4,7 +4,7 @@ export type AccountResponse = {
   id: UUID
   email: string
   displayName: string
-  roles: AccountRolesResponse
+  roles: RoleResponse[]
   picture?: string
 }
 

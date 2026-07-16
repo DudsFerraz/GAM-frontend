@@ -32,7 +32,7 @@ export const useAccountInfo = () => {
   return {
     user: accountData ? {
         name: accountData.displayName,
-        roleLabel: getMainRoleLabel(accountData.roles.roles), 
+        roleLabel: getMainRoleLabel(accountData.roles), 
         picture: accountData.picture || null
     } : null,
     
