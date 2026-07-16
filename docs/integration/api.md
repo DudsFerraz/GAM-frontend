@@ -12,9 +12,9 @@ For development, the browser should call the same relative paths and Vite should
 
 `.env.example` documents the supported local target. A developer may override it in the ignored `.env` file without changing browser code or committing a machine-specific backend origin.
 
-## Current integration gaps
+## Current integration status
 
-The checked local backend currently maps plural resource roots (`/accounts`, `/roles`, and `/members`), while the frontend adapter uses singular roots for those calls. Treat this as an integration mismatch to resolve against the selected contract; do not preserve either handwritten shape as a second source of truth.
+The existing frontend feature adapters use the plural resource roots in the checked-in generated contract, including `/members/search` and `/roles/{roleId}/permissions`. The generated contract still lacks a published source-artifact version, so future regeneration and release pinning remain blocked on the backend-owned workflow.
 
 ## Generated contract reference
 
