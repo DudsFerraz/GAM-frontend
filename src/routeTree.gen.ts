@@ -16,7 +16,14 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
+import { Route as AuthenticatedManageSolicitationsRouteImport } from './routes/_authenticated/manage/solicitations'
 import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage/members'
+import { Route as AuthenticatedManageLocationsRouteImport } from './routes/_authenticated/manage/locations'
+import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage/events'
+import { Route as AuthenticatedManageAccountsRouteImport } from './routes/_authenticated/manage/accounts'
+import { Route as AuthenticatedManageMembersMemberIdRouteImport } from './routes/_authenticated/manage/members/$memberId'
+import { Route as AuthenticatedManageLocationsLocationIdRouteImport } from './routes/_authenticated/manage/locations/$locationId'
+import { Route as AuthenticatedManageEventsEventIdRouteImport } from './routes/_authenticated/manage/events/$eventId'
 
 const ManageRoute = ManageRouteImport.update({
   id: '/manage',
@@ -52,11 +59,53 @@ const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   path: '/home',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedManageSolicitationsRoute =
+  AuthenticatedManageSolicitationsRouteImport.update({
+    id: '/manage/solicitations',
+    path: '/manage/solicitations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedManageMembersRoute =
   AuthenticatedManageMembersRouteImport.update({
     id: '/manage/members',
     path: '/manage/members',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedManageLocationsRoute =
+  AuthenticatedManageLocationsRouteImport.update({
+    id: '/manage/locations',
+    path: '/manage/locations',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedManageEventsRoute =
+  AuthenticatedManageEventsRouteImport.update({
+    id: '/manage/events',
+    path: '/manage/events',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedManageAccountsRoute =
+  AuthenticatedManageAccountsRouteImport.update({
+    id: '/manage/accounts',
+    path: '/manage/accounts',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedManageMembersMemberIdRoute =
+  AuthenticatedManageMembersMemberIdRouteImport.update({
+    id: '/$memberId',
+    path: '/$memberId',
+    getParentRoute: () => AuthenticatedManageMembersRoute,
+  } as any)
+const AuthenticatedManageLocationsLocationIdRoute =
+  AuthenticatedManageLocationsLocationIdRouteImport.update({
+    id: '/$locationId',
+    path: '/$locationId',
+    getParentRoute: () => AuthenticatedManageLocationsRoute,
+  } as any)
+const AuthenticatedManageEventsEventIdRoute =
+  AuthenticatedManageEventsEventIdRouteImport.update({
+    id: '/$eventId',
+    path: '/$eventId',
+    getParentRoute: () => AuthenticatedManageEventsRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -66,7 +115,14 @@ export interface FileRoutesByFullPath {
   '/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/manage/members': typeof AuthenticatedManageMembersRoute
+  '/manage/accounts': typeof AuthenticatedManageAccountsRoute
+  '/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/manage/locations': typeof AuthenticatedManageLocationsRouteWithChildren
+  '/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
+  '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
+  '/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
+  '/manage/locations/$locationId': typeof AuthenticatedManageLocationsLocationIdRoute
+  '/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -75,7 +131,14 @@ export interface FileRoutesByTo {
   '/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/manage/members': typeof AuthenticatedManageMembersRoute
+  '/manage/accounts': typeof AuthenticatedManageAccountsRoute
+  '/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/manage/locations': typeof AuthenticatedManageLocationsRouteWithChildren
+  '/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
+  '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
+  '/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
+  '/manage/locations/$locationId': typeof AuthenticatedManageLocationsLocationIdRoute
+  '/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -86,7 +149,14 @@ export interface FileRoutesById {
   '/_authenticated/home': typeof AuthenticatedHomeRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
-  '/_authenticated/manage/members': typeof AuthenticatedManageMembersRoute
+  '/_authenticated/manage/accounts': typeof AuthenticatedManageAccountsRoute
+  '/_authenticated/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/_authenticated/manage/locations': typeof AuthenticatedManageLocationsRouteWithChildren
+  '/_authenticated/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
+  '/_authenticated/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
+  '/_authenticated/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
+  '/_authenticated/manage/locations/$locationId': typeof AuthenticatedManageLocationsLocationIdRoute
+  '/_authenticated/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,7 +167,14 @@ export interface FileRouteTypes {
     | '/home'
     | '/auth/login'
     | '/auth/register'
+    | '/manage/accounts'
+    | '/manage/events'
+    | '/manage/locations'
     | '/manage/members'
+    | '/manage/solicitations'
+    | '/manage/events/$eventId'
+    | '/manage/locations/$locationId'
+    | '/manage/members/$memberId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -106,7 +183,14 @@ export interface FileRouteTypes {
     | '/home'
     | '/auth/login'
     | '/auth/register'
+    | '/manage/accounts'
+    | '/manage/events'
+    | '/manage/locations'
     | '/manage/members'
+    | '/manage/solicitations'
+    | '/manage/events/$eventId'
+    | '/manage/locations/$locationId'
+    | '/manage/members/$memberId'
   id:
     | '__root__'
     | '/'
@@ -116,7 +200,14 @@ export interface FileRouteTypes {
     | '/_authenticated/home'
     | '/auth/login'
     | '/auth/register'
+    | '/_authenticated/manage/accounts'
+    | '/_authenticated/manage/events'
+    | '/_authenticated/manage/locations'
     | '/_authenticated/manage/members'
+    | '/_authenticated/manage/solicitations'
+    | '/_authenticated/manage/events/$eventId'
+    | '/_authenticated/manage/locations/$locationId'
+    | '/_authenticated/manage/members/$memberId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -177,6 +268,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedHomeRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/manage/solicitations': {
+      id: '/_authenticated/manage/solicitations'
+      path: '/manage/solicitations'
+      fullPath: '/manage/solicitations'
+      preLoaderRoute: typeof AuthenticatedManageSolicitationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/manage/members': {
       id: '/_authenticated/manage/members'
       path: '/manage/members'
@@ -184,17 +282,113 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageMembersRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/manage/locations': {
+      id: '/_authenticated/manage/locations'
+      path: '/manage/locations'
+      fullPath: '/manage/locations'
+      preLoaderRoute: typeof AuthenticatedManageLocationsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage/events': {
+      id: '/_authenticated/manage/events'
+      path: '/manage/events'
+      fullPath: '/manage/events'
+      preLoaderRoute: typeof AuthenticatedManageEventsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage/accounts': {
+      id: '/_authenticated/manage/accounts'
+      path: '/manage/accounts'
+      fullPath: '/manage/accounts'
+      preLoaderRoute: typeof AuthenticatedManageAccountsRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage/members/$memberId': {
+      id: '/_authenticated/manage/members/$memberId'
+      path: '/$memberId'
+      fullPath: '/manage/members/$memberId'
+      preLoaderRoute: typeof AuthenticatedManageMembersMemberIdRouteImport
+      parentRoute: typeof AuthenticatedManageMembersRoute
+    }
+    '/_authenticated/manage/locations/$locationId': {
+      id: '/_authenticated/manage/locations/$locationId'
+      path: '/$locationId'
+      fullPath: '/manage/locations/$locationId'
+      preLoaderRoute: typeof AuthenticatedManageLocationsLocationIdRouteImport
+      parentRoute: typeof AuthenticatedManageLocationsRoute
+    }
+    '/_authenticated/manage/events/$eventId': {
+      id: '/_authenticated/manage/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/manage/events/$eventId'
+      preLoaderRoute: typeof AuthenticatedManageEventsEventIdRouteImport
+      parentRoute: typeof AuthenticatedManageEventsRoute
+    }
   }
 }
 
+interface AuthenticatedManageEventsRouteChildren {
+  AuthenticatedManageEventsEventIdRoute: typeof AuthenticatedManageEventsEventIdRoute
+}
+
+const AuthenticatedManageEventsRouteChildren: AuthenticatedManageEventsRouteChildren =
+  {
+    AuthenticatedManageEventsEventIdRoute:
+      AuthenticatedManageEventsEventIdRoute,
+  }
+
+const AuthenticatedManageEventsRouteWithChildren =
+  AuthenticatedManageEventsRoute._addFileChildren(
+    AuthenticatedManageEventsRouteChildren,
+  )
+
+interface AuthenticatedManageLocationsRouteChildren {
+  AuthenticatedManageLocationsLocationIdRoute: typeof AuthenticatedManageLocationsLocationIdRoute
+}
+
+const AuthenticatedManageLocationsRouteChildren: AuthenticatedManageLocationsRouteChildren =
+  {
+    AuthenticatedManageLocationsLocationIdRoute:
+      AuthenticatedManageLocationsLocationIdRoute,
+  }
+
+const AuthenticatedManageLocationsRouteWithChildren =
+  AuthenticatedManageLocationsRoute._addFileChildren(
+    AuthenticatedManageLocationsRouteChildren,
+  )
+
+interface AuthenticatedManageMembersRouteChildren {
+  AuthenticatedManageMembersMemberIdRoute: typeof AuthenticatedManageMembersMemberIdRoute
+}
+
+const AuthenticatedManageMembersRouteChildren: AuthenticatedManageMembersRouteChildren =
+  {
+    AuthenticatedManageMembersMemberIdRoute:
+      AuthenticatedManageMembersMemberIdRoute,
+  }
+
+const AuthenticatedManageMembersRouteWithChildren =
+  AuthenticatedManageMembersRoute._addFileChildren(
+    AuthenticatedManageMembersRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
-  AuthenticatedManageMembersRoute: typeof AuthenticatedManageMembersRoute
+  AuthenticatedManageAccountsRoute: typeof AuthenticatedManageAccountsRoute
+  AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRouteWithChildren
+  AuthenticatedManageLocationsRoute: typeof AuthenticatedManageLocationsRouteWithChildren
+  AuthenticatedManageMembersRoute: typeof AuthenticatedManageMembersRouteWithChildren
+  AuthenticatedManageSolicitationsRoute: typeof AuthenticatedManageSolicitationsRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
-  AuthenticatedManageMembersRoute: AuthenticatedManageMembersRoute,
+  AuthenticatedManageAccountsRoute: AuthenticatedManageAccountsRoute,
+  AuthenticatedManageEventsRoute: AuthenticatedManageEventsRouteWithChildren,
+  AuthenticatedManageLocationsRoute:
+    AuthenticatedManageLocationsRouteWithChildren,
+  AuthenticatedManageMembersRoute: AuthenticatedManageMembersRouteWithChildren,
+  AuthenticatedManageSolicitationsRoute: AuthenticatedManageSolicitationsRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(

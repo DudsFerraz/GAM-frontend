@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
-import { Home, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, type LucideIcon } from 'lucide-react';
+import { CalendarDays, FileClock, Home, MapPin, ShieldCheck, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, X, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { useAccountInfo, useAccountPermissions } from '@/features/account';
+import { ColorModeToggle } from '@/components/ColorModeToggle';
 
 type NavItem = {
   label: string;
@@ -20,15 +21,38 @@ const NAV_ITEMS: NavItem[] = [
     href: '/home' 
   },
   { 
+    label: 'Solicitações',
+    icon: FileClock,
+    href: '/manage/solicitations',
+  },
+  {
     label: 'Gestão dos membros', 
     icon: Users, 
     href: '/manage/members',
     requiredPermission: 'MEMBER_SEARCH'
   },
+  {
+    label: 'Eventos',
+    icon: CalendarDays,
+    href: '/manage/events',
+    requiredPermission: 'EVENT_SEARCH',
+  },
+  {
+    label: 'Locais',
+    icon: MapPin,
+    href: '/manage/locations',
+  },
+  {
+    label: 'Contas e papéis',
+    icon: ShieldCheck,
+    href: '/manage/accounts',
+    requiredPermission: 'ACCOUNT_SEARCH',
+  },
 ];
 
 export const SideNavigation = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const { user, account, logout, isLoading: isLoadingUser } = useAccountInfo();
   const { permissions, isLoading: isLoadingPermissions } = useAccountPermissions(account);
@@ -58,15 +82,22 @@ export const SideNavigation = () => {
   if (!user) return null;
 
   const navLinks = filteredNavItems.map((item) => {
-    const isActive = currentPath === item.href;
-    return <Link key={item.label} to={item.href} className={cn('group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all', isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground')}><item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground')} /><span className="truncate">{item.label}</span></Link>;
+    const isActive = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
+    return <Link key={item.label} onClick={() => setIsMobileMenuOpen(false)} to={item.href} className={cn('group flex items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-all', isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'text-muted-foreground hover:bg-accent/50 hover:text-foreground')}><item.icon className={cn('h-4 w-4 shrink-0', isActive ? 'text-primary-foreground' : 'text-muted-foreground group-hover:text-foreground')} /><span className="truncate">{item.label}</span></Link>;
   });
 
   return (
     <>
-    <div className="fixed inset-x-0 top-0 z-40 flex h-16 items-center justify-between border-b border-border bg-background/95 px-4 backdrop-blur md:hidden">
-      <div className="flex items-center gap-2"><Menu className="h-5 w-5 text-primary" /><span className="font-heading text-xl font-bold tracking-tight text-primary">GAM</span></div>
-      <div className="flex items-center gap-2">{navLinks}<button onClick={() => logout()} className="rounded-md p-2 text-destructive focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sair da conta"><LogOut className="h-4 w-4" /></button></div>
+    <div className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur md:hidden">
+      <div className="flex h-16 items-center justify-between px-4">
+        <span className="font-heading text-xl font-bold tracking-tight text-primary">GAM</span>
+        <div className="flex items-center gap-1">
+          <ColorModeToggle />
+          <button onClick={() => logout()} className="rounded-md p-2 text-destructive focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sair da conta"><LogOut className="h-4 w-4" /></button>
+          <button aria-expanded={isMobileMenuOpen} aria-label={isMobileMenuOpen ? 'Fechar menu' : 'Abrir menu'} className="rounded-md p-2 text-foreground focus:outline-none focus:ring-2 focus:ring-ring" onClick={() => setIsMobileMenuOpen((open) => !open)}>{isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}</button>
+        </div>
+      </div>
+      {isMobileMenuOpen && <nav aria-label="Navegação principal" className="max-h-[calc(100vh-4rem)] space-y-1 overflow-y-auto border-t p-3 shadow-lg">{navLinks}</nav>}
     </div>
     <aside 
       className={cn(
@@ -126,7 +157,7 @@ export const SideNavigation = () => {
       <nav className="flex-1 overflow-y-auto py-6 px-2">
         <ul className="space-y-1">
           {filteredNavItems.map((item) => {
-            const isActive = currentPath === item.href;
+            const isActive = currentPath === item.href || currentPath.startsWith(`${item.href}/`);
             
             return (
               <li key={item.label}>

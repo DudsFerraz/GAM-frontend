@@ -9,7 +9,7 @@ export const AppLayout = () => {
 
       <main className="relative flex min-h-0 flex-1 flex-col transition-all duration-300 md:h-full md:overflow-hidden">
         
-        <div className="absolute top-4 right-4 z-50">
+        <div className="absolute right-4 top-4 z-50 hidden md:block">
           <ColorModeToggle/>
         </div>
 
