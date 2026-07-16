@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { Link } from '@tanstack/react-router'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
@@ -176,6 +177,15 @@ export function MemberDetailsDialog({
             </Button>
           </DialogFooter>
         )}
+
+        <Button asChild type="button" variant="outline">
+          <Link
+            params={{ memberId: member.id }}
+            to="/manage/members/$memberId"
+          >
+            Ver perfil e histórico
+          </Link>
+        </Button>
       </DialogContent>
     </Dialog>
   )
