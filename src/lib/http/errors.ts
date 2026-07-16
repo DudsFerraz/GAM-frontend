@@ -23,3 +23,6 @@ export const getErrorMessage = (error: unknown): string => {
 
   return "Ocorreu um erro inesperado. Tente novamente.";
 };
+
+export const isForbiddenError = (error: unknown): boolean =>
+  error instanceof AxiosError && error.response?.status === 403
