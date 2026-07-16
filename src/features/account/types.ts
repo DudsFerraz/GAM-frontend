@@ -20,11 +20,11 @@ export type RoleResponse = {
 
 export type PermissionResponse = {
   id: UUID
-  name: string
+  code: string
+  label: string
   description: string
 }
 
 export type RolePermissionsResponse = {
   permissions: PermissionResponse[]
 }
-

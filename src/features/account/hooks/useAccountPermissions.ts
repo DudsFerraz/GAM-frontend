@@ -21,7 +21,7 @@ export const useAccountPermissions = (user: AccountResponse | null) => {
   results.forEach((result) => {
     if (result.data?.permissions) {
       result.data.permissions.forEach((p) => {
-        allPermissions.add(p.name);
+        allPermissions.add(p.code);
       });
     }
   });

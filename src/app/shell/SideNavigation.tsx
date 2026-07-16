@@ -23,7 +23,7 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Gestão dos membros', 
     icon: Users, 
     href: '/manage/members',
-    requiredPermission: 'MEMBER_MANAGE'
+    requiredPermission: 'MEMBER_SEARCH'
   },
 ];
 

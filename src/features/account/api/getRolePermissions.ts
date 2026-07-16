@@ -7,7 +7,7 @@ export const getRolePermissions = async (
   roleId: UUID,
 ): Promise<RolePermissionsResponse> => {
   const { data } = await api.get<RolePermissionsResponse>(
-    `/role/${roleId}/permissions`,
+    `/roles/${roleId}/permissions`,
   )
   return data
 }

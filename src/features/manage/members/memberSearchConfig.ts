@@ -2,62 +2,52 @@ import type { FieldConfig } from './components/SearchAndFilter/types';
 
 export const MEMBERS_FILTER_CONFIG: FieldConfig[] = [
   {
-    key: 'account.displayName',
-    label: 'Nome de Exibição',
+    key: 'name',
+    label: 'Nome',
     inputType: 'text',
-    allowedOperators: ['LIKE', 'EQUALS']
+    allowedOperators: ['LIKE'],
+    sortable: false,
   },
-  { 
-    key: 'fullName', 
-    label: 'Nome Completo', 
+  {
+    key: 'email',
+    label: 'E-mail',
     inputType: 'text',
-    allowedOperators: ['LIKE', 'EQUALS']
+    allowedOperators: ['LIKE', 'EQUALS'],
+    sortable: false,
   },
-  { 
-    key: 'account.email', 
-    label: 'E-mail', 
+  {
+    key: 'phoneNumber',
+    label: 'Telefone',
     inputType: 'text',
-    allowedOperators: ['LIKE', 'EQUALS']
+    allowedOperators: ['LIKE', 'EQUALS'],
+    sortable: false,
   },
-  { 
-    key: 'birthDate', 
+  {
+    key: 'birthDate',
     label: 'Data de Nascimento', 
     inputType: 'date',
-    allowedOperators: ['EQUALS', 'GREATER_THAN_OR_EQUAL', 'LESS_THAN_OR_EQUAL']
+    allowedOperators: ['EQUALS', 'GREATER_THAN_OR_EQUAL', 'LESS_THAN_OR_EQUAL'],
   },
-  { 
-    key: 'status', 
+  {
+    key: 'status',
     label: 'Status', 
     inputType: 'select',
     options: [
       { label: 'Ativo', value: 'ACTIVE' },
       { label: 'Inativo', value: 'INACTIVE' },
-      { label: 'Pendente', value: 'PENDENT' },
-    ],
-    allowedOperators: ['EQUALS']
-  },
-  { 
-    key: 'account.accountRoles.role.name', 
-    label: 'Cargo (Role)', 
-    inputType: 'select',
-    options: [
-        { label: 'Coordenador', value: 'COORD' },
-        { label: 'Membro', value: 'MEMBER' },
-        { label: 'Visitante', value: 'VISITOR' },
     ],
     allowedOperators: ['EQUALS'],
-    sortable: false
   },
-  { 
-    key: 'createdAt', 
-    label: 'Data de Criação', 
-    inputType: 'date', 
-    filterable: false 
+  {
+    key: 'firstName',
+    label: 'Primeiro nome',
+    inputType: 'text',
+    filterable: false,
   },
-  { 
-    key: 'updatedAt', 
-    label: 'Última Atualização', 
-    inputType: 'date', 
-    filterable: false 
-  }
-];
+  {
+    key: 'surname',
+    label: 'Sobrenome',
+    inputType: 'text',
+    filterable: false,
+  },
+]

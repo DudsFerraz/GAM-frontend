@@ -1,16 +1,4 @@
-import type { AccountResponse } from '@/features/account'
-import type { UUID } from '@/types/uuid'
-
-export type Page<T> = {
-  content: T[]
-  totalElements: number
-  totalPages: number
-  size: number
-  number: number
-  first: boolean
-  last: boolean
-  empty: boolean
-}
+import type { components } from '@/api/generated/gam-api'
 
 export type PageParams = {
   page?: number
@@ -18,31 +6,33 @@ export type PageParams = {
   sort?: string[]
 }
 
-export type ComparationMethod =
-  | 'EQUALS'
-  | 'LIKE'
-  | 'GREATER_THAN_OR_EQUAL'
-  | 'LESS_THAN_OR_EQUAL'
-  | 'IN'
+export type SearchFilter = NonNullable<
+  components['schemas']['SearchDTO']['filters']
+>[number]
 
-export type SpecificationFilter = {
-  field: string
+export type ComparationMethod = SearchFilter['comparationMethod']
+
+export type SpecificationFilter = SearchFilter & {
   value: string
-  comparationMethod: ComparationMethod
 }
 
-export type SearchDTO = {
-  filters: SpecificationFilter[]
+export type MemberListItem = {
+  id: string
+  firstName: string
+  surname: string | null
+  displayName: string
+  email: string | null
+  birthDate: string | null
+  phoneNumber: string | null
+  status: 'ACTIVE' | 'INACTIVE' | null
 }
 
-export type MemberResponse = {
-  id: UUID
-  account: AccountResponse
-  name: string
-  birthDate: string
-  age: number
-  phoneNumber: string
-  status: string
-  picture?: string
+export type MemberPage = {
+  items: MemberListItem[]
+  page: number
+  size: number
+  totalElements: number
+  totalPages: number
+  first: boolean
+  last: boolean
 }
-

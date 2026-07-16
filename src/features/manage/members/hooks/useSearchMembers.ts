@@ -1,25 +1,25 @@
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
-import { searchMembers } from '../api/searchMembers';
-import { MEMBERS_QUERY_KEY } from '../queryKeys';
-import type { MemberResponse, Page, PageParams, SearchDTO } from '../types';
+import { keepPreviousData, useQuery } from '@tanstack/react-query'
+
+import { searchMembers } from '../api/searchMembers'
+import { memberQueryKeys } from '../queryKeys'
+import type { MemberPage, PageParams, SpecificationFilter } from '../types'
 
 type UseSearchMembersOptions = {
-  filters: SearchDTO;
-  pageParams: PageParams;
-  enabled?: boolean;
-};
+  filters: SpecificationFilter[]
+  pageParams: PageParams
+  enabled?: boolean
+}
 
-export const useSearchMembers = ({ 
-  filters, 
-  pageParams, 
-  enabled = true 
-}: UseSearchMembersOptions) => {
-  
-  return useQuery<Page<MemberResponse>>({
-    queryKey: [MEMBERS_QUERY_KEY, 'search', filters, pageParams],
+export function useSearchMembers({
+  filters,
+  pageParams,
+  enabled = true,
+}: UseSearchMembersOptions) {
+  return useQuery<MemberPage>({
+    queryKey: memberQueryKeys.search(filters, pageParams),
     queryFn: () => searchMembers(filters, pageParams),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 60 * 1,
     enabled,
-  });
-};
+  })
+}
