@@ -12,15 +12,25 @@ The current guard decodes a stored JWT to obtain an account id. This is an imple
 
 ### Server state and API calls
 
-`src/lib/query/client.ts` provides one TanStack Query client. Account and permission queries live in `src/features/account/`; member queries live in `src/features/manage/members/`. Axios configuration is centralized in `src/lib/http/client.ts`, uses the public relative `/api` base, and is called by individual feature API modules. During local development, Vite proxies that base to the configured local backend and removes the public `/api` prefix before forwarding.
+`src/lib/query/client.ts` provides one TanStack Query client. Current-Account and permission queries live in `src/features/account/`; operational queries are colocated under `src/features/manage/` for members, solicitations, Accounts, Events, and Locations. Axios configuration is centralized in `src/lib/http/client.ts`, uses the public relative `/api` base, and is called by individual feature API modules. During local development, Vite proxies that base to the configured local backend and removes the public `/api` prefix before forwarding.
 
 Backend routes, operations, and transport types are referenced from the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Feature API modules still own the calls made with the shared Axios client, while feature-specific view models and mappings remain outside the generated file. Do not edit the generated file manually. See [API integration](../integration/api.md) for the contract boundary and current limitations.
+
+The current-Account adapter also normalizes the backend's flat `roles` list and the stale generated wrapper representation into one frontend Account view model. Permission queries and navigation consume that normalized list; this compatibility mapping remains at the boundary rather than leaking response-shape branching into components.
 
 ### Forms, UI, and features
 
 Login and registration use React Hook Form with Zod resolvers and feature-local schemas. `src/components/ui/` contains reusable Radix-based primitives, while `src/components/` contains genuinely cross-feature components. `src/components/AsyncState.tsx` provides the shared loading, error/retry, empty, and forbidden feedback vocabulary for data-driven views. `src/components/PublicNavbar.tsx` is the shared navigation for unauthenticated pages, including links between the public home, login, and registration and the theme toggle. Application composition belongs to `src/app/`. Feature-specific code is organized under `src/features/account`, `src/features/auth`, and `src/features/manage/members`, with components, hooks, API calls, query keys, schemas, types, and mappings colocated where practical.
 
-The member-management route composes `ManageMembersPage` from the member feature. That page uses a feature API module, TanStack Query hooks, feature-local search/filter UI, paginated state, and shared UI primitives. Its detail dialog supports the backend's activation and deactivation actions when the current UI permissions include `MEMBER_ACTIVATION`; record editing is not part of the current backend contract.
+The management area currently provides these vertical views:
+
+- Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history.
+- Authenticated membership-solicitation history, self-service submission, detail, and `MEMBER_MANAGE` approval/rejection actions.
+- Account search and contextual Account-role administration, including role assignment/drop, assignment lookup, Role inspection, and Permission inspection.
+- Event search, authorized creation, Event detail, and authorized Event-presence history.
+- Location list, creation, and dedicated detail views.
+
+Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. RBAC reference data remains embedded in Account administration rather than becoming an isolated generic screen.
 
 The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments.
 
@@ -42,7 +52,11 @@ src/
 │   ├── account/         # Account data, permissions, hooks, and mappings
 │   ├── auth/            # Login, registration, token handling, and auth feedback
 │   └── manage/
-│       └── members/     # Vertical member-management feature
+│       ├── accounts/    # Account-role administration and contextual RBAC reads
+│       ├── events/      # Event creation/search/detail and Event presences
+│       ├── locations/   # Location creation/list/detail
+│       ├── members/     # Member management, detail, and Member presences
+│       └── solicitations/ # Membership solicitation and review workflow
 ├── lib/
 │   ├── http/            # Shared Axios client and HTTP error boundary
 │   ├── query/           # Shared TanStack Query client configuration

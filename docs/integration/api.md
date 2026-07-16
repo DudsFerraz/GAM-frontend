@@ -8,13 +8,15 @@ For development, the browser should call the same relative paths and Vite should
 
 ## Current implementation
 
-`src/lib/http/client.ts` uses the fixed relative `/api` base. Feature API modules append resource paths such as `/auth/login`; browser requests therefore stay on the frontend origin under `/api/*`. `vite.config.ts` proxies `/api` to `API_PROXY_TARGET` (defaulting to `http://localhost:8080`) and removes the public `/api` prefix because the local Spring Boot application maps resources at its root. `API_PROXY_TARGET` is a server-only development value, not a `VITE_*` browser variable.
+`src/lib/http/client.ts` uses the fixed relative `/api` base. Feature API modules append resource paths such as `/auth/login`, `/members/search`, `/membership-solicitations/search`, `/accounts/search`, `/events/search`, and `/locations`; browser requests therefore stay on the frontend origin under `/api/*`. `vite.config.ts` proxies `/api` to `API_PROXY_TARGET` (defaulting to `http://localhost:8080`) and removes the public `/api` prefix because the local Spring Boot application maps resources at its root. `API_PROXY_TARGET` is a server-only development value, not a `VITE_*` browser variable.
 
 `.env.example` documents the supported local target. A developer may override it in the ignored `.env` file without changing browser code or committing a machine-specific backend origin.
 
 ## Current integration status
 
-The existing frontend feature adapters use the plural resource roots in the checked-in generated contract, including `/members/search` and `/roles/{roleId}/permissions`. The generated contract still lacks a published source-artifact version, so future regeneration and release pinning remain blocked on the backend-owned workflow.
+The frontend feature adapters use the plural resource roots and transport shapes in the checked-in generated contract for Members, membership solicitations, Accounts and Account-role assignments, Events and Presences, Locations, Roles, and Permissions. The generated contract still lacks a published source-artifact version, so future regeneration and release pinning remain blocked on the backend-owned workflow.
+
+The current backend serializes `AccountRDTO.roles` as a flat Role list, as required by the accepted Account-record contract, while the checked-in generated TypeScript artifact still models that field as an `AccountRolesRDTO` wrapper. The Account API adapters normalize either representation at the frontend boundary. The generated file remains untouched; its backend generation metadata must be corrected and regenerated separately.
 
 ## Generated contract reference
 

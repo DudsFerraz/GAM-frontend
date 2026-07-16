@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository contains the GAM browser frontend: a static single-page application (SPA) for account access and the currently implemented member-management view. It owns frontend source, UI behavior, the local development workflow, the frontend build, and frontend-only notes.
+This repository contains the GAM browser frontend: a static single-page application (SPA) for account access and the implemented operational views for members, membership solicitations, accounts and roles, events and attendance, and locations. It owns frontend source, UI behavior, the local development workflow, the frontend build, and frontend-only notes.
 
 Shared API, browser-session, deployment, operations, and domain contracts are owned by the [GAM backend repository](https://github.com/DudsFerraz/GAM-Bakckend-API). This repository links to those sources instead of copying their DTOs or requirements.
 
@@ -14,11 +14,11 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Tailwind CSS, Radix UI primitives, Lucide icons, and local UI components provide the UI layer.
 - Axios is the current HTTP client.
 
-The codebase is an early, pre-production implementation. It has login and registration screens, a protected route group, an application shell, and one vertical member-management view with search and lifecycle actions. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
+The codebase is an early, pre-production implementation. It has login and registration screens, a protected route group, a responsive application shell, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, Account-role administration with contextual RBAC inspection, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
 
 ## Immediate scope
 
-Stabilize the existing base before broad feature work: document and align the API boundary, migrate authentication to the accepted browser contract, then complete one real feature vertically. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
+Validate and refine the implemented contract-backed workflows, add focused test tooling, and migrate authentication to the accepted browser contract as soon as the required backend operations are published. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
 
 ## Ownership boundary
 

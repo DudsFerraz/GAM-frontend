@@ -81,7 +81,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 7. Deliver pages as vertical features
 
-**Current partial progress:** member management now has contract-aligned paginated search, filters, sorting, detail display, and authorized activation/deactivation actions with a required reason. It still depends on the accepted authentication boundary, and the other backend capabilities have no frontend features yet.
+**Current progress:** the current backend capabilities now have frontend vertical slices for Members, membership solicitations, Account-role administration with contextual RBAC inspection, Events and Presences, and Locations. They use generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, and explicit asynchronous states. They still depend on the pending accepted authentication boundary.
 
 For each accepted product feature, implement the full vertical slice in this order:
 
@@ -100,7 +100,7 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 ## 8. Expand the application incrementally
 
-**Status:** Pending. Member management is the only management feature with a substantive vertical slice; the next features should be selected from the backend capabilities listed below after the authentication contract is available.
+**Status:** In progress. The contract-backed management candidates have initial vertical slices. Product validation, the accepted browser-authentication boundary, test tooling, and follow-up usability refinement remain pending.
 
 - Start with one real end-to-end feature after the base contracts are ready, then add the next approved page/feature.
 - Make protected routes depend on completed authentication state, not token decoding.
@@ -110,16 +110,16 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 **Done when:** each new page adds product value without bypassing the established route, UI, API, query, or authentication boundaries.
 
-## Feature candidates from the current backend contract
+## Implemented features from the current backend contract
 
-These are frontend feature candidates derived from the current generated route reference. They are not a product-priority decision; each needs accepted UI requirements before implementation.
+The following first-pass UI behavior is implemented from the checked-in generated route reference. This records current frontend behavior, not a claim that later product refinement or the accepted authentication work is complete.
 
-1. **Member management — extend next.** The implemented search and lifecycle actions can be extended with direct registration (`POST /members`), a dedicated detail route (`GET /members/{id}`), and member presence history (`GET /members/{id}/presences`).
-2. **Membership solicitations.** Solicitation submission, authenticated history/search, detail, and coordinator approval/rejection are supported by `/membership-solicitations` routes. This is the closest adjacent workflow to member management.
-3. **Account and role administration.** Search Accounts, inspect account roles, assign/drop roles, and inspect a specific assignment are supported under `/accounts` and `/accounts/{accountId}/roles`.
-4. **Events and attendance.** Create/search/view Events and inspect event or member presences through `/events`, `/events/search`, `/events/{id}/presences`, and `/members/{id}/presences`.
-5. **Locations.** Create, list, and view Locations through `/locations`; this is likely a supporting feature for event creation.
-6. **RBAC reference views.** Inspect individual Roles, their permissions, and individual Permissions through `/roles/{roleId}`, `/roles/{roleId}/permissions`, and `/permissions/{permissionId}`. This should support account-role administration rather than become an isolated generic admin screen.
+1. **Member management.** Search and lifecycle actions now include direct registration (`POST /members`), a dedicated detail route (`GET /members/{id}`), and Member presence history (`GET /members/{id}/presences`).
+2. **Membership solicitations.** The Solicitation view provides self-service submission, authenticated scoped history/search, detail, and `MEMBER_MANAGE` approval/rejection.
+3. **Account and role administration.** The Account view searches Accounts, lists Account roles, assigns/drops roles, and looks up a specific assignment.
+4. **Events and attendance.** The Event view creates/searches/views Events and the Event and Member detail routes show their respective Presence histories when authorized.
+5. **Locations.** The Location view creates, lists, and opens dedicated detail routes. Event creation consumes Location options.
+6. **RBAC reference data.** Role, role-permission, and Permission detail reads are contextual panels inside Account-role administration.
 
 ## Out of scope for this order
 
