@@ -12,6 +12,8 @@ import { isForbiddenError } from '@/lib/http'
 
 import { useMember } from '../hooks/useMember'
 import { useMemberPresences } from '../hooks/useMemberPresences'
+import { getEventTypeLabel } from '@/features/manage/events'
+import { getMemberStatusLabel } from '../presentation'
 
 type MemberDetailPageProps = {
   memberId: string
@@ -60,7 +62,7 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
           <p className="mt-1 text-sm text-muted-foreground">{member.account?.displayName}</p>
         </div>
         <Badge variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}>
-          {member.status === 'ACTIVE' ? 'Ativo' : member.status === 'INACTIVE' ? 'Inativo' : 'Sem status'}
+          {getMemberStatusLabel(member.status)}
         </Badge>
       </div>
 
@@ -68,11 +70,10 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
         <CardHeader><CardTitle>Dados cadastrais</CardTitle></CardHeader>
         <CardContent>
           <dl className="grid gap-5 text-sm sm:grid-cols-2 lg:grid-cols-3">
-            <div><dt className="flex items-center gap-2 text-muted-foreground"><UserRound className="h-4 w-4" />Conta</dt><dd className="mt-1 break-all font-medium">{member.account?.id ?? 'Não informada'}</dd></div>
+            <div><dt className="flex items-center gap-2 text-muted-foreground"><UserRound className="h-4 w-4" />Conta</dt><dd className="mt-1 font-medium">{member.account?.displayName ?? 'Não informada'}</dd></div>
             <div><dt className="flex items-center gap-2 text-muted-foreground"><Mail className="h-4 w-4" />E-mail</dt><dd className="mt-1 font-medium">{member.account?.email ?? 'Não informado'}</dd></div>
             <div><dt className="flex items-center gap-2 text-muted-foreground"><Phone className="h-4 w-4" />Telefone</dt><dd className="mt-1 font-medium">{member.phoneNumber ?? 'Não informado'}</dd></div>
             <div><dt className="flex items-center gap-2 text-muted-foreground"><CalendarDays className="h-4 w-4" />Nascimento</dt><dd className="mt-1 font-medium">{formatDate(member.birthDate)}</dd></div>
-            <div className="sm:col-span-2"><dt className="text-muted-foreground">Identificador do membro</dt><dd className="mt-1 break-all font-medium">{member.id}</dd></div>
           </dl>
         </CardContent>
       </Card>
@@ -101,7 +102,7 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
                 <CardContent className="space-y-2">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold">{presence.event?.title ?? 'Evento não informado'}</h3>
-                    {presence.event?.type && <Badge variant="outline">{presence.event.type}</Badge>}
+                    {presence.event?.type && <Badge variant="outline">{getEventTypeLabel(presence.event.type)}</Badge>}
                   </div>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground"><CalendarDays className="h-4 w-4" />{formatDateTime(presence.event?.beginDate)}</p>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{presence.event?.location?.name ?? 'Local não informado'}</p>

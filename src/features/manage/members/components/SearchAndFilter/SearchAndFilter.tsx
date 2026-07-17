@@ -180,18 +180,18 @@ export const SearchAndFilter = ({
 
   }, [currentFieldConfig]);
 
-  const getFieldLabel = (key: string) => config.find(c => c.key === key)?.label || key;
+  const getFieldLabel = (key: string) => config.find(c => c.key === key)?.label || 'Campo não identificado';
 
   const getDisplayValue = (filter: SpecificationFilter) => {
     const conf = config.find(c => c.key === filter.field);
     if (conf?.inputType === 'select' && conf.options) {
-      return conf.options.find(o => o.value === filter.value)?.label || filter.value;
+      return conf.options.find(o => o.value === filter.value)?.label || 'Valor não identificado';
     }
     if (conf?.inputType === 'date') {
         try {
             const [y, m, d] = filter.value.split('-');
-            return `${d}/${m}/${y}`;
-        } catch { return filter.value; }
+            return y && m && d ? `${d}/${m}/${y}` : 'Data inválida';
+        } catch { return 'Data inválida'; }
     }
     return filter.value;
   }

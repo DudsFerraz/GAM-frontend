@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 
 import type { MemberListItem } from '../types'
+import { getMemberStatusLabel } from '../presentation'
 
 function calculateAge(birthDate: string | null): string {
   if (!birthDate) {
@@ -31,11 +32,6 @@ function calculateAge(birthDate: string | null): string {
   return `${age} anos`
 }
 
-const memberStatusLabels = {
-  ACTIVE: 'Ativo',
-  INACTIVE: 'Inativo',
-} as const
-
 interface MemberCardProps {
   member: MemberListItem
   onClick: (member: MemberListItem) => void
@@ -44,9 +40,7 @@ interface MemberCardProps {
 
 export function MemberCard({ member, onClick, className }: MemberCardProps) {
   const fullName = [member.firstName, member.surname].filter(Boolean).join(' ')
-  const statusLabel = member.status
-    ? memberStatusLabels[member.status]
-    : 'Status não informado'
+  const statusLabel = getMemberStatusLabel(member.status)
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key !== 'Enter' && event.key !== ' ') {

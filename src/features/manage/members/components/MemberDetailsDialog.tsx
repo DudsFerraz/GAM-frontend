@@ -23,8 +23,10 @@ import {
   FormMessage,
 } from '@/components/ui/Form'
 import { Input } from '@/components/ui/Input'
+import { formatDate } from '@/lib/format'
 import { getErrorMessage } from '@/lib/http'
 
+import { getMemberStatusLabel } from '../presentation'
 import { useUpdateMemberStatus } from '../hooks/useUpdateMemberStatus'
 import type { MemberListItem } from '../types'
 
@@ -37,11 +39,6 @@ const memberStatusSchema = z.object({
 })
 
 type MemberStatusFormValues = z.infer<typeof memberStatusSchema>
-
-const statusLabels = {
-  ACTIVE: 'Ativo',
-  INACTIVE: 'Inativo',
-} as const
 
 type MemberDetailsDialogProps = {
   member: MemberListItem | null
@@ -105,10 +102,10 @@ export function MemberDetailsDialog({
             <dd className="font-medium">{member.displayName}</dd>
           </div>
           <div>
-            <dt className="text-muted-foreground">Status</dt>
+            <dt className="text-muted-foreground">Situação</dt>
             <dd className="mt-1">
               <Badge variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}>
-                {member.status ? statusLabels[member.status] : 'Não informado'}
+                {getMemberStatusLabel(member.status)}
               </Badge>
             </dd>
           </div>
@@ -122,11 +119,7 @@ export function MemberDetailsDialog({
           </div>
           <div>
             <dt className="text-muted-foreground">Nascimento</dt>
-            <dd className="font-medium">{member.birthDate ?? 'Não informado'}</dd>
-          </div>
-          <div>
-            <dt className="text-muted-foreground">Identificador</dt>
-            <dd className="break-all font-medium">{member.id}</dd>
+            <dd className="font-medium">{formatDate(member.birthDate)}</dd>
           </div>
         </dl>
 
@@ -153,7 +146,7 @@ export function MemberDetailsDialog({
 
               {updateStatus.isError && (
                 <Alert variant="destructive">
-                  <AlertTitle>Não foi possível alterar o status.</AlertTitle>
+                  <AlertTitle>Não foi possível alterar a situação.</AlertTitle>
                   <AlertDescription>{getErrorMessage(updateStatus.error)}</AlertDescription>
                 </Alert>
               )}

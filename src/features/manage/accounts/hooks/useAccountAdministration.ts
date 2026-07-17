@@ -12,8 +12,8 @@ import {
 } from '../api/accounts'
 import { accountAdminQueryKeys } from '../queryKeys'
 
-export function useSearchAccounts(term: string, field: 'displayName' | 'email', page: number) {
-  return useQuery({ queryKey: accountAdminQueryKeys.search(term, field, page), queryFn: () => searchAccounts(term, field, page), placeholderData: keepPreviousData })
+export function useSearchAccounts(term: string, field: 'displayName' | 'email', page: number, enabled = true) {
+  return useQuery({ queryKey: accountAdminQueryKeys.search(term, field, page), queryFn: () => searchAccounts(term, field, page), placeholderData: keepPreviousData, enabled })
 }
 
 export function useAccountRoles(accountId: string | null) {
