@@ -1,19 +1,15 @@
 import type { RoleResponse } from './types';
+import { getRoleLabel } from './presentation'
 
-const ROLE_HIERARCHY = ['COORD', 'MEMBER', 'VISITOR'];
-
-const ROLE_LABELS: Record<string, string> = {
-  COORD: 'Coordenador',
-  MEMBER: 'Membro',
-  VISITOR: 'Visitante',
-};
+const ROLE_HIERARCHY = ['SUDO', 'COORD', 'MEMBER', 'VISITOR'];
 
 export const getMainRoleLabel = (roles: RoleResponse[]): string => {
   if (!roles || roles.length === 0) return '-';
 
-  const mainRoleKey = ROLE_HIERARCHY.find(priorityRole => 
-    roles.some(userRole => userRole.name === priorityRole)
-  );
+  const mainRoleName = ROLE_HIERARCHY.find((priorityRole) =>
+    roles.some((role) => role.name === priorityRole),
+  )
+  const mainRole = roles.find((role) => role.name === mainRoleName)
 
-  return mainRoleKey ? ROLE_LABELS[mainRoleKey] : (roles[0].name || '-');
+  return getRoleLabel(mainRole ?? roles[0]);
 };

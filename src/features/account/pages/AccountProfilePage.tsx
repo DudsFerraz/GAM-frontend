@@ -1,8 +1,7 @@
-import { KeyRound, Mail, ShieldCheck, UserRound } from 'lucide-react'
+import { Mail, ShieldCheck, UserRound } from 'lucide-react'
 
 import { EmptyState, LoadingState } from '@/components/AsyncState'
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar'
-import { Badge } from '@/components/ui/Badge'
 import {
   Card,
   CardContent,
@@ -13,6 +12,7 @@ import {
 
 import { getMainRoleLabel } from '../getMainRoleLabel'
 import { useAccountInfo } from '../hooks/useAccountInfo'
+import { getRolePresentation } from '../presentation'
 
 function getInitials(displayName: string) {
   return displayName
@@ -35,8 +35,6 @@ export function AccountProfilePage() {
   if (!account) {
     return <EmptyState title="Perfil indisponível." description="Não foi possível carregar os dados da conta autenticada." />
   }
-
-  const permissions = [...account.permissions].sort((first, second) => first.localeCompare(second))
 
   return (
     <div className="space-y-6 py-2 sm:py-4">
@@ -62,7 +60,7 @@ export function AccountProfilePage() {
               <UserRound className="h-5 w-5 text-primary" />
               Dados da conta
             </CardTitle>
-            <CardDescription>Informações fornecidas pelo contexto da sessão atual.</CardDescription>
+            <CardDescription>Informações básicas da sua conta.</CardDescription>
           </CardHeader>
           <CardContent>
             <dl className="grid gap-5 text-sm">
@@ -77,10 +75,6 @@ export function AccountProfilePage() {
                 </dt>
                 <dd className="mt-1 break-all font-medium">{account.email}</dd>
               </div>
-              <div>
-                <dt className="text-muted-foreground">Identificador</dt>
-                <dd className="mt-1 break-all font-mono text-xs font-medium">{account.id}</dd>
-              </div>
             </dl>
           </CardContent>
         </Card>
@@ -89,52 +83,30 @@ export function AccountProfilePage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <ShieldCheck className="h-5 w-5 text-primary" />
-              Papéis ativos
+              Tipos de acesso
             </CardTitle>
-            <CardDescription>Papéis associados à sua conta neste momento.</CardDescription>
+            <CardDescription>Como sua participação está configurada na plataforma.</CardDescription>
           </CardHeader>
           <CardContent>
             {account.roles.length === 0 ? (
-              <p className="text-sm text-muted-foreground">Nenhum papel ativo.</p>
+              <p className="text-sm text-muted-foreground">Nenhum tipo de acesso disponível.</p>
             ) : (
               <ul className="space-y-3">
-                {account.roles.map((role) => (
-                  <li className="rounded-lg border p-4" key={role.id}>
-                    <div className="flex flex-wrap items-center gap-2">
-                      <p className="font-medium">{role.name}</p>
-                      {role.systemManaged && <Badge variant="secondary">Papel do sistema</Badge>}
-                    </div>
-                    <p className="mt-1 text-sm text-muted-foreground">{role.description || 'Sem descrição.'}</p>
-                  </li>
-                ))}
+                {account.roles.map((role) => {
+                  const presentation = getRolePresentation(role)
+
+                  return (
+                    <li className="rounded-lg border p-4" key={role.id}>
+                      <p className="font-medium">{presentation.label}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">{presentation.description}</p>
+                    </li>
+                  )
+                })}
               </ul>
             )}
           </CardContent>
         </Card>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <KeyRound className="h-5 w-5 text-primary" />
-            Permissões efetivas
-          </CardTitle>
-          <CardDescription>Capacidades atualmente liberadas pelo backend para esta conta.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {permissions.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhuma permissão efetiva.</p>
-          ) : (
-            <ul className="flex flex-wrap gap-2" aria-label="Permissões efetivas">
-              {permissions.map((permission) => (
-                <li key={permission}>
-                  <Badge variant="outline">{permission}</Badge>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
     </div>
   )
 }

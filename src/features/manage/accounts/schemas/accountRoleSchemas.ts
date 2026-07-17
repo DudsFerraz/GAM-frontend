@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const reason = z.string().trim().min(1, 'Informe o motivo da alteração.').max(2000)
+const reason = z.string().trim().min(1, 'Informe o motivo da alteração.').max(2000, 'O motivo deve ter no máximo 2.000 caracteres.')
 
 export const assignRoleSchema = z.object({ roleId: z.uuid('Informe um identificador de papel válido.'), reason })
 export const dropRoleSchema = z.object({ reason })

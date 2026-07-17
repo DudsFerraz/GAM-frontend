@@ -43,7 +43,7 @@ const NAV_ITEMS: NavItem[] = [
     href: '/manage/locations',
   },
   {
-    label: 'Contas e papéis',
+    label: 'Contas e acessos',
     icon: ShieldCheck,
     href: '/manage/accounts',
     requiredPermission: 'ACCOUNT_SEARCH',
