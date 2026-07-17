@@ -12,9 +12,8 @@ import { formatDate, formatDateTime } from '@/lib/format'
 import { getErrorMessage } from '@/lib/http'
 
 import { useReviewSolicitation, useSolicitation } from '../hooks/useSolicitations'
+import { getSolicitationStatusLabel } from '../presentation'
 import { reviewSchema, type ReviewFormValues } from '../schemas/solicitationSchemas'
-
-const statusLabels = { PENDING: 'Pendente', APPROVED: 'Aprovada', REJECTED: 'Rejeitada' } as const
 
 type Props = { id: string | null; canReview: boolean; onClose: () => void }
 
@@ -34,7 +33,7 @@ export function SolicitationDetailsDialog({ id, canReview, onClose }: Props) {
         {query.isError && <ErrorState className="min-h-48" onRetry={() => void query.refetch()} />}
         {solicitation && (
           <>
-            <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{[solicitation.firstName, solicitation.surname].filter(Boolean).join(' ')}</h3>{solicitation.status && <Badge variant={solicitation.status === 'REJECTED' ? 'destructive' : 'secondary'}>{statusLabels[solicitation.status]}</Badge>}</div>
+            <div className="flex items-center justify-between gap-3"><h3 className="text-lg font-semibold">{[solicitation.firstName, solicitation.surname].filter(Boolean).join(' ')}</h3>{solicitation.status && <Badge variant={solicitation.status === 'REJECTED' ? 'destructive' : 'secondary'}>{getSolicitationStatusLabel(solicitation.status)}</Badge>}</div>
             <dl className="grid gap-4 text-sm sm:grid-cols-2">
               <div><dt className="text-muted-foreground">Conta</dt><dd className="font-medium">{solicitation.account?.displayName ?? 'Não informada'}</dd></div>
               <div><dt className="text-muted-foreground">E-mail</dt><dd className="font-medium">{solicitation.account?.email ?? 'Não informado'}</dd></div>

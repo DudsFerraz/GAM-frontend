@@ -16,8 +16,7 @@ import type { SolicitationStatus } from '../api/solicitations'
 import { SolicitationDetailsDialog } from '../components/SolicitationDetailsDialog'
 import { SubmitSolicitationDialog } from '../components/SubmitSolicitationDialog'
 import { useSolicitations } from '../hooks/useSolicitations'
-
-const statusLabels = { PENDING: 'Pendente', APPROVED: 'Aprovada', REJECTED: 'Rejeitada' } as const
+import { SOLICITATION_STATUS_LABELS, getSolicitationStatusLabel } from '../presentation'
 
 export function ManageSolicitationsPage() {
   const [status, setStatus] = useState<SolicitationStatus | 'ALL'>('ALL')
@@ -42,9 +41,9 @@ export function ManageSolicitationsPage() {
       </div>
 
       <div className="max-w-xs rounded-xl border bg-card p-4">
-        <Label htmlFor="solicitation-status">Status</Label>
+        <Label htmlFor="solicitation-status">Situação</Label>
         <Select id="solicitation-status" value={status} onChange={(event) => { setStatus(event.target.value as SolicitationStatus | 'ALL'); setPage(0) }}>
-          <option value="ALL">Todos</option><option value="PENDING">Pendentes</option><option value="APPROVED">Aprovadas</option><option value="REJECTED">Rejeitadas</option>
+          <option value="ALL">Todas</option>{Object.entries(SOLICITATION_STATUS_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
         </Select>
       </div>
 
@@ -57,7 +56,7 @@ export function ManageSolicitationsPage() {
             <Card key={item.id ?? index} className="gap-4 py-5">
               <CardHeader className="flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
                 <div><CardTitle>{[item.firstName, item.surname].filter(Boolean).join(' ') || 'Solicitação'}</CardTitle><p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><UserRound className="h-3.5 w-3.5" />{item.account?.displayName ?? 'Conta não informada'}</p></div>
-                {item.status && <Badge variant={item.status === 'REJECTED' ? 'destructive' : 'secondary'}>{statusLabels[item.status]}</Badge>}
+                {item.status && <Badge variant={item.status === 'REJECTED' ? 'destructive' : 'secondary'}>{getSolicitationStatusLabel(item.status)}</Badge>}
               </CardHeader>
               <CardContent className="space-y-2 px-5 text-sm"><p className="flex items-center gap-2 text-muted-foreground"><FileClock className="h-4 w-4" />{formatDateTime(item.submittedAt)}</p><p className="line-clamp-2">{item.justification}</p></CardContent>
               <CardFooter className="px-5"><Button className="w-full" disabled={!item.id} onClick={() => item.id && setSelectedId(item.id)} size="sm" variant="outline">Ver detalhes</Button></CardFooter>
