@@ -47,6 +47,10 @@ Before adding or changing a feature API operation, consult [`src/api/generated/g
 
 This file is generated and must not be edited directly. The generation workflow and contract-version metadata are still pending documentation; until then, treat the checked-in artifact as the frontend route/type reference and report a missing or stale operation instead of recreating the backend contract by hand.
 
+## User-facing presentation workflow
+
+Before rendering response data, classify it using the [user-facing language and presentation boundary](user-facing-language.md). Contract enums, roles, permissions, backend catalog text, error envelopes, and identifiers are not UI copy. Add or update the owning feature's typed presentation map, retain the raw value for requests and capability checks, and use a neutral Portuguese fallback for unexpected runtime values. Form schemas must provide explicit Portuguese validation messages rather than relying on library defaults.
+
 ## Production delivery context
 
 The frontend will be a versioned static artifact. Fingerprinted assets may be cached immutably, while `index.html` must be revalidated; API routes must never receive SPA fallback. Proxy selection, VPS provider, domain, packaging, deployment, backups, and operations are backend-owned shared decisions and are out of scope for this repository. See [Initial Production Topology](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/diagrams/initial-production-topology.md).

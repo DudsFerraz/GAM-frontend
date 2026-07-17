@@ -14,7 +14,7 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Tailwind CSS, Radix UI primitives, Lucide icons, and local UI components provide the UI layer.
 - Axios is the current HTTP client.
 
-The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, Account-role administration with contextual RBAC inspection, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
+The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, business-facing Account access administration, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
 
 ## Immediate scope
 
@@ -28,7 +28,7 @@ Validate and refine the implemented contract-backed workflows, complete the rema
 
 The shared boundary follows [ADR-0005](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/decisions/0005-keep-frontend-and-backend-in-separate-repositories.md). Use the backend's [ubiquitous language](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/ubiquitous-language.md) for shared domain terms such as Account, Member, and Coordinator.
 
-Read [architecture/overview.md](architecture/overview.md), [integration/authentication.md](integration/authentication.md), [integration/api.md](integration/api.md), [guides/development.md](guides/development.md), and the ordered [implementation backlog](backlog/steps.md) before significant frontend work.
+Read [architecture/overview.md](architecture/overview.md), [integration/authentication.md](integration/authentication.md), [integration/api.md](integration/api.md), [guides/development.md](guides/development.md), the [user-facing language and presentation boundary](guides/user-facing-language.md), and the ordered [implementation backlog](backlog/steps.md) before significant frontend work.
 
 ## Documentation map
 

@@ -44,8 +44,14 @@
 
 - Every interface must be responsive from the initial implementation, adapting content, navigation, spacing, and interaction for small, medium, and large screens.
 - Reuse existing UI primitives and design tokens before adding new ones. Keep feature-specific presentation inside its feature until reuse is stable.
+- Follow [`docs/guides/user-facing-language.md`](docs/guides/user-facing-language.md) for every view, dialog, toast, document title/metadata, accessible label, validation message, and asynchronous state. Current interface copy and document language are Brazilian Portuguese.
+- Never render transport enums, role names, permission codes, backend catalog labels/descriptions, backend `message`/`details`, JavaScript error messages, UUIDs, stack traces, or other diagnostic values directly. Permission codes are for capability checks only.
+- Convert closed contract values through a typed feature-owned `presentation.ts` mapping. Unknown, null, and future values must use a neutral Portuguese fallback; never fall back to the raw value with patterns such as `labels[value] ?? value`.
+- Treat user-authored business content separately from backend-authored metadata: preserve submitted names, titles, justifications, and observations, but translate system-controlled values at the presentation boundary.
+- Do not ask users to enter technical identifiers. Use a business-facing search or selector; if the contract cannot supply one, keep that operation out of the UI and document the integration gap rather than exposing a UUID field.
+- Keep developer tools and technical diagnostics restricted to development builds. Ordinary profiles and management views must show only information and actions with a clear user or business purpose.
 - Use semantic HTML, associated labels, keyboard-accessible controls, visible focus states, and Radix accessibility behavior. Preserve accessibility when wrapping primitives.
-- Forms use React Hook Form and Zod where validation is required. Keep schemas close to the owning feature and show actionable field or submission feedback.
+- Forms use React Hook Form and Zod where validation is required. Keep schemas close to the owning feature, provide explicit Portuguese messages for every reachable validation failure instead of library defaults, and show actionable field or submission feedback.
 - Every data-driven page must deliberately handle relevant loading, empty, error, success, forbidden, and retry states. Avoid silent failures and layout shifts where a stable placeholder is practical.
 
 ## Quality and change discipline

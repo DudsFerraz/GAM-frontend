@@ -14,7 +14,7 @@ For development, the browser should call the same relative paths and Vite should
 
 ## Current integration status
 
-The frontend feature adapters use the routes and transport shapes in the checked-in generated contract for browser authentication, current Account, Members, membership solicitations, Accounts and Account-role assignments, Events and Presences, Locations, Roles, and Permissions. The generated contract still lacks a published source-artifact version, so future regeneration and release pinning remain blocked on the backend-owned workflow.
+The frontend feature adapters use the routes and transport shapes in the checked-in generated contract for browser authentication, current Account, Members, membership solicitations, Accounts and Account-role assignments, Events and Presences, Locations, Roles, and Permissions. Not every adapter operation is exposed as a view: identifier-only Account-role assignment/lookup and granular Role/Permission inspection remain outside the UI, while Permission records are consumed internally for Event audience choices. The generated contract still lacks a published source-artifact version, so future regeneration and release pinning remain blocked on the backend-owned workflow.
 
 The current backend serializes `AccountRDTO.roles` as a flat Role list, as required by the accepted Account-record contract, while the checked-in generated TypeScript artifact still models that field as an `AccountRolesRDTO` wrapper. The Account API adapters normalize either representation at the frontend boundary. The generated file remains untouched; its backend generation metadata must be corrected and regenerated separately.
 

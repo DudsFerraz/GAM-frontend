@@ -47,7 +47,7 @@ Logout obtains CSRF proof as needed and calls the logout endpoint. After success
 - `AuthProvider` owns `initializing`, `authenticated`, and `unauthenticated` state. Startup obtains `/auth/csrf`, posts `/auth/refresh`, retains the access token in memory, and loads `/accounts/me` before protected UI renders.
 - Login, refresh, and logout obtain fresh CSRF proof and echo it through the header named by the bootstrap response. Axios sends the browser-managed cookies with `withCredentials`.
 - Protected requests receive the in-memory bearer token. A `401` joins one in-instance refresh and replays each request at most once; authentication endpoints do not recursively refresh. A `403` remains forbidden and does not refresh.
-- Capability visibility consumes the effective permission codes from `/accounts/me`. Role-permission queries are not the authorization source; they remain only where the Event form needs Permission records and UUIDs.
+- Capability visibility consumes the effective permission codes from `/accounts/me`. Role-permission queries are not the authorization source; they remain only where the Event form needs Permission records and keeps their identifiers internal.
 - Logout calls the backend, clears all local session state even if confirmation fails, and broadcasts an ephemeral logout event through `BroadcastChannel`.
 
 ## Remaining gaps

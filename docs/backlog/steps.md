@@ -81,7 +81,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 7. Deliver pages as vertical features
 
-**Current progress:** the current backend capabilities now have frontend vertical slices for Members, membership solicitations, Account-role administration with contextual RBAC inspection, Events and Presences, and Locations. They use generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, and explicit asynchronous states. They still depend on the pending accepted authentication boundary.
+**Current progress:** the current backend capabilities now have frontend vertical slices for Members, membership solicitations, business-facing Account access administration, Events and Presences, and Locations. They use generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, explicit asynchronous states, and Portuguese presentation mappings for contract-controlled values. They still depend on the pending accepted authentication boundary.
 
 For each accepted product feature, implement the full vertical slice in this order:
 
@@ -116,11 +116,11 @@ The following first-pass UI behavior is implemented from the checked-in generate
 
 1. **Member management.** Search and lifecycle actions now include direct registration (`POST /members`), a dedicated detail route (`GET /members/{id}`), and Member presence history (`GET /members/{id}/presences`).
 2. **Membership solicitations.** The Solicitation view provides self-service submission, authenticated scoped history/search, detail, and `MEMBER_MANAGE` approval/rejection.
-3. **Account and role administration.** The Account view searches Accounts, lists Account roles, assigns/drops roles, and looks up a specific assignment.
+3. **Account access administration.** The Account view searches Accounts, lists translated access types, and removes an existing type when authorized. Identifier-based assignment and assignment lookup are intentionally not exposed until the contract can provide a business-facing Role catalog or selector.
 4. **Events and attendance.** The Event view creates/searches/views Events and the Event and Member detail routes show their respective Presence histories when authorized.
 5. **Locations.** The Location view creates, lists, and opens dedicated detail routes. Event creation consumes Location options.
-6. **RBAC reference data.** Role, role-permission, and Permission detail reads are contextual panels inside Account-role administration.
-7. **Current Account profile.** The authenticated sidebar opens a dedicated read-only profile using the `/accounts/me` identity, active Roles, and effective permission codes already held by the session context. The current contract does not expose an Account update operation.
+6. **Authorization reference data.** Role-permission reads remain an internal integration used to assemble Event audience choices. Raw Role/Permission catalog inspection is not a user-facing view.
+7. **Current Account profile.** The authenticated sidebar opens a dedicated read-only profile using the `/accounts/me` identity and translated business-facing access types. Effective permission codes remain in the session context for capability checks and are not displayed. The current contract does not expose an Account update operation.
 
 ## Out of scope for this order
 

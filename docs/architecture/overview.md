@@ -16,7 +16,7 @@ TanStack Router generates `src/routeTree.gen.ts` from the file routes in `src/ro
 
 Backend routes, operations, and transport types are referenced from the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Feature API modules still own the calls made with the shared Axios client, while feature-specific view models and mappings remain outside the generated file. Do not edit the generated file manually. See [API integration](../integration/api.md) for the contract boundary and current limitations.
 
-The current-Account session uses the generated `CurrentAccountContextRDTO` returned by `/accounts/me`. Account administration still normalizes the generated `AccountRDTO.roles` wrapper at its boundary so response-shape compatibility does not leak into components. Navigation and capability checks use `/accounts/me` effective permission codes; per-Role permission reads remain only where the Event creation UI needs Permission records and UUIDs.
+The current-Account session uses the generated `CurrentAccountContextRDTO` returned by `/accounts/me`. Account administration still normalizes the generated `AccountRDTO.roles` wrapper at its boundary so response-shape compatibility does not leak into components. Navigation and capability checks use `/accounts/me` effective permission codes; per-Role permission reads remain only where the Event creation UI needs Permission records and keeps their identifiers internal.
 
 ### Forms, UI, and features
 
@@ -26,11 +26,11 @@ The management area currently provides these vertical views:
 
 - Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history.
 - Authenticated membership-solicitation history, self-service submission, detail, and `MEMBER_MANAGE` approval/rejection actions.
-- Account search and contextual Account-role administration, including role assignment/drop, assignment lookup, Role inspection, and Permission inspection.
+- Account search and business-facing access-type administration, including translated active types and authorized removal without exposing the Role or Permission catalogs.
 - Event search, authorized creation, Event detail, and authorized Event-presence history.
 - Location list, creation, and dedicated detail views.
 
-Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. RBAC reference data remains embedded in Account administration rather than becoming an isolated generic screen.
+Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. Contract enums, roles, permissions, catalog text, and errors cross a Portuguese presentation boundary before rendering; granular authorization data and technical identifiers are not profile or management content. See [user-facing language and presentation](../guides/user-facing-language.md).
 
 The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments.
 
@@ -52,7 +52,7 @@ src/
 │   ├── account/         # Account data, permissions, hooks, and mappings
 │   ├── auth/            # Login, registration, token handling, and auth feedback
 │   └── manage/
-│       ├── accounts/    # Account-role administration and contextual RBAC reads
+│       ├── accounts/    # Business-facing Account access administration
 │       ├── events/      # Event creation/search/detail and Event presences
 │       ├── locations/   # Location creation/list/detail
 │       ├── members/     # Member management, detail, and Member presences
@@ -208,6 +208,7 @@ This architecture is intentionally not a traditional Clean Architecture implemen
 
 - Cross-tab refresh coordination beyond logout broadcast, and visible reporting when server-side logout cannot be confirmed.
 - Formalized generation/version-selection workflow for the generated TypeScript transport types. The current generated artifact is already available at `src/api/generated/gam-api.ts`, but its repository workflow remains to be documented and accepted.
+- Business-facing Role catalog/search support for assigning a new Account access type without asking for an internal identifier.
 
 ## Incremental refactoring guidance
 
