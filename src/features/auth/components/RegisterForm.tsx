@@ -125,8 +125,8 @@ export const RegisterForm = () => {
       <RedirectFeedback
         isVisible={showSuccessFeedback}
         title="Cadastro realizado!"
-        description="Sua conta foi criada com sucesso. Agora você já pode fazer login para acessar a plataforma."
-        buttonText="Realizar Login"
+        description="Sua conta foi criada com sucesso. Agora você já pode entrar na plataforma."
+        buttonText="Entrar"
         redirectUrl="/auth/login"
       />
 

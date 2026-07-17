@@ -9,6 +9,8 @@ const dateTimeFormatter = new Intl.DateTimeFormat('pt-BR', {
   timeStyle: 'short',
 })
 
+const regionNames = new Intl.DisplayNames(['pt-BR'], { type: 'region' })
+
 export function formatDate(value?: string | null): string {
   if (!value) {
     return 'Não informado'
@@ -18,7 +20,7 @@ export function formatDate(value?: string | null): string {
     ? new Date(`${value}T12:00:00`)
     : new Date(value)
 
-  return Number.isNaN(date.getTime()) ? value : dateFormatter.format(date)
+  return Number.isNaN(date.getTime()) ? 'Data inválida' : dateFormatter.format(date)
 }
 
 export function formatDateTime(value?: string | null): string {
@@ -27,5 +29,22 @@ export function formatDateTime(value?: string | null): string {
   }
 
   const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? value : dateTimeFormatter.format(date)
+  return Number.isNaN(date.getTime()) ? 'Data e hora inválidas' : dateTimeFormatter.format(date)
+}
+
+export function formatCountryName(countryCode?: string | null): string {
+  if (!countryCode) {
+    return 'País não informado'
+  }
+
+  const normalizedCode = countryCode.trim().toUpperCase()
+
+  try {
+    const countryName = regionNames.of(normalizedCode)
+    return countryName && countryName !== normalizedCode
+      ? countryName
+      : 'País não identificado'
+  } catch {
+    return 'País não identificado'
+  }
 }

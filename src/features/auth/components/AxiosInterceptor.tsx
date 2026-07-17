@@ -42,7 +42,6 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
       (response) => response,
       async (error: AxiosError<ApiErrorResponse>) => {
         const status = error.response?.status;
-        const errorMessage = error.response?.data?.message;
         const requestUrl = error.config?.url;
         const requestConfig = error.config as RetriableRequestConfig | undefined;
         const isSessionRequest = AUTH_SESSION_PATHS.some((path) => requestUrl?.includes(path));
@@ -73,12 +72,9 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
           setErrorConfig({
             isVisible: true,
             title: 'Sessão Expirada',
-            description: errorMessage || getErrorMessage(error),
-            buttonText: 'Ir para Login',
+            description: getErrorMessage(error),
+            buttonText: 'Entrar novamente',
             redirectUrl: '/auth/login',
-            action: () => {
-              console.log('Redirecionando para login por 401 (Global)');
-            }
           });
         }
 
@@ -86,12 +82,9 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
           setErrorConfig({
             isVisible: true,
             title: 'Acesso Negado',
-            description: errorMessage || getErrorMessage(error),
+            description: getErrorMessage(error),
             buttonText: 'Voltar ao Início',
             redirectUrl: '/home',
-            action: () => {
-               console.log('Redirecionando para home por 403');
-            }
           });
         }
 

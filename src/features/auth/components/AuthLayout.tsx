@@ -94,7 +94,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
                           "h-2 rounded-full transition-all duration-300",
                           currentSlide === index ? "w-8 bg-white" : "w-2 bg-white/50 hover:bg-white/80"
                           )}
-                          aria-label={`Ir para slide ${index + 1}`}
+                          aria-label={`Ir para imagem ${index + 1}`}
                       />
                       ))}
                   </div>

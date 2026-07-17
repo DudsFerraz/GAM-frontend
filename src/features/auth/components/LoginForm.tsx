@@ -35,7 +35,7 @@ export const LoginForm = () => {
       },
       {
         onError: (error) => {
-          const message = getErrorMessage(error);
+          const message = getErrorMessage(error, 'authentication');
           setServerError(message);
         }
       }
