@@ -1,7 +1,3 @@
-export type ApiErrorResponse = {
-  status: number
-  error: string
-  message: string
-  timestamp: string
-}
+import type { components } from '@/api/generated/gam-api'
 
+export type ApiErrorResponse = components['schemas']['ApiErrorDTO']

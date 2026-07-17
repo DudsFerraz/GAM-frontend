@@ -8,7 +8,7 @@
 
 TanStack Router generates `src/routeTree.gen.ts` from the file routes in `src/routes/`; do not edit that generated file. The root route installs the global Axios response-interceptor component and router devtools. Public routes currently live under `/auth`. Routes in `src/routes/_authenticated/` use a `beforeLoad` guard and render inside `AppLayout`; the `_authenticated` path segment is not part of the URL.
 
-The current guard decodes a stored JWT to obtain an account id. This is an implementation detail that conflicts with the accepted authentication direction described in [browser authentication](../integration/authentication.md); it is not an authorization boundary.
+`AuthProvider` starts in `initializing`, obtains CSRF proof, attempts refresh through the browser-managed cookie, and loads `/accounts/me` before protected UI may render. Access tokens stay in memory. The protected layout redirects only after bootstrap reaches `unauthenticated`; capability visibility consumes the effective permission codes returned by the current-Account context. See [browser authentication](../integration/authentication.md) for the remaining coordination and feedback gaps.
 
 ### Server state and API calls
 
@@ -16,7 +16,7 @@ The current guard decodes a stored JWT to obtain an account id. This is an imple
 
 Backend routes, operations, and transport types are referenced from the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Feature API modules still own the calls made with the shared Axios client, while feature-specific view models and mappings remain outside the generated file. Do not edit the generated file manually. See [API integration](../integration/api.md) for the contract boundary and current limitations.
 
-The current-Account adapter also normalizes the backend's flat `roles` list and the stale generated wrapper representation into one frontend Account view model. Permission queries and navigation consume that normalized list; this compatibility mapping remains at the boundary rather than leaking response-shape branching into components.
+The current-Account session uses the generated `CurrentAccountContextRDTO` returned by `/accounts/me`. Account administration still normalizes the generated `AccountRDTO.roles` wrapper at its boundary so response-shape compatibility does not leak into components. Navigation and capability checks use `/accounts/me` effective permission codes; per-Role permission reads remain only where the Event creation UI needs Permission records and UUIDs.
 
 ### Forms, UI, and features
 
@@ -206,7 +206,7 @@ This architecture is intentionally not a traditional Clean Architecture implemen
 
 ## Planned, not yet implemented
 
-- A session-aware authentication state with bootstrap, in-memory access tokens, bounded refresh/replay, and cross-tab coordination.
+- Cross-tab refresh coordination beyond logout broadcast, and visible reporting when server-side logout cannot be confirmed.
 - Formalized generation/version-selection workflow for the generated TypeScript transport types. The current generated artifact is already available at `src/api/generated/gam-api.ts`, but its repository workflow remains to be documented and accepted.
 
 ## Incremental refactoring guidance

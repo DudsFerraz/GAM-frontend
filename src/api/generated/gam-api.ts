@@ -552,6 +552,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/csrf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Establish browser CSRF proof
+         * @description Returns a CSRF token and establishes the matching JavaScript-readable XSRF-TOKEN cookie.
+         */
+        get: operations["getCsrfProof"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/accounts/{id}": {
         parameters: {
             query?: never;
@@ -584,6 +604,26 @@ export interface paths {
          * @description Performs the documented GAM operation: get Account Role Assignment.
          */
         get: operations["getAccountRoleAssignment"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/accounts/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current Account context
+         * @description Returns the authenticated Account identity, active roles, and distinct currently effective permission codes for frontend capability synchronization.
+         */
+        get: operations["getCurrentAccountContext"];
         put?: never;
         post?: never;
         delete?: never;
@@ -811,10 +851,10 @@ export interface components {
         };
         RoleRDTO: {
             /** Format: uuid */
-            id?: string;
-            name?: string;
-            description?: string;
-            systemManaged?: boolean;
+            id: string;
+            name: string;
+            description: string;
+            systemManaged: boolean;
         };
         PagedResponseAccountRDTO: {
             items?: components["schemas"]["AccountRDTO"][];
@@ -873,6 +913,34 @@ export interface components {
             totalPages?: number;
             first?: boolean;
             last?: boolean;
+        };
+        CsrfToken: {
+            token?: string;
+            headerName?: string;
+            parameterName?: string;
+        };
+        /** @description CSRF proof established for the same-origin browser authentication workflow. */
+        CsrfBootstrapRDTO: {
+            /**
+             * @description Unpredictable token that must be echoed in the named request header.
+             * @example <browser CSRF token>
+             */
+            token: string;
+            /**
+             * @description Request header that carries the CSRF proof.
+             * @example X-XSRF-TOKEN
+             */
+            headerName: string;
+        };
+        /** @description Current authenticated Account identity and effective authorization context. */
+        CurrentAccountContextRDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: email */
+            email: string;
+            displayName: string;
+            roles: components["schemas"]["RoleRDTO"][];
+            permissions: string[];
         };
         ApiErrorDTO: {
             /** Format: date-time */
@@ -957,11 +1025,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -975,11 +1043,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -993,11 +1061,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1011,11 +1079,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1029,11 +1097,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1124,11 +1192,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1142,11 +1210,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1160,11 +1228,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1178,11 +1246,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1196,11 +1264,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1263,11 +1331,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1281,11 +1349,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1299,11 +1367,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1317,11 +1385,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1335,11 +1403,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1420,11 +1488,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1438,11 +1506,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1456,11 +1524,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1474,11 +1542,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1492,11 +1560,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1560,11 +1628,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1578,11 +1646,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1596,11 +1664,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1614,11 +1682,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1632,11 +1700,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1691,11 +1759,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1709,11 +1777,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1727,11 +1795,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1745,11 +1813,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1763,11 +1831,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1821,11 +1889,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1839,11 +1907,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1857,11 +1925,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1875,11 +1943,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1893,11 +1961,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1993,11 +2061,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2011,11 +2079,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2029,11 +2097,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2047,11 +2115,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2065,11 +2133,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2119,11 +2187,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2137,11 +2205,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2155,11 +2223,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2173,11 +2241,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2191,11 +2259,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2206,15 +2274,23 @@ export interface operations {
     refreshAccessToken: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description CSRF proof obtained from GET /auth/csrf. */
+                "X-XSRF-TOKEN": string;
+            };
             path?: never;
-            cookie?: never;
+            cookie: {
+                /** @description Browser-managed HttpOnly refresh cookie; never enter it in Swagger authorization. */
+                refreshToken: string;
+            };
         };
         requestBody?: never;
         responses: {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description Sets and rotates the browser-managed refreshToken cookie. */
+                    "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2234,11 +2310,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2252,11 +2328,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2270,11 +2346,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2288,11 +2364,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2306,11 +2382,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2321,15 +2397,23 @@ export interface operations {
     logout: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description CSRF proof obtained from GET /auth/csrf. */
+                "X-XSRF-TOKEN": string;
+            };
             path?: never;
-            cookie?: never;
+            cookie?: {
+                /** @description Browser-managed HttpOnly refresh cookie; never enter it in Swagger authorization. */
+                refreshToken?: string;
+            };
         };
         requestBody?: never;
         responses: {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description Expires the browser-managed refreshToken cookie with Max-Age=0. */
+                    "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2345,11 +2429,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2363,11 +2447,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2381,11 +2465,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2399,11 +2483,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2417,11 +2501,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2432,7 +2516,10 @@ export interface operations {
     login: {
         parameters: {
             query?: never;
-            header?: never;
+            header: {
+                /** @description CSRF proof obtained from GET /auth/csrf. */
+                "X-XSRF-TOKEN": string;
+            };
             path?: never;
             cookie?: never;
         };
@@ -2451,6 +2538,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description Sets the browser-managed refreshToken cookie to establish the authentication session. */
+                    "Set-Cookie"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2470,11 +2559,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2488,11 +2577,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2506,11 +2595,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2524,11 +2613,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2542,11 +2631,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2594,11 +2683,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2612,11 +2701,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2630,11 +2719,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2648,11 +2737,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2666,11 +2755,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2742,11 +2831,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2760,11 +2849,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2778,11 +2867,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2796,11 +2885,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2814,11 +2903,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2901,11 +2990,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2919,11 +3008,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2937,11 +3026,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2955,11 +3044,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2973,11 +3062,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3047,11 +3136,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3065,11 +3154,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3083,11 +3172,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3101,11 +3190,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3119,11 +3208,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3193,11 +3282,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3211,11 +3300,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3229,11 +3318,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3247,11 +3336,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3265,11 +3354,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3312,11 +3401,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3330,11 +3419,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3348,11 +3437,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3366,11 +3455,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3384,11 +3473,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3431,11 +3520,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3449,11 +3538,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3467,11 +3556,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3485,11 +3574,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3503,11 +3592,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3551,11 +3640,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3569,11 +3658,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3587,11 +3676,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3605,11 +3694,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3623,11 +3712,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3671,11 +3760,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3689,11 +3778,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3707,11 +3796,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3725,11 +3814,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3743,11 +3832,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3796,11 +3885,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3814,11 +3903,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3832,11 +3921,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3850,11 +3939,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3868,11 +3957,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3917,11 +4006,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3935,11 +4024,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3953,11 +4042,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3971,11 +4060,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3989,11 +4078,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4054,11 +4143,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4072,11 +4161,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4090,11 +4179,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4108,11 +4197,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4126,11 +4215,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4230,11 +4319,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4248,11 +4337,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4266,11 +4355,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4284,11 +4373,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4302,11 +4391,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4357,11 +4446,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4375,11 +4464,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4393,11 +4482,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4411,11 +4500,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4429,11 +4518,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4482,11 +4571,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4500,11 +4589,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4518,11 +4607,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4536,11 +4625,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4554,11 +4643,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4624,11 +4713,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4642,11 +4731,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4660,11 +4749,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4678,11 +4767,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4696,11 +4785,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4800,11 +4889,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4818,11 +4907,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4836,11 +4925,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4854,11 +4943,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4872,11 +4961,133 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getCsrfProof: {
+        parameters: {
+            query: {
+                csrfToken: components["schemas"]["CsrfToken"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSRF proof established. */
+            200: {
+                headers: {
+                    /** @description Prevents storage of the CSRF bootstrap response. */
+                    "Cache-Control"?: string;
+                    /** @description Host-only XSRF-TOKEN cookie using SameSite=Lax and Path=/api/auth. */
+                    "Set-Cookie"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "token": "<browser CSRF token>",
+                     *       "headerName": "X-XSRF-TOKEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CsrfBootstrapRDTO"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST",
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED",
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN",
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND",
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 409,
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4929,11 +5140,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4947,11 +5158,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4965,11 +5176,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4983,11 +5194,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5001,11 +5212,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5068,11 +5279,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 400,
                      *       "code": "INVALID_REQUEST",
                      *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5086,11 +5297,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 401,
                      *       "code": "UNAUTHORIZED",
                      *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5104,11 +5315,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 403,
                      *       "code": "FORBIDDEN",
                      *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5122,11 +5333,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 404,
                      *       "code": "NOT_FOUND",
                      *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5140,11 +5351,68 @@ export interface operations {
                 content: {
                     /**
                      * @example {
-                     *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z"
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getCurrentAccountContext: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "roles": [
+                     *         {
+                     *           "description": "Standard authenticated member access",
+                     *           "systemManaged": true,
+                     *           "id": "019f6343-321a-7c90-a096-a551e8f88eb5",
+                     *           "name": "MEMBER"
+                     *         }
+                     *       ],
+                     *       "email": "member@example.test",
+                     *       "displayName": "Example Member",
+                     *       "permissions": [
+                     *         "ACCOUNT_GET",
+                     *         "EVENT_SEARCH"
+                     *       ],
+                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["CurrentAccountContextRDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED",
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {}
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];

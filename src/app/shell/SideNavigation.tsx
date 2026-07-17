@@ -55,7 +55,7 @@ export const SideNavigation = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   
   const { user, account, logout, isLoading: isLoadingUser } = useAccountInfo();
-  const { permissions, isLoading: isLoadingPermissions } = useAccountPermissions(account);
+  const { permissions } = useAccountPermissions(account);
 
   const router = useRouterState(); 
   const currentPath = router.location.pathname;
@@ -71,7 +71,7 @@ export const SideNavigation = () => {
     });
   }, [user, permissions]);
 
-  if (isLoadingUser || (user && isLoadingPermissions)) {
+  if (isLoadingUser) {
     return (
       <aside className="hidden h-screen w-20 shrink-0 items-center justify-center border-r border-border bg-background md:flex">
         <Loader2 className="h-6 w-6 animate-spin text-primary/50" />

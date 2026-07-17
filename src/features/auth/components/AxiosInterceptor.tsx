@@ -1,7 +1,9 @@
-import { useEffect, useState, useRef, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { api, getErrorMessage, type ApiErrorResponse } from '@/lib/http';
+import { getAccessToken } from '@/lib/http/accessToken';
 import { RedirectFeedback } from './RedirectFeedback';
-import { AxiosError } from 'axios';
+import { AxiosError, type InternalAxiosRequestConfig } from 'axios';
+import { useAuth } from '../hooks/useAuth';
 
 interface ErrorConfig {
   isVisible: boolean;
@@ -12,7 +14,21 @@ interface ErrorConfig {
   action?: () => void;
 }
 
+type RetriableRequestConfig = InternalAxiosRequestConfig & {
+  _authRetry?: boolean;
+}
+
+const AUTH_SESSION_PATHS = [
+  '/auth/csrf',
+  '/auth/login',
+  '/auth/logout',
+  '/auth/refresh',
+  '/auth/register',
+  '/accounts/me',
+];
+
 export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
+  const { expire, refresh } = useAuth();
   const [errorConfig, setErrorConfig] = useState<ErrorConfig>({
     isVisible: false,
     title: '',
@@ -21,23 +37,38 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
     redirectUrl: '/',
   });
 
-  const interceptorId = useRef<number | null>(null);
-
   useEffect(() => {
     const id = api.interceptors.response.use(
       (response) => response,
-      (error: AxiosError<ApiErrorResponse>) => {
+      async (error: AxiosError<ApiErrorResponse>) => {
         const status = error.response?.status;
         const errorMessage = error.response?.data?.message;
         const requestUrl = error.config?.url;
+        const requestConfig = error.config as RetriableRequestConfig | undefined;
+        const isSessionRequest = AUTH_SESSION_PATHS.some((path) => requestUrl?.includes(path));
 
-        if (status === 401 && requestUrl?.includes('/auth/login')) {
+        // If the error is related to session management endpoints, 
+        // we don't want to attempt a refresh or show a global error message. 
+        // Instead, we just reject the promise and let the calling code handle it.
+        if (isSessionRequest) {
           return Promise.reject(error);
         }
 
+        if (status === 401 && requestConfig && !requestConfig._authRetry) {
+          requestConfig._authRetry = true;
+
+          try {
+            await refresh();
+            const token = getAccessToken();
+            if (token) requestConfig.headers.Authorization = `Bearer ${token}`;
+            return api.request(requestConfig);
+          } catch {
+            // The refresh path already cleared the in-memory session.
+          }
+        }
+
         if (status === 401) {
-          localStorage.removeItem('auth_token');
-          sessionStorage.removeItem('auth_token');
+          expire();
 
           setErrorConfig({
             isVisible: true,
@@ -68,13 +99,10 @@ export const AxiosInterceptor = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    interceptorId.current = id;
-
-    // Cleanup: Remove o interceptor ao desmontar o componente
     return () => {
       api.interceptors.response.eject(id);
     };
-  }, []);
+  }, [expire, refresh]);
 
   const handleClose = () => {
      setErrorConfig(prev => ({ ...prev, isVisible: false }));

@@ -17,6 +17,7 @@ function normalizeRole(value: unknown): RoleResponse | null {
     id: value.id,
     name: value.name,
     description: typeof value.description === 'string' ? value.description : '',
+    systemManaged: typeof value.systemManaged === 'boolean' ? value.systemManaged : false,
   }
 }
 

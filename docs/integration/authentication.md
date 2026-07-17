@@ -42,12 +42,16 @@ Each protected request is replayed at most once. After an unexpected `403`, the 
 
 Logout obtains CSRF proof as needed and calls the logout endpoint. After successful logout, broadcast an ephemeral logout event so every open tab clears its in-memory token, Account, and permissions and becomes unauthenticated. If the server request cannot be confirmed, clear the initiating tab's local context but report that server-side logout is unconfirmed.
 
-## Current gaps to resolve deliberately
+## Current implementation
 
-- `src/features/auth/hooks/useLogin.ts` writes the bearer token to `localStorage` or `sessionStorage`; `src/features/auth/token.ts` and `src/lib/http/client.ts` read it from persistent storage. This directly conflicts with the accepted contract.
-- Protected routing checks a decoded stored JWT before rendering. There is no `initializing` state, CSRF bootstrap, or refresh call; the current Account is still loaded through the legacy `/api/accounts/{id}` operation because `/api/accounts/me` is not implemented by the published backend contract.
-- The Axios interceptor clears persistent storage on `401`; it has no single-flight refresh, bounded replay, or cross-tab coordination. It displays a `403` error, which is appropriate as an outcome, but no resynchronization path exists.
-- Current permissions are assembled through per-role lookups. The accepted contract requires the current Account response's effective permission codes after refresh; role names remain presentation data only.
-- The current logout only clears frontend storage and navigates. It does not call server logout or notify other tabs.
+- `AuthProvider` owns `initializing`, `authenticated`, and `unauthenticated` state. Startup obtains `/auth/csrf`, posts `/auth/refresh`, retains the access token in memory, and loads `/accounts/me` before protected UI renders.
+- Login, refresh, and logout obtain fresh CSRF proof and echo it through the header named by the bootstrap response. Axios sends the browser-managed cookies with `withCredentials`.
+- Protected requests receive the in-memory bearer token. A `401` joins one in-instance refresh and replays each request at most once; authentication endpoints do not recursively refresh. A `403` remains forbidden and does not refresh.
+- Capability visibility consumes the effective permission codes from `/accounts/me`. Role-permission queries are not the authorization source; they remain only where the Event form needs Permission records and UUIDs.
+- Logout calls the backend, clears all local session state even if confirmation fails, and broadcasts an ephemeral logout event through `BroadcastChannel`.
 
-These are documentation findings, not authorization to change the authentication implementation in this task.
+## Remaining gaps
+
+- Refresh is single-flight within one application instance, but refresh attempts are not yet coordinated between tabs.
+- The logout operation tracks whether the server call was confirmed, but the current shell does not yet present an unconfirmed-logout warning to the user.
+- After an unexpected `403`, the UI preserves the forbidden outcome but does not yet reload `/accounts/me` once to resynchronize capability visibility.

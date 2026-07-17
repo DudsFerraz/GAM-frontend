@@ -10,7 +10,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Select } from '@/components/ui/Select'
-import { useAccountInfo, useAccountPermissions } from '@/features/account'
+import { useAccountInfo, useAccountPermissionRecords, useAccountPermissions } from '@/features/account'
 import { formatDateTime } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
 
@@ -28,10 +28,11 @@ export function ManageEventsPage() {
   const [isCreateOpen, setIsCreateOpen] = useState(false)
   const navigate = useNavigate()
   const { account } = useAccountInfo()
-  const { permissions, permissionRecords } = useAccountPermissions(account)
+  const { permissions } = useAccountPermissions(account)
+  const canCreate = permissions.includes('EVENT_CREATE')
+  const { permissionRecords } = useAccountPermissionRecords(account, canCreate)
   const query = useEvents(filters, page)
   const items = query.data?.items ?? []
-  const canCreate = permissions.includes('EVENT_CREATE')
   const audiencePermissions = permissionRecords.filter((permission) => permission.code === 'EVENT_GET_MEMBER' || permission.code === 'EVENT_GET_COORD')
 
   const submitSearch = (event: FormEvent) => { event.preventDefault(); setPage(0); setFilters((current) => ({ ...current, title })) }

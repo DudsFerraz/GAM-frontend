@@ -14,11 +14,11 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Tailwind CSS, Radix UI primitives, Lucide icons, and local UI components provide the UI layer.
 - Axios is the current HTTP client.
 
-The codebase is an early, pre-production implementation. It has login and registration screens, a protected route group, a responsive application shell, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, Account-role administration with contextual RBAC inspection, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
+The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, Account-role administration with contextual RBAC inspection, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
 
 ## Immediate scope
 
-Validate and refine the implemented contract-backed workflows, add focused test tooling, and migrate authentication to the accepted browser contract as soon as the required backend operations are published. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
+Validate and refine the implemented contract-backed workflows, complete the remaining cross-tab and logout-feedback authentication refinements, and add focused test tooling. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
 
 ## Ownership boundary
 

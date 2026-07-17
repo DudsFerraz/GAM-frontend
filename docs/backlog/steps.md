@@ -55,7 +55,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 5. Implement the accepted browser authentication boundary
 
-**Status:** Pending the accepted backend operations. The current backend implementation and checked-in generated contract do not yet expose `GET /auth/csrf` or `GET /accounts/me`, which are required for bootstrap and effective-permission loading. The legacy frontend token-storage implementation remains non-compliant and must be replaced when those backend contract operations are available.
+**Status:** In progress. The checked-in contract now exposes `GET /auth/csrf` and `GET /accounts/me`. Startup bootstrap, in-memory access tokens, CSRF-protected login/refresh/logout, current-Account loading, effective-permission visibility, in-instance single-flight refresh, bounded replay, and cross-tab logout broadcast are implemented. Cross-tab refresh coordination, unconfirmed-logout feedback, and one-time Account resynchronization after an unexpected `403` remain.
 
 - Introduce one authentication context/state with `initializing`, `authenticated`, and `unauthenticated` states.
 - Implement startup: CSRF bootstrap, refresh, in-memory access-token storage, then current Account loading.
@@ -103,7 +103,7 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 **Status:** In progress. The contract-backed management candidates have initial vertical slices. Product validation, the accepted browser-authentication boundary, test tooling, and follow-up usability refinement remain pending.
 
 - Start with one real end-to-end feature after the base contracts are ready, then add the next approved page/feature.
-- Make protected routes depend on completed authentication state, not token decoding.
+- Keep protected routes dependent on completed authentication state rather than token decoding.
 - Migrate existing account, role/permission, and member code as their features are touched; do not perform a speculative mass refactor.
 - Reuse the shared shell, UI primitives, API infrastructure, query conventions, and form patterns established by earlier features.
 - Add a shared abstraction only after multiple real features demonstrate the same stable need.

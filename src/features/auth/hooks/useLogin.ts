@@ -1,24 +1,16 @@
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
-import { login } from '../api/login';
 import type { LoginInfo } from '../types';
-
-interface LoginVariables extends LoginInfo {
-  rememberMe?: boolean;
-}
+import { useAuth } from './useAuth';
 
 export const useLogin = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   return useMutation({
-    mutationFn: (data: LoginVariables) => login(data),
+    mutationFn: (data: LoginInfo) => login(data),
     
-    onSuccess: (data, variables) => {      
-      const token = data.token;
-      const storage = variables.rememberMe ? localStorage : sessionStorage;
-
-      storage.setItem('auth_token', token);
-
+    onSuccess: () => {
       navigate({ to: '/home' });
     },
   });

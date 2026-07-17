@@ -1,10 +1,9 @@
+import type { components } from '@/api/generated/gam-api'
 import type { UUID } from '@/types/uuid'
 
-export type AccountResponse = {
-  id: UUID
-  email: string
-  displayName: string
-  roles: RoleResponse[]
+type CurrentAccount = components['schemas']['CurrentAccountContextRDTO']
+
+export type AccountResponse = CurrentAccount & {
   picture?: string
 }
 
@@ -12,11 +11,7 @@ export type AccountRolesResponse = {
   roles: RoleResponse[]
 }
 
-export type RoleResponse = {
-  id: UUID
-  name: string
-  description: string
-}
+export type RoleResponse = CurrentAccount['roles'][number]
 
 export type PermissionResponse = {
   id: UUID

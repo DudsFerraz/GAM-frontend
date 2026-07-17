@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { getAccessToken } from './accessToken';
 
 export const api = axios.create({
   baseURL: '/api',
@@ -10,9 +11,7 @@ export const api = axios.create({
 
 api.interceptors.request.use(
   (config) => {
-    if (config.url?.includes('/auth/login') || config.url?.includes('/auth/register')) return config;
-
-    const token = localStorage.getItem('auth_token') || sessionStorage.getItem('auth_token');
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }

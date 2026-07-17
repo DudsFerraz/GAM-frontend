@@ -22,7 +22,6 @@ export const LoginForm = () => {
     defaultValues: {
       email: "",
       password: "",
-      rememberMe: true,
     },
   });
 
@@ -33,7 +32,6 @@ export const LoginForm = () => {
       {
         email: values.email,
         password: values.password,
-        rememberMe: values.rememberMe,
       },
       {
         onError: (error) => {
@@ -109,31 +107,6 @@ export const LoginForm = () => {
               </FormItem>
             )}
           />
-
-          {/* Checkbox 'Lembrar de Mim'
-          <div className="flex items-center justify-between text-sm">
-            <FormField
-              control={form.control}
-              name="rememberMe"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center space-x-2 space-y-0">
-                  <FormControl>
-                    <Checkbox
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                      id="remember"
-                    />
-                  </FormControl>
-                  <FormLabel 
-                    htmlFor="remember" 
-                    className="text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 font-normal cursor-pointer"
-                  >
-                    Lembrar de mim
-                  </FormLabel>
-                </FormItem>
-              )}
-            />
-          </div> */}
 
           <Button type="submit" className="w-full" disabled={isPending}>
             {isPending ? "Entrando..." : "Entrar"}
