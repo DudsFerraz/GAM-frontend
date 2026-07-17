@@ -120,6 +120,7 @@ The following first-pass UI behavior is implemented from the checked-in generate
 4. **Events and attendance.** The Event view creates/searches/views Events and the Event and Member detail routes show their respective Presence histories when authorized.
 5. **Locations.** The Location view creates, lists, and opens dedicated detail routes. Event creation consumes Location options.
 6. **RBAC reference data.** Role, role-permission, and Permission detail reads are contextual panels inside Account-role administration.
+7. **Current Account profile.** The authenticated sidebar opens a dedicated read-only profile using the `/accounts/me` identity, active Roles, and effective permission codes already held by the session context. The current contract does not expose an Account update operation.
 
 ## Out of scope for this order
 

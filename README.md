@@ -1,6 +1,6 @@
 # GAM Frontend
 
-GAM's React/TypeScript single-page frontend. The application currently provides same-origin browser-session bootstrap, public login and registration, protected navigation, and contract-backed views for Members, membership solicitations, Accounts and Roles, Events and attendance, and Locations.
+GAM's React/TypeScript single-page frontend. The application currently provides same-origin browser-session bootstrap, public login and registration, protected navigation, a current-Account profile, and contract-backed views for Members, membership solicitations, Accounts and Roles, Events and attendance, and Locations.
 
 Read the contributor documentation before significant work:
 

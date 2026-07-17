@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRegisterRouteImport } from './routes/auth/register'
 import { Route as AuthLoginRouteImport } from './routes/auth/login'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedManageSolicitationsRouteImport } from './routes/_authenticated/manage/solicitations'
 import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage/members'
@@ -53,6 +54,11 @@ const AuthLoginRoute = AuthLoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => AuthRoute,
+} as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRoute,
 } as any)
 const AuthenticatedHomeRoute = AuthenticatedHomeRouteImport.update({
   id: '/home',
@@ -113,6 +119,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/manage': typeof ManageRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/manage/accounts': typeof AuthenticatedManageAccountsRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRouteWithChildren
   '/manage': typeof ManageRoute
   '/home': typeof AuthenticatedHomeRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/manage/accounts': typeof AuthenticatedManageAccountsRoute
@@ -147,6 +155,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRouteWithChildren
   '/manage': typeof ManageRoute
   '/_authenticated/home': typeof AuthenticatedHomeRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/_authenticated/manage/accounts': typeof AuthenticatedManageAccountsRoute
@@ -165,6 +174,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/manage'
     | '/home'
+    | '/profile'
     | '/auth/login'
     | '/auth/register'
     | '/manage/accounts'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/manage'
     | '/home'
+    | '/profile'
     | '/auth/login'
     | '/auth/register'
     | '/manage/accounts'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/manage'
     | '/_authenticated/home'
+    | '/_authenticated/profile'
     | '/auth/login'
     | '/auth/register'
     | '/_authenticated/manage/accounts'
@@ -260,6 +272,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/auth/login'
       preLoaderRoute: typeof AuthLoginRouteImport
       parentRoute: typeof AuthRoute
+    }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRoute
     }
     '/_authenticated/home': {
       id: '/_authenticated/home'
@@ -374,6 +393,7 @@ const AuthenticatedManageMembersRouteWithChildren =
 
 interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedManageAccountsRoute: typeof AuthenticatedManageAccountsRoute
   AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRouteWithChildren
   AuthenticatedManageLocationsRoute: typeof AuthenticatedManageLocationsRouteWithChildren
@@ -383,6 +403,7 @@ interface AuthenticatedRouteChildren {
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedManageAccountsRoute: AuthenticatedManageAccountsRoute,
   AuthenticatedManageEventsRoute: AuthenticatedManageEventsRouteWithChildren,
   AuthenticatedManageLocationsRoute:

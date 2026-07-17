@@ -130,10 +130,15 @@ export const SideNavigation = () => {
       </div>
 
       {/* --- PERFIL DO USUÁRIO --- */}
-      <div className={cn(
-        "flex items-center gap-3 p-4 mx-2 mt-2 rounded-lg bg-muted/30 border border-border/50 transition-all duration-300",
-        isCollapsed && "justify-center px-0 mx-2 flex-col gap-2 bg-transparent border-none"
-      )}>
+      <Link
+        aria-label="Abrir meu perfil"
+        className={cn(
+          "mx-2 mt-2 flex items-center gap-3 rounded-lg border border-border/50 bg-muted/30 p-4 transition-all duration-300 hover:border-primary/30 hover:bg-muted/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          isCollapsed && "mx-2 flex-col justify-center gap-2 border-none bg-transparent px-0"
+        )}
+        title={isCollapsed ? 'Abrir meu perfil' : undefined}
+        to="/profile"
+      >
         <Avatar className={cn("border-2 border-background shadow-sm", isCollapsed ? "h-8 w-8" : "h-10 w-10")}>
           <AvatarImage src={user.picture || undefined} alt={user.name} />
           <AvatarFallback className="bg-primary/10 text-primary">
@@ -151,7 +156,7 @@ export const SideNavigation = () => {
             </span>
           </div>
         )}
-      </div>
+      </Link>
 
       {/* --- LISTA DE NAVEGAÇÃO --- */}
       <nav className="flex-1 overflow-y-auto py-6 px-2">
