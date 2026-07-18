@@ -69,7 +69,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
 
           <div className="relative z-10 p-12 h-full flex flex-col justify-between text-white w-full">
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 pt-6">
               <span className="text-4xl font-heading font-bold tracking-tight">Grupo de Animação Missionária</span>
             </div>
 

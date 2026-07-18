@@ -26,8 +26,8 @@ export function PublicNavbar({ variant = "hero" }: PublicNavbarProps) {
           />
           <span
             className={cn(
-              "hidden text-sm font-semibold tracking-[0.18em] sm:block",
-              isHero ? "text-white" : "text-foreground",
+              "hidden text-sm font-semibold tracking-[0.18em] sm:block text-white",
+            
             )}
           >
             GAM PIRACICABA
