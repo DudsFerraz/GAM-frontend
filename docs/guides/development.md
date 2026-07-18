@@ -51,6 +51,12 @@ This file is generated and must not be edited directly. The generation workflow 
 
 Before rendering response data, classify it using the [user-facing language and presentation boundary](user-facing-language.md). Contract enums, roles, permissions, backend catalog text, error envelopes, and identifiers are not UI copy. Add or update the owning feature's typed presentation map, retain the raw value for requests and capability checks, and use a neutral Portuguese fallback for unexpected runtime values. Form schemas must provide explicit Portuguese validation messages rather than relying on library defaults.
 
+## Typography and visual identity
+
+**Current implementation:** the application uses one sans-serif family across public pages, authentication, and the authenticated shell: `ui-sans-serif, system-ui, sans-serif`. The tokens `font-sans` and `font-heading` in [`src/index.css`](../../src/index.css) are separate semantic names that resolve to the same family, so headings and body copy do not diverge between surfaces. Authentication must not reintroduce `font-serif` or another local font override.
+
+The official GAM logos are the bundled [`src/assets/logos/gam_logo.png`](../../src/assets/logos/gam_logo.png) and [`src/assets/logos/gam_logo_claro.png`](../../src/assets/logos/gam_logo_claro.png). The authenticated sidebar selects the dark or light variant according to the active theme and renders it with rounded corners and `object-contain`; new navigation branding should reuse these assets instead of recreating the logo with text or cropping it with `object-cover`.
+
 ## Production delivery context
 
 The frontend will be a versioned static artifact. Fingerprinted assets may be cached immutably, while `index.html` must be revalidated; API routes must never receive SPA fallback. Proxy selection, VPS provider, domain, packaging, deployment, backups, and operations are backend-owned shared decisions and are out of scope for this repository. See [Initial Production Topology](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/diagrams/initial-production-topology.md).

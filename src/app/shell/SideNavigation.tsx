@@ -1,11 +1,14 @@
 import { useState, useMemo } from 'react';
 import { Link, useRouterState } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
+import gamLogo from '@/assets/logos/gam_logo.png';
+import gamLogoClaro from '@/assets/logos/gam_logo_claro.png';
 import { CalendarDays, FileClock, Home, MapPin, ShieldCheck, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, X, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { useAccountInfo, useAccountPermissions } from '@/features/account';
 import { ColorModeToggle } from '@/components/ColorModeToggle';
+import { useTheme } from '@/lib/theme';
 
 type NavItem = {
   label: string;
@@ -56,6 +59,9 @@ export const SideNavigation = () => {
   
   const { user, account, logout, isLoading: isLoadingUser } = useAccountInfo();
   const { permissions } = useAccountPermissions(account);
+  const { theme } = useTheme();
+  const isDarkTheme = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const logo = isDarkTheme ? gamLogo : gamLogoClaro;
 
   const router = useRouterState(); 
   const currentPath = router.location.pathname;
@@ -90,7 +96,7 @@ export const SideNavigation = () => {
     <>
     <div className="fixed inset-x-0 top-0 z-40 border-b border-border bg-background/95 backdrop-blur md:hidden">
       <div className="flex h-16 items-center justify-between px-4">
-        <span className="font-heading text-xl font-bold tracking-tight text-primary">GAM</span>
+        <img src={logo} alt="GAM Piracicaba" className="h-10 w-16 rounded-xl object-contain" />
         <div className="flex items-center gap-1">
           <ColorModeToggle />
           <button onClick={() => logout()} className="rounded-md p-2 text-destructive focus:outline-none focus:ring-2 focus:ring-ring" aria-label="Sair da conta"><LogOut className="h-4 w-4" /></button>
@@ -117,16 +123,15 @@ export const SideNavigation = () => {
       </Button>
 
       {/* --- CABEÇALHO --- */}
-      <div className="flex items-center justify-center p-6 h-20 border-b border-border/50">
-        {!isCollapsed ? (
-           <h1 className="text-2xl font-heading font-bold tracking-tight text-primary animate-in fade-in duration-300">
-             GAM
-           </h1>
-        ) : (
-          <h1 className="text-xl font-heading font-bold tracking-tight text-primary">
-            GAM
-          </h1>
-        )}
+      <div className="flex h-20 items-center justify-center border-b border-border/50 bg-background p-6">
+        <img
+          src={logo}
+          alt="GAM Piracicaba"
+          className={cn(
+            'rounded-xl object-contain transition-all duration-300',
+            isCollapsed ? 'h-10 w-12' : 'h-12 w-20',
+          )}
+        />
       </div>
 
       {/* --- PERFIL DO USUÁRIO --- */}

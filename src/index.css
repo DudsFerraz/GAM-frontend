@@ -2,6 +2,10 @@
 @import "tw-animate-css";
 
 @theme {
+  /* A interface usa uma única família sem serifa em todas as superfícies. */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-heading: ui-sans-serif, system-ui, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
@@ -114,6 +118,6 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground antialiased;
+    @apply bg-background font-sans text-foreground antialiased;
   }
 }

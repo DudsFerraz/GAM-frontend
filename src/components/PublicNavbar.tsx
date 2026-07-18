@@ -22,7 +22,7 @@ export function PublicNavbar({ variant = "hero" }: PublicNavbarProps) {
           <img
             src={gamLogo}
             alt="GAM"
-            className="h-11 w-20 object-cover object-center"
+            className="h-11 w-20 object-contain object-center"
           />
           <span
             className={cn(

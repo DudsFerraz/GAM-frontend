@@ -49,7 +49,7 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
   }, [currentSlide]);
 
   return (
-      <div className="min-h-screen w-full flex font-serif bg-background text-foreground relative">  
+      <div className="relative flex min-h-screen w-full bg-background font-sans text-foreground">
 
       <PublicNavbar variant="surface" />
 
