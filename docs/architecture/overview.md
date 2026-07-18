@@ -24,7 +24,7 @@ Login and registration use React Hook Form with Zod resolvers and feature-local 
 
 The management area currently provides these vertical views:
 
-- Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history.
+- Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission, detail, and `MEMBER_MANAGE` approval/rejection actions.
 - Account search and business-facing access-type administration, including translated active types and authorized removal without exposing the Role or Permission catalogs.
 - Event search, authorized creation, Event detail, and authorized Event-presence history.

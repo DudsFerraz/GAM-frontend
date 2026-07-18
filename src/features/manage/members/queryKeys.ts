@@ -6,6 +6,6 @@ export const memberQueryKeys = {
   detail: (memberId: string) => [...memberQueryKeys.details(), memberId] as const,
   presences: (memberId: string, page: number) =>
     [...memberQueryKeys.detail(memberId), 'presences', page] as const,
-  search: (filters: SpecificationFilter[], pageParams: PageParams) =>
-    [...memberQueryKeys.all, 'search', filters, pageParams] as const,
+  search: (filters: SpecificationFilter[], pageParams: PageParams, showInactive: boolean) =>
+    [...memberQueryKeys.all, 'search', filters, pageParams, showInactive] as const,
 }

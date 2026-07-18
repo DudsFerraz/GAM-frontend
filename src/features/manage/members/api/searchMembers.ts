@@ -39,7 +39,10 @@ function isSupportedMemberStatusFilter(filter: SearchFilter): boolean {
   return false
 }
 
-function toMemberSearchFilters(filters: SpecificationFilter[]): SearchFilter[] {
+function toMemberSearchFilters(
+  filters: SpecificationFilter[],
+  showInactive: boolean,
+): SearchFilter[] {
   const supportedFilters = filters.filter(isSupportedMemberStatusFilter)
   const hasStatusFilter = supportedFilters.some((filter) => filter.field === 'status')
 
@@ -51,7 +54,7 @@ function toMemberSearchFilters(filters: SpecificationFilter[]): SearchFilter[] {
     ...supportedFilters,
     {
       field: 'status',
-      value: [...MEMBER_STATUSES],
+      value: showInactive ? [...MEMBER_STATUSES] : ['ACTIVE'],
       comparationMethod: 'IN',
     },
   ]
@@ -109,6 +112,7 @@ function toMemberPage(
 export async function searchMembers(
   filters: SpecificationFilter[],
   pageParams: PageParams = { page: 0, size: 10 },
+  showInactive = false,
 ): Promise<MemberPage> {
   const requestedSort = (pageParams.sort ?? []).filter(isSupportedMemberSort)
   const params: { page?: number; size?: number; sort?: string[] } = {
@@ -119,7 +123,7 @@ export async function searchMembers(
     params.sort = requestedSort
   }
 
-  const searchFilters = toMemberSearchFilters(filters)
+  const searchFilters = toMemberSearchFilters(filters, showInactive)
 
   const { data } = await api.post<MemberPageTransport>(
     '/members/search',

@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, useRef } from 'react';
-import { Search, Filter, ArrowUpDown, X, Plus, Check, ArrowUp, ArrowDown } from 'lucide-react';
+import { Search, Filter, ArrowUpDown, X, Plus, Check, ArrowUp, ArrowDown, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
@@ -18,6 +18,8 @@ interface SearchAndFilterProps {
   config: FieldConfig[];
   mainFilterField: string;
   onSearch: (filters: SpecificationFilter[], sorts: SortCriteria[]) => void;
+  showInactive: boolean;
+  onShowInactiveChange: (showInactive: boolean) => void;
   className?: string;
 }
 
@@ -25,6 +27,8 @@ export const SearchAndFilter = ({
   config,
   mainFilterField,
   onSearch,
+  showInactive,
+  onShowInactiveChange,
   className
 }: SearchAndFilterProps) => {
   const [mainSearchValue, setMainSearchValue] = useState('');
@@ -216,34 +220,49 @@ export const SearchAndFilter = ({
           />
         </div>
         
-        <div className="grid grid-cols-2 gap-2 sm:flex">
-          <Button 
-            variant="outline" 
-            onClick={() => { setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
-            className={cn("w-full gap-2 border-border sm:w-auto", isFilterOpen && "bg-secondary text-secondary-foreground")}
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <Button
+            aria-label="Mostrar inativos"
+            aria-pressed={showInactive}
+            className={cn("w-full gap-2 border-border sm:w-auto", showInactive && "bg-secondary text-secondary-foreground")}
+            onClick={() => onShowInactiveChange(!showInactive)}
+            title="Mostrar inativos"
+            type="button"
+            variant="outline"
           >
-            <Filter className="h-4 w-4" />
-            <span className="hidden sm:inline">Filtrar</span>
-            {activeFilters.length > 0 && (
-              <span className="ml-1 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full">
-                {activeFilters.length}
-              </span>
-            )}
+            <Users className="h-4 w-4" />
+            <span>{showInactive ? 'Ativos e inativos' : 'Apenas ativos'}</span>
           </Button>
 
-          <Button 
-            variant="outline" 
-            onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
-            className={cn("w-full gap-2 border-border sm:w-auto", isSortOpen && "bg-secondary text-secondary-foreground")}
-          >
-            <ArrowUpDown className="h-4 w-4" />
-            <span className="hidden sm:inline">Ordenar</span>
-            {activeSorts.length > 0 && (
-              <span className="ml-1 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full">
-                {activeSorts.length}
-              </span>
-            )}
-          </Button>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <Button
+              variant="outline"
+              onClick={() => { setIsFilterOpen(!isFilterOpen); setIsSortOpen(false); }}
+              className={cn("w-full gap-2 border-border sm:w-auto", isFilterOpen && "bg-secondary text-secondary-foreground")}
+            >
+              <Filter className="h-4 w-4" />
+              <span className="hidden sm:inline">Filtrar</span>
+              {activeFilters.length > 0 && (
+                <span className="ml-1 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full">
+                  {activeFilters.length}
+                </span>
+              )}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => { setIsSortOpen(!isSortOpen); setIsFilterOpen(false); }}
+              className={cn("w-full gap-2 border-border sm:w-auto", isSortOpen && "bg-secondary text-secondary-foreground")}
+            >
+              <ArrowUpDown className="h-4 w-4" />
+              <span className="hidden sm:inline">Ordenar</span>
+              {activeSorts.length > 0 && (
+                <span className="ml-1 bg-primary text-primary-foreground text-[10px] px-1.5 py-0.5 rounded-full">
+                  {activeSorts.length}
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
       </div>
 

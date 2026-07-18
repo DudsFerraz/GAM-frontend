@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -20,8 +20,23 @@ import type {
   SpecificationFilter,
 } from '../types'
 
+const SHOW_INACTIVE_STORAGE_KEY = 'gam:manage-members:show-inactive'
+
+function readShowInactivePreference(): boolean {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  try {
+    return window.localStorage.getItem(SHOW_INACTIVE_STORAGE_KEY) === 'true'
+  } catch {
+    return false
+  }
+}
+
 export function ManageMembersPage() {
   const [filters, setFilters] = useState<SpecificationFilter[]>([])
+  const [showInactive, setShowInactive] = useState(readShowInactivePreference)
   const [pageParams, setPageParams] = useState<PageParams>({
     page: 0,
     size: 12,
@@ -36,9 +51,18 @@ export function ManageMembersPage() {
   const canChangeStatus = permissions.includes('MEMBER_ACTIVATION')
   const canCreateMember = permissions.includes('MEMBER_MANAGE') && permissions.includes('ACCOUNT_SEARCH')
 
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(SHOW_INACTIVE_STORAGE_KEY, String(showInactive))
+    } catch {
+      // A preferência local não deve impedir a busca de membros.
+    }
+  }, [showInactive])
+
   const { data, isLoading, isError, refetch } = useSearchMembers({
     filters,
     pageParams,
+    showInactive,
   })
 
   const handleSearch = (filters: SpecificationFilter[], sorts: SortCriteria[]) => {
@@ -49,6 +73,11 @@ export function ManageMembersPage() {
 
   const handlePageChange = (page: number) => {
     setPageParams((previous) => ({ ...previous, page }))
+  }
+
+  const handleShowInactiveChange = (nextShowInactive: boolean) => {
+    setShowInactive(nextShowInactive)
+    setPageParams((previous) => ({ ...previous, page: 0 }))
   }
 
   return (
@@ -71,6 +100,8 @@ export function ManageMembersPage() {
           config={MEMBERS_FILTER_CONFIG}
           mainFilterField="name"
           onSearch={handleSearch}
+          onShowInactiveChange={handleShowInactiveChange}
+          showInactive={showInactive}
         />
       </div>
 
