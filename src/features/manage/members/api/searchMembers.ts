@@ -5,11 +5,68 @@ import type {
   MemberListItem,
   MemberPage,
   PageParams,
+  SearchFilter,
   SpecificationFilter,
 } from '../types'
 
 type MemberTransport = components['schemas']['MemberRDTO']
 type MemberPageTransport = components['schemas']['PagedResponseMemberRDTO']
+
+const MEMBER_STATUSES = ['ACTIVE', 'INACTIVE'] as const
+const MEMBER_SORT_FIELDS = ['firstName', 'surname', 'birthDate', 'status'] as const
+
+type MemberStatus = (typeof MEMBER_STATUSES)[number]
+
+function isMemberStatus(value: unknown): value is MemberStatus {
+  return MEMBER_STATUSES.some((status) => status === value)
+}
+
+function isSupportedMemberStatusFilter(filter: SearchFilter): boolean {
+  if (filter.field !== 'status') {
+    return true
+  }
+
+  if (filter.comparationMethod === 'EQUALS') {
+    return isMemberStatus(filter.value)
+  }
+
+  if (filter.comparationMethod === 'IN') {
+    return Array.isArray(filter.value)
+      && filter.value.length > 0
+      && filter.value.every(isMemberStatus)
+  }
+
+  return false
+}
+
+function toMemberSearchFilters(filters: SpecificationFilter[]): SearchFilter[] {
+  const supportedFilters = filters.filter(isSupportedMemberStatusFilter)
+  const hasStatusFilter = supportedFilters.some((filter) => filter.field === 'status')
+
+  if (hasStatusFilter) {
+    return supportedFilters
+  }
+
+  return [
+    ...supportedFilters,
+    {
+      field: 'status',
+      value: [...MEMBER_STATUSES],
+      comparationMethod: 'IN',
+    },
+  ]
+}
+
+function isSupportedMemberSort(value: string): boolean {
+  const parts = value.split(',')
+  if (parts.length !== 2) {
+    return false
+  }
+
+  const [field, direction] = parts
+  return MEMBER_SORT_FIELDS.some((allowedField) => allowedField === field)
+    && (direction === 'asc' || direction === 'desc')
+}
 
 function toMemberListItem(member: MemberTransport): MemberListItem | null {
   if (!member.id) {
@@ -53,15 +110,22 @@ export async function searchMembers(
   filters: SpecificationFilter[],
   pageParams: PageParams = { page: 0, size: 10 },
 ): Promise<MemberPage> {
+  const requestedSort = (pageParams.sort ?? []).filter(isSupportedMemberSort)
+  const params: { page?: number; size?: number; sort?: string[] } = {
+    page: pageParams.page,
+    size: pageParams.size,
+  }
+  if (requestedSort.length > 0) {
+    params.sort = requestedSort
+  }
+
+  const searchFilters = toMemberSearchFilters(filters)
+
   const { data } = await api.post<MemberPageTransport>(
     '/members/search',
-    { filters },
+    { filters: searchFilters },
     {
-      params: {
-        page: pageParams.page,
-        size: pageParams.size,
-        sort: pageParams.sort,
-      },
+      params,
       paramsSerializer: {
         indexes: null,
       },

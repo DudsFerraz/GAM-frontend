@@ -17,8 +17,7 @@ export async function searchSolicitations(
     '/membership-solicitations/search',
     { filters },
     {
-      params: { page, size: 10, sort: ['createdAt,desc'] },
-      paramsSerializer: { indexes: null },
+      params: { page, size: 10 },
     },
   )
   return data

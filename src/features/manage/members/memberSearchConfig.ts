@@ -25,9 +25,10 @@ export const MEMBERS_FILTER_CONFIG: FieldConfig[] = [
   },
   {
     key: 'birthDate',
-    label: 'Data de Nascimento', 
+    label: 'Data de Nascimento',
     inputType: 'date',
     allowedOperators: ['EQUALS', 'GREATER_THAN_OR_EQUAL', 'LESS_THAN_OR_EQUAL'],
+    sortable: true,
   },
   {
     key: 'status',
@@ -38,17 +39,20 @@ export const MEMBERS_FILTER_CONFIG: FieldConfig[] = [
       { label: MEMBER_STATUS_LABELS.INACTIVE, value: 'INACTIVE' },
     ],
     allowedOperators: ['EQUALS'],
+    sortable: true,
   },
   {
     key: 'firstName',
     label: 'Primeiro nome',
     inputType: 'text',
     filterable: false,
+    sortable: true,
   },
   {
     key: 'surname',
     label: 'Sobrenome',
     inputType: 'text',
     filterable: false,
+    sortable: true,
   },
 ]

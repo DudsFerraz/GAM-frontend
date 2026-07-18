@@ -92,8 +92,8 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
 | Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized. |
 | Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
-| Event list/detail/creation (`/manage/events/*`) | Situation, type, and audience translated; permission codes and backend labels hidden. |
-| Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden. |
+| Event list/detail/creation (`/manage/events/*`) | Situation, type, and audience translated; permission codes and backend labels hidden; map links use coordinates or the localized address. |
+| Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; map links use coordinates or the localized address. |
 | Account administration (`/manage/accounts`) | Access types translated; no RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
 
 Internal IDs still exist in route parameters, React keys, query keys, and API payloads. This is expected and is not user exposure.

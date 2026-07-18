@@ -28,7 +28,9 @@ The management area currently provides these vertical views:
 - Authenticated membership-solicitation history, self-service submission, detail, and `MEMBER_MANAGE` approval/rejection actions.
 - Account search and business-facing access-type administration, including translated active types and authorized removal without exposing the Role or Permission catalogs.
 - Event search, authorized creation, Event detail, and authorized Event-presence history.
-- Location list, creation, and dedicated detail views.
+- Location list, creation, dedicated detail views, and external Google Maps links based on the location address or coordinates.
+
+Event and Location cards also expose external Google Maps links. These links use the Maps search URL and do not require a Google Maps API key; coordinates are preferred and the business address is used as a fallback.
 
 Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. Contract enums, roles, permissions, catalog text, and errors cross a Portuguese presentation boundary before rendering; granular authorization data and technical identifiers are not profile or management content. See [user-facing language and presentation](../guides/user-facing-language.md).
 
