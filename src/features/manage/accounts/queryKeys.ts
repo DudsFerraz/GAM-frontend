@@ -1,3 +1,6 @@
+// Query keys for account administration
+// These keys are used to identify and manage queries related to account administration in the application. 
+// They help in caching, invalidating, and refetching data efficiently.
 export const accountAdminQueryKeys = {
   all: ['account-administration'] as const,
   search: (term: string, field: string, page: number) => [...accountAdminQueryKeys.all, 'search', term, field, page] as const,

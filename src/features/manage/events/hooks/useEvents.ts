@@ -3,8 +3,8 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { createEvent, getEvent, getEventPresences, searchEvents, type EventFilters } from '../api/events'
 import { eventQueryKeys } from '../queryKeys'
 
-export function useEvents(filters: EventFilters, page: number) {
-  return useQuery({ queryKey: eventQueryKeys.search(filters, page), queryFn: () => searchEvents(filters, page), placeholderData: keepPreviousData })
+export function useEvents(filters: EventFilters, page: number, enabled = true) {
+  return useQuery({ queryKey: eventQueryKeys.search(filters, page), queryFn: () => searchEvents(filters, page), enabled, placeholderData: keepPreviousData })
 }
 
 export function useEvent(eventId: string) {

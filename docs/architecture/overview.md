@@ -22,6 +22,8 @@ The current-Account session uses the generated `CurrentAccountContextRDTO` retur
 
 Login and registration use React Hook Form with Zod resolvers and feature-local schemas. `src/components/ui/` contains reusable Radix-based primitives, while `src/components/` contains genuinely cross-feature components. `src/components/AsyncState.tsx` provides the shared loading, error/retry, empty, and forbidden feedback vocabulary for data-driven views. `src/components/PublicNavbar.tsx` is the shared navigation for unauthenticated pages, including links between the public home, login, and registration and the theme toggle. The authenticated sidebar links the current Account identity to a read-only profile backed by the already loaded `/accounts/me` context. Application composition belongs to `src/app/`. Feature-specific code is organized under `src/features/account`, `src/features/auth`, and `src/features/manage/members`, with components, hooks, API calls, query keys, schemas, types, and mappings colocated where practical.
 
+The authenticated home (`/home`) is a dashboard composition under `src/features/home/`. It greets the current Account, summarizes the effective access type, shows pending membership solicitations and upcoming Events when the current Account can search them, and offers permission-aware shortcuts into the existing vertical features. Its visual support uses bundled GAM imagery; it does not introduce a new backend resource or dashboard-specific contract.
+
 The management area currently provides these vertical views:
 
 - Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
@@ -34,7 +36,7 @@ Event and Location cards also expose external Google Maps links. These links use
 
 Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. Contract enums, roles, permissions, catalog text, and errors cross a Portuguese presentation boundary before rendering; granular authorization data and technical identifiers are not profile or management content. See [user-facing language and presentation](../guides/user-facing-language.md).
 
-The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments.
+The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments; the authenticated home composes the same responsive shell with its own dashboard sections.
 
 ## Source directory architecture
 
@@ -53,6 +55,7 @@ src/
 ├── features/
 │   ├── account/         # Account data, permissions, hooks, and mappings
 │   ├── auth/            # Login, registration, token handling, and auth feedback
+│   ├── home/            # Public and authenticated home compositions
 │   └── manage/
 │       ├── accounts/    # Business-facing Account access administration
 │       ├── events/      # Event creation/search/detail and Event presences

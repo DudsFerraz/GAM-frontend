@@ -87,6 +87,7 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | View | Current presentation behavior |
 | --- | --- |
 | Public home (`/`) | Frontend-authored Portuguese copy; no contract values. |
+| Authenticated home (`/home`) | Portuguese dashboard copy; current Account name and translated access type; pending solicitation and Event summaries use safe loading, empty, error, and permission-aware states. |
 | Login and registration (`/auth/*`) | Explicit Portuguese validation and safe API error mapping. |
 | Authenticated shell and route fallbacks | Portuguese loading, forbidden, error, and not-found feedback; developer tools are development-only. |
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
