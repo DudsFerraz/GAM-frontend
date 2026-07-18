@@ -6,7 +6,7 @@ type AccountTransport = components['schemas']['AccountRDTO']
 type AccountPageTransport = components['schemas']['PagedResponseAccountRDTO']
 export type Account = Omit<AccountTransport, 'roles'> & { roles: Role[] }
 export type AccountPage = Omit<AccountPageTransport, 'items'> & { items?: Account[] }
-export type AccountRoles = components['schemas']['AccountRolesRDTO']
+export type AccountRoles = { roles: Role[] }
 export type AccountRoleAssignment = components['schemas']['AccountRoleRDTO']
 export type Role = components['schemas']['RoleRDTO']
 export type Permission = components['schemas']['PermissionRDTO']
@@ -29,8 +29,8 @@ export async function searchAccounts(term: string, field: 'displayName' | 'email
 }
 
 export async function getAccountRoles(accountId: string): Promise<AccountRoles> {
-  const { data } = await api.get<AccountRoles>(`/accounts/${accountId}/roles`)
-  return data
+  const { data } = await api.get<unknown>(`/accounts/${accountId}/roles`)
+  return { roles: normalizeAccountRoles(data) }
 }
 
 export async function assignAccountRole(accountId: string, roleId: string, reason: string): Promise<AccountRoleAssignment> {

@@ -14,7 +14,7 @@ This is a frontend presentation rule. The backend remains authoritative for API 
 - [`src/lib/http/errors.ts`](../../src/lib/http/errors.ts) derives user feedback from the stable error code, HTTP status, network condition, and operation context. It never renders the backend `message` or a JavaScript `Error.message`.
 - Date and country formatting lives in [`src/lib/format.ts`](../../src/lib/format.ts). Invalid values and unknown region codes receive safe Portuguese fallbacks rather than their raw transport representation.
 - The current Account profile shows identity and business-facing access types only. It does not show the Account UUID, effective permission codes, catalog metadata, or system-management flags.
-- Account administration shows translated access types and supports removing an existing type when authorized. Raw role assignment and assignment lookup are not exposed because the current contract offers only identifier-based operations, not a business-facing role catalog or selector.
+- Account administration shows translated access types in a details dialog and supports removing an existing type from a separate editing dialog when authorized. Raw role assignment and assignment lookup are not exposed because the current contract offers only identifier-based operations, not a business-facing role catalog or selector.
 - Direct Member registration selects an Account by name instead of asking for an Account UUID.
 - Location creation currently presents `Brasil` and keeps `BR` as an internal request value. Supporting additional countries requires a business-facing country selector; it must not reintroduce a free-form region-code field.
 - Router developer tools render only in the development build. The root route owns Portuguese not-found and unexpected-error states so library defaults cannot leak into production UI.
@@ -94,7 +94,7 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
 | Event list/detail/creation (`/manage/events/*`) | Situation, type, and audience translated; permission codes and backend labels hidden; map links use coordinates or the localized address. |
 | Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; map links use coordinates or the localized address. |
-| Account administration (`/manage/accounts`) | Access types translated; no RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
+| Account administration (`/manage/accounts`) | Account details and access types are shown in dialogs; authorized removal is available in the editing dialog; no RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
 
 Internal IDs still exist in route parameters, React keys, query keys, and API payloads. This is expected and is not user exposure.
 
