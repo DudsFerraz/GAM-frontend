@@ -26,7 +26,10 @@ import { Input } from '@/components/ui/Input'
 import { formatDate } from '@/lib/format'
 import { getErrorMessage } from '@/lib/http'
 
-import { getMemberStatusLabel } from '../presentation'
+import {
+  getMemberStatusBadgeClassName,
+  getMemberStatusLabel,
+} from '../presentation'
 import { useUpdateMemberStatus } from '../hooks/useUpdateMemberStatus'
 import type { MemberListItem } from '../types'
 
@@ -104,7 +107,10 @@ export function MemberDetailsDialog({
           <div>
             <dt className="text-muted-foreground">Situação</dt>
             <dd className="mt-1">
-              <Badge variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}>
+              <Badge
+                className={getMemberStatusBadgeClassName(member.status)}
+                variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}
+              >
                 {getMemberStatusLabel(member.status)}
               </Badge>
             </dd>

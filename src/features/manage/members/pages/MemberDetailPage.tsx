@@ -13,7 +13,10 @@ import { isForbiddenError } from '@/lib/http'
 import { useMember } from '../hooks/useMember'
 import { useMemberPresences } from '../hooks/useMemberPresences'
 import { getEventTypeLabel } from '@/features/manage/events'
-import { getMemberStatusLabel } from '../presentation'
+import {
+  getMemberStatusBadgeClassName,
+  getMemberStatusLabel,
+} from '../presentation'
 
 type MemberDetailPageProps = {
   memberId: string
@@ -61,7 +64,10 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">{member.account?.displayName}</p>
         </div>
-        <Badge variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}>
+        <Badge
+          className={getMemberStatusBadgeClassName(member.status)}
+          variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}
+        >
           {getMemberStatusLabel(member.status)}
         </Badge>
       </div>

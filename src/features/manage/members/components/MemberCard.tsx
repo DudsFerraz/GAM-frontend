@@ -7,7 +7,10 @@ import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 
 import type { MemberListItem } from '../types'
-import { getMemberStatusLabel } from '../presentation'
+import {
+  getMemberStatusBadgeClassName,
+  getMemberStatusLabel,
+} from '../presentation'
 
 function calculateAge(birthDate: string | null): string {
   if (!birthDate) {
@@ -95,10 +98,7 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
           <Badge
             className={cn(
               'pointer-events-none mt-1 font-normal',
-              member.status === 'ACTIVE' &&
-                'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
-              member.status === 'INACTIVE' &&
-                'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+              getMemberStatusBadgeClassName(member.status),
             )}
             variant={member.status === 'INACTIVE' ? 'destructive' : 'secondary'}
           >
