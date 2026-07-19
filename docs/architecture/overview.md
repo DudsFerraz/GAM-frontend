@@ -29,8 +29,8 @@ The management area currently provides these vertical views:
 - Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission, detail, and `MEMBER_MANAGE` approval/rejection actions.
 - Account search and business-facing access-type administration, including translated active types and authorized removal without exposing the Role or Permission catalogs. Account details and access editing open in separate dialogs, while the account cards use a responsive two-column layout on larger screens.
-- Event search, authorized creation, Event detail, and authorized Event-presence history.
-- Location list, creation, dedicated detail views, and external Google Maps links based on the location address or coordinates.
+- Event search, authorized creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, and authorized Event-presence history.
+- Location list, creation, the dedicated detail view reached after creation, and external Google Maps links based on the location address or coordinates. The list does not expose a separate details action because the card already contains every Location field available in the contract.
 
 Event and Location cards also expose external Google Maps links. These links use the Maps search URL and do not require a Google Maps API key; coordinates are preferred and the business address is used as a fallback.
 

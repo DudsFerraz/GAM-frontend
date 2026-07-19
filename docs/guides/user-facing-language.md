@@ -94,8 +94,8 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
 | Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized; the submission dialog fills the `+55` prefix automatically and shows the complete Brazilian phone format. |
 | Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
-| Event list/detail/creation (`/manage/events/*`) | Situation, type, and audience translated; permission codes and backend labels hidden; map links use coordinates or the localized address. |
-| Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; map links use coordinates or the localized address. |
+| Event list/detail/creation (`/manage/events/*`) | Event details open in a dialog with translated situation, type, and audience; permission codes and backend labels are hidden; map links use coordinates or the localized address. |
+| Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; the list does not repeat a details action because every available field is already visible; map links use coordinates or the localized address. |
 | Account administration (`/manage/accounts`) | Account details and access types are shown in dialogs; authorized removal is available in the editing dialog; no RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
 
 Internal IDs still exist in route parameters, React keys, query keys, and API payloads. This is expected and is not user exposure.

@@ -1,6 +1,8 @@
 import { resolvePresentationLabel } from '@/lib/presentation'
+import { formatCountryName } from '@/lib/format'
+import { getGoogleMapsSearchUrl } from '@/lib/maps'
 
-import type { EventStatus, EventType } from './api/events'
+import type { Event, EventStatus, EventType } from './api/events'
 
 export const EVENT_STATUS_LABELS = {
   SCHEDULED: 'Agendado',
@@ -43,4 +45,21 @@ export function getEventAudienceLabel(permissionCode?: string | null): string {
     permissionCode,
     'Público não identificado',
   )
+}
+
+export function getEventMapUrl(location: Event['location']): string | null {
+  if (!location) {
+    return null
+  }
+
+  return getGoogleMapsSearchUrl({
+    name: location.name,
+    street: location.street,
+    city: location.city,
+    state: location.state,
+    postalCode: location.postalCode,
+    country: formatCountryName(location.countryCode),
+    latitude: location.latitude,
+    longitude: location.longitude,
+  })
 }
