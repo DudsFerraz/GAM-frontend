@@ -16,6 +16,7 @@ This is a frontend presentation rule. The backend remains authoritative for API 
 - The current Account profile shows identity and business-facing access types only. It does not show the Account UUID, effective permission codes, catalog metadata, or system-management flags.
 - Account administration shows translated access types in a details dialog and supports removing an existing type from a separate editing dialog when authorized. Raw role assignment and assignment lookup are not exposed because the current contract offers only identifier-based operations, not a business-facing role catalog or selector.
 - Direct Member registration selects an Account by name instead of asking for an Account UUID.
+- The membership-solicitation submission dialog presents Brazilian phone numbers with the `+55` prefix and a local mask, converting them to the API's international format only at the request boundary.
 - Location creation currently presents `Brasil` and keeps `BR` as an internal request value. Supporting additional countries requires a business-facing country selector; it must not reintroduce a free-form region-code field.
 - Router developer tools render only in the development build. The root route owns Portuguese not-found and unexpected-error states so library defaults cannot leak into production UI.
 - The base HTML declares `pt-BR` and uses product-facing GAM title, description, and icon metadata rather than starter-tool defaults.
@@ -91,7 +92,7 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Login and registration (`/auth/*`) | Explicit Portuguese validation and safe API error mapping. |
 | Authenticated shell and route fallbacks | Portuguese loading, forbidden, error, and not-found feedback; developer tools are development-only. |
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
-| Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized. |
+| Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized; the submission dialog fills the `+55` prefix automatically and shows the complete Brazilian phone format. |
 | Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
 | Event list/detail/creation (`/manage/events/*`) | Situation, type, and audience translated; permission codes and backend labels hidden; map links use coordinates or the localized address. |
 | Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; map links use coordinates or the localized address. |
