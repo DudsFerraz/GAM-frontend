@@ -35,7 +35,7 @@ export function ManageSolicitationsPage() {
         <div>
           <p className="text-sm font-medium text-primary">Membresia</p>
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Solicitações</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Consulte seu histórico ou analise solicitações quando autorizado.</p>
+          <p className="mt-1 text-sm text-muted-foreground">Consulte seu histórico ou analise solicitações.</p>
         </div>
         <Button onClick={() => setIsSubmitOpen(true)}><Plus className="h-4 w-4" />Nova solicitação</Button>
       </div>
