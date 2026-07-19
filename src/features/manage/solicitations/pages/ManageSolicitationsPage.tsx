@@ -37,7 +37,7 @@ export function ManageSolicitationsPage() {
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Solicitações</h1>
           <p className="mt-1 text-sm text-muted-foreground">Consulte seu histórico ou analise solicitações.</p>
         </div>
-        <Button onClick={() => setIsSubmitOpen(true)}><Plus className="h-4 w-4" />Nova solicitação</Button>
+        {!canReview && <Button onClick={() => setIsSubmitOpen(true)}><Plus className="h-4 w-4" />Nova solicitação</Button>}
       </div>
 
       <div className="max-w-xs rounded-xl border bg-card p-4">
@@ -66,7 +66,7 @@ export function ManageSolicitationsPage() {
       )}
       {query.data && <Pagination disabled={query.isFetching} itemLabel="solicitações" onPageChange={setPage} page={query.data.page ?? page} totalElements={query.data.totalElements ?? items.length} totalPages={query.data.totalPages ?? 0} />}
 
-      <SubmitSolicitationDialog onOpenChange={setIsSubmitOpen} open={isSubmitOpen} />
+      {!canReview && <SubmitSolicitationDialog onOpenChange={setIsSubmitOpen} open={isSubmitOpen} />}
       <SolicitationDetailsDialog canReview={canReview} id={selectedId} onClose={() => setSelectedId(null)} />
     </div>
   )

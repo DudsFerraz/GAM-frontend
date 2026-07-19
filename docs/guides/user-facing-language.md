@@ -92,7 +92,7 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Login and registration (`/auth/*`) | Explicit Portuguese validation and safe API error mapping. |
 | Authenticated shell and route fallbacks | Portuguese loading, forbidden, error, and not-found feedback; developer tools are development-only. |
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
-| Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized; the submission dialog fills the `+55` prefix automatically and shows the complete Brazilian phone format. |
+| Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized; the self-service submission action is hidden for accounts with `MEMBER_MANAGE`; the submission dialog fills the `+55` prefix automatically and shows the complete Brazilian phone format. |
 | Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
 | Event list/detail/creation (`/manage/events/*`) | Event details open in a dialog with translated situation, type, and audience; permission codes and backend labels are hidden; map links use coordinates or the localized address. |
 | Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; the list does not repeat a details action because every available field is already visible; map links use coordinates or the localized address. |
