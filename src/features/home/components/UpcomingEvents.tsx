@@ -78,8 +78,8 @@ export function UpcomingEvents({ events, isLoading, isError, onRetry }: Upcoming
                 <Link
                   className="flex items-start justify-between gap-4 px-5 py-4 transition-colors hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-none sm:px-6"
                   key={event.id}
-                  params={{ eventId: event.id }}
-                  to="/manage/events/$eventId"
+                  search={{ eventId: event.id }}
+                  to="/manage/events"
                 >
                   {content}
                 </Link>
