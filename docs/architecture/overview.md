@@ -36,6 +36,8 @@ Event and Location cards also expose external Google Maps links. These links use
 
 Forms use feature-local React Hook Form and Zod schemas. Paginated pages share the domain-neutral pagination component and deliberately render loading, empty, error, forbidden, and retry states. Contract enums, roles, permissions, catalog text, and errors cross a Portuguese presentation boundary before rendering; granular authorization data and technical identifiers are not profile or management content. See [user-facing language and presentation](../guides/user-facing-language.md).
 
+Automated tests use Vitest with jsdom and Testing Library. Tests are colocated with the source boundary they protect through `*.test.ts` and `*.test.tsx` files; shared DOM matcher and cleanup setup lives in `src/test/setup.ts`. The current focused suite covers authentication and refresh behavior, the shared HTTP and presentation boundaries, feature transport mappings and filters, form schemas, and reusable asynchronous-state and pagination components. Browser end-to-end tests, live-backend integration tests, and a repository coverage threshold are not currently configured.
+
 The authenticated shell is responsive: the desktop side navigation is replaced by a compact top navigation on small screens, and page content uses responsive spacing and overflow behavior. The public home page has its own layout and is not governed by these shell adjustments; the authenticated home composes the same responsive shell with its own dashboard sections.
 
 ## Source directory architecture
@@ -67,6 +69,7 @@ src/
 │   ├── query/           # Shared TanStack Query client configuration
 │   └── theme/           # Theme context, provider, and hook
 ├── routes/              # TanStack Router file routes and route layouts
+├── test/                # Shared automated-test setup
 ├── types/               # Truly global types, currently only UUID
 ├── index.css            # Global styles and design tokens
 ├── main.tsx             # Browser entry point

@@ -100,7 +100,7 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 ## 8. Expand the application incrementally
 
-**Status:** In progress. The contract-backed management candidates have initial vertical slices. Product validation, the accepted browser-authentication boundary, test tooling, and follow-up usability refinement remain pending.
+**Status:** In progress. The contract-backed management candidates have initial vertical slices and focused Vitest/Testing Library tooling now protects the main authentication, presentation, validation, mapping, and shared-component boundaries. Product validation, the remaining accepted browser-authentication gaps, and follow-up usability refinement remain pending.
 
 - Start with one real end-to-end feature after the base contracts are ready, then add the next approved page/feature.
 - Keep protected routes dependent on completed authentication state rather than token decoding.

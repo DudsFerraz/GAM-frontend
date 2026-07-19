@@ -18,4 +18,4 @@ npm run dev
 
 The supported local workflow keeps browser requests on the frontend origin. The shared HTTP client calls `/api`, and Vite proxies that prefix to the local backend configured through the server-only `API_PROXY_TARGET` environment variable.
 
-`npm run lint` and `npm run build` are configured and verified. Automated test scripts and test files are not configured yet. See the [development workflow](docs/guides/development.md) for the current command status and local API setup.
+`npm test`, `npm run lint`, and `npm run build` are configured and verified. The automated suite uses Vitest and Testing Library for focused frontend behavior; see the [development workflow](docs/guides/development.md) for the current commands, test scope, and local API setup.

@@ -13,12 +13,13 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - React Hook Form and Zod are used by the login and registration forms.
 - Tailwind CSS, Radix UI primitives, Lucide icons, and local UI components provide the UI layer.
 - Axios is the current HTTP client.
+- Vitest, jsdom, and Testing Library provide focused unit, integration, and component tests.
 
-The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, business-facing Account access administration, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); repository test scripts are not configured.
+The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, business-facing Account access administration, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); focused automated tests cover the most important frontend boundaries and implemented workflows.
 
 ## Immediate scope
 
-Validate and refine the implemented contract-backed workflows, complete the remaining cross-tab and logout-feedback authentication refinements, and add focused test tooling. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
+Validate and refine the implemented contract-backed workflows, complete the remaining cross-tab and logout-feedback authentication refinements, and expand focused test coverage as those behaviors evolve. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
 
 ## Ownership boundary
 

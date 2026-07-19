@@ -20,8 +20,25 @@ The default development proxy target is `http://localhost:8080`. Change `API_PRO
 | Lint TypeScript/TSX | `npm run lint` | Verified. |
 | Build and type-check | `npm run build` | Verified; runs `tsc -b` before producing the Vite artifact. |
 | Preview a built artifact | `npm run preview` | Configured; validate after a successful build exists. |
-| Run tests | — | No test script or test files are currently configured. |
+| Run tests once | `npm test` | Verified; runs the Vitest suite in non-watch mode. |
+| Run tests while editing | `npm run test:watch` | Configured; reruns affected Vitest tests as files change. |
 | Run type checking alone | — | No dedicated script; `npm run build` is the configured type-check path. |
+
+## Automated test workflow
+
+The current test stack is Vitest, jsdom, and Testing Library. Test files are colocated with the source they protect and use the `*.test.ts` or `*.test.tsx` suffix. Shared DOM matchers and automatic render cleanup are configured in `src/test/setup.ts`; `vitest.config.ts` owns the test environment and the same `@/` source alias used by application code.
+
+Run the complete local quality gate before handoff:
+
+```sh
+npm test
+npm run lint
+npm run build
+```
+
+The initial suite focuses on observable frontend contracts: in-memory authentication and CSRF flow, bounded `401` replay and `403` handling, safe Portuguese presentation, API request/mapping behavior, form validation, and accessible shared UI states. Transport tests mock the shared client at the frontend boundary and do not require a running backend.
+
+Browser end-to-end tests, live-backend integration tests, automated coverage reporting, and a required coverage percentage are not current repository capabilities. Introduce them only with an accepted workflow and stable scenarios; do not describe them as part of the current quality gate before they are configured.
 
 ## Source naming
 
