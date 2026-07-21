@@ -14,14 +14,14 @@ import { getErrorMessage } from '@/lib/http'
 
 import { useCreateEvent } from '../hooks/useEvents'
 import { eventSchema, type EventFormValues } from '../schemas/eventSchema'
-import { EVENT_TYPE_LABELS, getEventAudienceLabel } from '../presentation'
+import { getEventAudienceLabel } from '../presentation'
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void; onCreated: (eventId: string) => void; audiencePermissions: PermissionResponse[] }
 
 export function CreateEventDialog({ open, onOpenChange, onCreated, audiencePermissions }: Props) {
   const mutation = useCreateEvent()
   const locationsQuery = useLocationOptions()
-  const form = useForm<EventFormValues>({ resolver: zodResolver(eventSchema), defaultValues: { title: '', description: '', locationId: '', requiredPermissionId: '', beginDate: '', endDate: '', type: 'GENERIC' } })
+  const form = useForm<EventFormValues>({ resolver: zodResolver(eventSchema), defaultValues: { title: '', description: '', locationId: '', requiredPermissionId: '', beginDate: '', endDate: '' } })
   const changeOpen = (nextOpen: boolean) => { if (!nextOpen) { form.reset(); mutation.reset() }; onOpenChange(nextOpen) }
 
   return (
@@ -29,12 +29,11 @@ export function CreateEventDialog({ open, onOpenChange, onCreated, audiencePermi
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader><DialogTitle>Novo evento</DialogTitle><DialogDescription>Defina a agenda, o local e o público do evento.</DialogDescription></DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate({ title: values.title, description: values.description || undefined, locationId: values.locationId, requiredPermissionId: values.requiredPermissionId, beginDate: new Date(values.beginDate).toISOString(), endDate: new Date(values.endDate).toISOString(), type: values.type }, { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }))}>
+          <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate({ title: values.title, description: values.description || undefined, gamLocationId: values.locationId, requiredPermissionId: values.requiredPermissionId, beginDate: new Date(values.beginDate).toISOString(), endDate: new Date(values.endDate).toISOString() }, { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }))}>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField control={form.control} name="title" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Título</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
               <FormField control={form.control} name="description" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Descrição</FormLabel><FormControl><Textarea maxLength={2000} {...field} /></FormControl><FormMessage /></FormItem>} />
               <FormField control={form.control} name="locationId" render={({ field }) => <FormItem><FormLabel>Local</FormLabel><FormControl><Select disabled={locationsQuery.isLoading} {...field}><option value="">Selecione</option>{locationsQuery.data?.items?.map((location) => <option key={location.id} value={location.id}>{location.name} — {location.city}</option>)}</Select></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="type" render={({ field }) => <FormItem><FormLabel>Tipo</FormLabel><FormControl><Select {...field}>{Object.entries(EVENT_TYPE_LABELS).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</Select></FormControl><FormMessage /></FormItem>} />
               <FormField control={form.control} name="beginDate" render={({ field }) => <FormItem><FormLabel>Início</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl><FormMessage /></FormItem>} />
               <FormField control={form.control} name="endDate" render={({ field }) => <FormItem><FormLabel>Término</FormLabel><FormControl><Input type="datetime-local" {...field} /></FormControl><FormMessage /></FormItem>} />
               <FormField control={form.control} name="requiredPermissionId" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Público do evento</FormLabel><FormControl><Select {...field}><option value="">Selecione o público</option>{audiencePermissions.map((permission) => <option key={permission.id} value={permission.id}>{getEventAudienceLabel(permission.code)}</option>)}</Select></FormControl><FormMessage /></FormItem>} />

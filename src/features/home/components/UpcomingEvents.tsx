@@ -63,7 +63,7 @@ export function UpcomingEvents({ events, isLoading, isError, onRetry }: Upcoming
                       <p className="mt-1 text-sm text-muted-foreground">{formatDateTime(event.beginDate)}</p>
                       <p className="mt-1 flex items-center gap-1.5 truncate text-sm text-muted-foreground">
                         <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                        {event.location?.name || 'Local não informado'}
+                        {event.gamLocation?.name || 'Local não informado'}
                       </p>
                     </div>
                   </div>

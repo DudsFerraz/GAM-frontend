@@ -9,7 +9,6 @@ const validEvent = {
   locationId: '550e8400-e29b-41d4-a716-446655440000',
   requiredPermissionId: '6ba7b810-9dad-41d1-80b4-00c04fd430c8',
   title: 'Encontro do GAM',
-  type: 'GENERIC' as const,
 }
 
 describe('eventSchema', () => {
@@ -29,12 +28,11 @@ describe('eventSchema', () => {
     }
   })
 
-  it('traduz seleções inválidas de local, público e tipo', () => {
+  it('traduz seleções inválidas de local e público', () => {
     const result = eventSchema.safeParse({
       ...validEvent,
       locationId: 'local-técnico',
       requiredPermissionId: 'permissão-técnica',
-      type: 'INTERNAL',
     })
 
     expect(result.success).toBe(false)
@@ -42,7 +40,6 @@ describe('eventSchema', () => {
       expect(result.error.flatten().fieldErrors).toMatchObject({
         locationId: ['Selecione um local válido.'],
         requiredPermissionId: ['Selecione o público do evento.'],
-        type: ['Selecione um tipo de evento válido.'],
       })
     }
   })

@@ -8,7 +8,7 @@ For development, the browser should call the same relative paths and Vite should
 
 ## Current implementation
 
-`src/lib/http/client.ts` uses the fixed relative `/api` base. Feature API modules append resource paths such as `/auth/csrf`, `/auth/login`, `/auth/refresh`, `/accounts/me`, `/members/search`, `/membership-solicitations/search`, `/accounts/search`, `/events/search`, and `/locations`; browser requests therefore stay on the frontend origin under `/api/*`. `vite.config.ts` proxies `/api` to `API_PROXY_TARGET` (defaulting to `http://localhost:8080`) and removes the public `/api` prefix because the local Spring Boot application maps resources at its root. `API_PROXY_TARGET` is a server-only development value, not a `VITE_*` browser variable.
+`src/lib/http/client.ts` uses the fixed relative `/api` base. Feature API modules append resource paths such as `/auth/csrf`, `/auth/login`, `/auth/refresh`, `/accounts/me`, `/members/search`, `/membership-solicitations/search`, `/accounts/search`, `/events/search`, and `/gam-locations`; browser requests therefore stay on the frontend origin under `/api/*`. `vite.config.ts` proxies `/api` to `API_PROXY_TARGET` (defaulting to `http://localhost:8080`) and removes the public `/api` prefix because the local Spring Boot application maps resources at its root. `API_PROXY_TARGET` is a server-only development value, not a `VITE_*` browser variable.
 
 `.env.example` documents the supported local target. A developer may override it in the ignored `.env` file without changing browser code or committing a machine-specific backend origin.
 

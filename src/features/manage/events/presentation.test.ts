@@ -26,8 +26,12 @@ describe('apresentação de eventos', () => {
       city: 'Campinas',
       countryCode: 'BR',
       id: '550e8400-e29b-41d4-a716-446655440000',
+      latitude: null,
       name: 'Sede',
+      postalCode: null,
       state: 'SP',
+      street: null,
+      longitude: null,
     })
 
     expect(url).not.toBeNull()

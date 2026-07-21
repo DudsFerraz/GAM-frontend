@@ -35,7 +35,7 @@ export function EventDetailsDialog({ eventId, onClose }: EventDetailsDialogProps
   }
 
   const event = query.data
-  const mapUrl = getEventMapUrl(event?.location)
+  const mapUrl = getEventMapUrl(event?.gamLocation)
 
   return (
     <Dialog
@@ -90,10 +90,10 @@ export function EventDetailsDialog({ eventId, onClose }: EventDetailsDialogProps
               </div>
               <div className="sm:col-span-2">
                 <dt className="flex items-center gap-2 text-muted-foreground"><MapPin className="h-4 w-4" />Local</dt>
-                <dd className="mt-1 font-medium">{event.location?.name ?? 'Não informado'}</dd>
-                {event.location && (
+                <dd className="mt-1 font-medium">{event.gamLocation?.name ?? 'Não informado'}</dd>
+                {event.gamLocation && (
                   <p className="mt-1 text-muted-foreground">
-                    {[event.location.street, event.location.postalCode, event.location.city, event.location.state, formatCountryName(event.location.countryCode)]
+                    {[event.gamLocation.street, event.gamLocation.postalCode, event.gamLocation.city, event.gamLocation.state, formatCountryName(event.gamLocation.countryCode)]
                       .filter(Boolean)
                       .join(' · ') || 'Endereço não informado'}
                   </p>
@@ -109,10 +109,10 @@ export function EventDetailsDialog({ eventId, onClose }: EventDetailsDialogProps
                   <dd className="mt-1 whitespace-pre-wrap font-medium">{event.cancellationReason}</dd>
                 </div>
               )}
-              {event.location?.latitude !== undefined && event.location?.longitude !== undefined && (
+              {event.gamLocation?.latitude != null && event.gamLocation?.longitude != null && (
                 <div className="sm:col-span-2">
                   <dt className="flex items-center gap-2 text-muted-foreground"><Navigation className="h-4 w-4" />Coordenadas</dt>
-                  <dd className="mt-1 font-medium">{event.location.latitude}, {event.location.longitude}</dd>
+                  <dd className="mt-1 font-medium">{event.gamLocation.latitude}, {event.gamLocation.longitude}</dd>
                 </div>
               )}
             </dl>

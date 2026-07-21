@@ -3,7 +3,7 @@ import { api } from "@/lib/http";
 
 export type Event = components["schemas"]["EventRDTO"];
 export type EventPage = components["schemas"]["PagedResponseEventRDTO"];
-export type CreateEvent = components["schemas"]["CreateEventDTO"];
+export type CreateEvent = components["schemas"]["CreateGenericEventDTO"];
 export type CreatedEvent = components["schemas"]["CreateEventRDTO"];
 export type EventStatus = NonNullable<Event["status"]>;
 export type EventType = NonNullable<Event["type"]>;

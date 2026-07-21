@@ -111,7 +111,7 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
                     {presence.event?.type && <Badge variant="outline">{getEventTypeLabel(presence.event.type)}</Badge>}
                   </div>
                   <p className="flex items-center gap-2 text-sm text-muted-foreground"><CalendarDays className="h-4 w-4" />{formatDateTime(presence.event?.beginDate)}</p>
-                  <p className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{presence.event?.location?.name ?? 'Local não informado'}</p>
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{presence.event?.gamLocation?.name ?? 'Local não informado'}</p>
                   {presence.observations && <p className="text-sm">{presence.observations}</p>}
                   {presence.event?.id && (
                     <Button asChild size="sm" variant="link">

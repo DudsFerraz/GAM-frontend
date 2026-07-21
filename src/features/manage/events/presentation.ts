@@ -47,19 +47,19 @@ export function getEventAudienceLabel(permissionCode?: string | null): string {
   )
 }
 
-export function getEventMapUrl(location: Event['location']): string | null {
-  if (!location) {
+export function getEventMapUrl(gamLocation: Event['gamLocation']): string | null {
+  if (!gamLocation) {
     return null
   }
 
   return getGoogleMapsSearchUrl({
-    name: location.name,
-    street: location.street,
-    city: location.city,
-    state: location.state,
-    postalCode: location.postalCode,
-    country: formatCountryName(location.countryCode),
-    latitude: location.latitude,
-    longitude: location.longitude,
+    name: gamLocation.name,
+    street: gamLocation.street,
+    city: gamLocation.city,
+    state: gamLocation.state,
+    postalCode: gamLocation.postalCode,
+    country: formatCountryName(gamLocation.countryCode),
+    latitude: gamLocation.latitude,
+    longitude: gamLocation.longitude,
   })
 }
