@@ -33,6 +33,13 @@ export async function getAccountRoles(accountId: string): Promise<AccountRoles> 
   return { roles: normalizeAccountRoles(data) }
 }
 
+export async function searchRoles(name: string): Promise<Role[]> {
+  const { data } = await api.get<components['schemas']['RolesRDTO']>('/roles', {
+    params: { name: name.trim() },
+  })
+  return data.roles
+}
+
 export async function assignAccountRole(accountId: string, roleId: string, reason: string): Promise<AccountRoleAssignment> {
   const { data } = await api.post<AccountRoleAssignment>(`/accounts/${accountId}/roles`, { roleId, reason })
   return data

@@ -28,7 +28,7 @@ The management area currently provides these vertical views:
 
 - Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission for accounts without `MEMBER_MANAGE`, detail, and `MEMBER_MANAGE` approval/rejection actions. Accounts with `MEMBER_MANAGE` do not see the self-service submission action because their workflow is to review requests or register Members directly.
-- Account search and business-facing access-type administration, including translated active types and authorized removal without exposing the Role or Permission catalogs. Account details and access editing open in separate dialogs, while the account cards use a responsive two-column layout on larger screens.
+- Account search and business-facing access-type administration, including translated active types, authorized role search/assignment/removal, and no exposure of internal Role or Permission catalogs. Account details and access editing open in separate dialogs, while the account cards use a responsive two-column layout on larger screens.
 - Event search, authorized creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, and authorized Event-presence history.
 - Location list, creation, the dedicated detail view reached after creation, and external Google Maps links based on the location address or coordinates. The list does not expose a separate details action because the card already contains every Location field available in the contract.
 
@@ -216,7 +216,6 @@ This architecture is intentionally not a traditional Clean Architecture implemen
 
 - Cross-tab refresh coordination beyond logout broadcast, and visible reporting when server-side logout cannot be confirmed.
 - Formalized generation/version-selection workflow for the generated TypeScript transport types. The current generated artifact is already available at `src/api/generated/gam-api.ts`, but its repository workflow remains to be documented and accepted.
-- Business-facing Role catalog/search support for assigning a new Account access type without asking for an internal identifier.
 
 ## Incremental refactoring guidance
 

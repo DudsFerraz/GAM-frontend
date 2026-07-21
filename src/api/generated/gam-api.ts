@@ -4,6 +4,34 @@
  */
 
 export interface paths {
+    "/gam-locations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get an active GamLocation
+         * @description Performs the documented GAM operation: Get an active GamLocation.
+         */
+        get: operations["getGamLocation"];
+        /**
+         * Replace a GamLocation
+         * @description Performs the documented GAM operation: Replace a GamLocation.
+         */
+        put: operations["updateGamLocation"];
+        post?: never;
+        /**
+         * Remove an unused GamLocation
+         * @description Performs the documented GAM operation: Remove an unused GamLocation.
+         */
+        delete: operations["removeGamLocation"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/membership-solicitations": {
         parameters: {
             query?: never;
@@ -84,7 +112,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/locations": {
+    "/gam-locations": {
         parameters: {
             query?: never;
             header?: never;
@@ -92,16 +120,16 @@ export interface paths {
             cookie?: never;
         };
         /**
-         * get Locations
-         * @description Performs the documented GAM operation: get Locations.
+         * List active GamLocations
+         * @description Performs the documented GAM operation: List active GamLocations.
          */
-        get: operations["getLocations"];
+        get: operations["listGamLocations"];
         put?: never;
         /**
-         * create Location
-         * @description Performs the documented GAM operation: create Location.
+         * Create a GamLocation
+         * @description Performs the documented GAM operation: Create a GamLocation.
          */
-        post: operations["createLocation"];
+        post: operations["createGamLocation"];
         delete?: never;
         options?: never;
         head?: never;
@@ -312,6 +340,46 @@ export interface paths {
         patch: operations["approveMembershipSolicitation"];
         trace?: never;
     };
+    "/members/{memberId}/coordinator/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Revoke Coordinator designation
+         * @description Performs the documented GAM operation: Revoke Coordinator designation.
+         */
+        patch: operations["revokeCoordinator"];
+        trace?: never;
+    };
+    "/members/{memberId}/coordinator/grant": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Grant Coordinator designation
+         * @description Performs the documented GAM operation: Grant Coordinator designation.
+         */
+        patch: operations["grantCoordinator"];
+        trace?: never;
+    };
     "/members/{id}/deactivate": {
         parameters: {
             query?: never;
@@ -370,6 +438,26 @@ export interface paths {
          * @description Performs the documented GAM operation: drop Account Role.
          */
         patch: operations["dropAccountRole"];
+        trace?: never;
+    };
+    "/roles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List visible Roles
+         * @description Performs the documented GAM operation: List visible Roles.
+         */
+        get: operations["listRoles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
         trace?: never;
     };
     "/roles/{roleId}": {
@@ -484,26 +572,6 @@ export interface paths {
          * @description Performs the documented GAM operation: get Member.
          */
         get: operations["getMember"];
-        put?: never;
-        post?: never;
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
-        trace?: never;
-    };
-    "/locations/{id}": {
-        parameters: {
-            query?: never;
-            header?: never;
-            path?: never;
-            cookie?: never;
-        };
-        /**
-         * get Location
-         * @description Performs the documented GAM operation: get Location.
-         */
-        get: operations["getLocation"];
         put?: never;
         post?: never;
         delete?: never;
@@ -636,6 +704,28 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        GamLocationMutationDTO: {
+            name: string;
+            street?: string | null;
+            city: string;
+            state: string;
+            postalCode?: string | null;
+            countryCode: string;
+            latitude?: number | null;
+            longitude?: number | null;
+        };
+        GamLocationRDTO: {
+            /** Format: uuid */
+            id: string;
+            name: string;
+            street: string | null;
+            city: string;
+            state: string;
+            postalCode: string | null;
+            countryCode: string;
+            latitude: number | null;
+            longitude: number | null;
+        };
         JsonNode: unknown;
         SubmitMembershipSolicitationDTO: {
             firstName: string;
@@ -730,33 +820,17 @@ export interface components {
             first?: boolean;
             last?: boolean;
         };
-        CreateLocationDTO: {
-            name: string;
-            street?: string;
-            city: string;
-            state: string;
-            postalCode?: string;
-            countryCode: string;
-            latitude?: number;
-            longitude?: number;
-        };
-        CreateLocationRDTO: {
-            /** Format: uuid */
-            id?: string;
-        };
-        CreateEventDTO: {
+        CreateGenericEventDTO: {
             title: string;
             description?: string;
             /** Format: uuid */
-            locationId: string;
+            gamLocationId: string;
             /** Format: uuid */
-            requiredPermissionId: string;
+            requiredPermissionId?: string;
             /** Format: date-time */
             beginDate: string;
             /** Format: date-time */
             endDate: string;
-            /** @enum {string} */
-            type: "GENERIC" | "ORATORIO" | "MISSA";
         };
         CreateEventRDTO: {
             /** Format: uuid */
@@ -767,7 +841,7 @@ export interface components {
             id?: string;
             title?: string;
             description?: string;
-            location?: components["schemas"]["LocationRDTO"];
+            gamLocation?: components["schemas"]["GamLocationRDTO"];
             requiredPermission?: components["schemas"]["PermissionRDTO"];
             /** Format: date-time */
             beginDate?: string;
@@ -778,18 +852,6 @@ export interface components {
             /** @enum {string} */
             status?: "SCHEDULED" | "COMPLETED" | "LOCKED" | "FINALIZED" | "CANCELLED";
             cancellationReason?: string;
-        };
-        LocationRDTO: {
-            /** Format: uuid */
-            id: string;
-            name: string;
-            street?: string;
-            city: string;
-            state: string;
-            postalCode?: string;
-            countryCode: string;
-            latitude?: number;
-            longitude?: number;
         };
         PagedResponseEventRDTO: {
             items?: components["schemas"]["EventRDTO"][];
@@ -872,11 +934,18 @@ export interface components {
         ReviewMembershipSolicitationDTO: {
             reason: string;
         };
+        CoordinatorTransitionDTO: {
+            /** @description Trimmed before validation; the normalized reason must contain at most 2,000 Unicode code points. */
+            reason: string;
+        };
         DeactivateMemberDTO: {
             reason: string;
         };
         DropAccountRoleDTO: {
             reason: string;
+        };
+        RolesRDTO: {
+            roles: components["schemas"]["RoleRDTO"][];
         };
         GetRolePermissionsRDTO: {
             permissions?: components["schemas"]["PermissionRDTO"][];
@@ -901,8 +970,8 @@ export interface components {
             event?: components["schemas"]["EventRDTO"];
             observations?: string;
         };
-        PagedResponseLocationRDTO: {
-            items?: components["schemas"]["LocationRDTO"][];
+        PagedResponseGamLocationRDTO: {
+            items?: components["schemas"]["GamLocationRDTO"][];
             /** Format: int32 */
             page?: number;
             /** Format: int32 */
@@ -942,6 +1011,9 @@ export interface components {
             roles: components["schemas"]["RoleRDTO"][];
             permissions: string[];
         };
+        RemoveGamLocationDTO: {
+            reason: string;
+        };
         ApiErrorDTO: {
             /** Format: date-time */
             timestamp: string;
@@ -960,6 +1032,395 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    getGamLocation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "name": "Synthetic GAM value",
+                     *       "street": "Synthetic GAM value",
+                     *       "city": "Synthetic GAM value",
+                     *       "state": "Synthetic GAM value",
+                     *       "postalCode": "Synthetic GAM value",
+                     *       "countryCode": "BR",
+                     *       "latitude": 1,
+                     *       "longitude": 1
+                     *     }
+                     */
+                    "*/*": components["schemas"]["GamLocationRDTO"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409,
+                     *       "code": "CONFLICT"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateGamLocation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "name": "Synthetic GAM value",
+                 *       "street": "Synthetic GAM value",
+                 *       "city": "Synthetic GAM value",
+                 *       "state": "Synthetic GAM value",
+                 *       "postalCode": "Synthetic GAM value",
+                 *       "countryCode": "BR",
+                 *       "latitude": -90,
+                 *       "longitude": -180
+                 *     }
+                 */
+                "application/json": components["schemas"]["GamLocationMutationDTO"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "name": "Synthetic GAM value",
+                     *       "street": "Synthetic GAM value",
+                     *       "city": "Synthetic GAM value",
+                     *       "state": "Synthetic GAM value",
+                     *       "postalCode": "Synthetic GAM value",
+                     *       "countryCode": "BR",
+                     *       "latitude": 1,
+                     *       "longitude": 1
+                     *     }
+                     */
+                    "*/*": components["schemas"]["GamLocationRDTO"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409,
+                     *       "code": "GAM_LOCATION_ALREADY_EXISTS"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    removeGamLocation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["RemoveGamLocationDTO"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "GamLocation",
+                     *         "eventReferenceCount": 2
+                     *       },
+                     *       "status": 409,
+                     *       "code": "GAM_LOCATION_IN_USE"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
     submitMembershipSolicitation: {
         parameters: {
             query?: never;
@@ -1572,7 +2033,7 @@ export interface operations {
             };
         };
     };
-    getLocations: {
+    listGamLocations: {
         parameters: {
             query?: {
                 /** @description Zero-based page index. */
@@ -1617,7 +2078,7 @@ export interface operations {
                      *       "last": true
                      *     }
                      */
-                    "*/*": components["schemas"]["PagedResponseLocationRDTO"];
+                    "*/*": components["schemas"]["PagedResponseGamLocationRDTO"];
                 };
             };
             /** @description Invalid request */
@@ -1712,7 +2173,7 @@ export interface operations {
             };
         };
     };
-    createLocation: {
+    createGamLocation: {
         parameters: {
             query?: never;
             header?: never;
@@ -1729,26 +2190,36 @@ export interface operations {
                  *       "state": "Synthetic GAM value",
                  *       "postalCode": "Synthetic GAM value",
                  *       "countryCode": "BR",
-                 *       "latitude": 1,
-                 *       "longitude": 1
+                 *       "latitude": -90,
+                 *       "longitude": -180
                  *     }
                  */
-                "application/json": components["schemas"]["CreateLocationDTO"];
+                "application/json": components["schemas"]["GamLocationMutationDTO"];
             };
         };
         responses: {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description URI of the created GamLocation resource. */
+                    Location?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "name": "Synthetic GAM value",
+                     *       "street": "Synthetic GAM value",
+                     *       "city": "Synthetic GAM value",
+                     *       "state": "Synthetic GAM value",
+                     *       "postalCode": "Synthetic GAM value",
+                     *       "countryCode": "BR",
+                     *       "latitude": 1,
+                     *       "longitude": 1
                      *     }
                      */
-                    "*/*": components["schemas"]["CreateLocationRDTO"];
+                    "*/*": components["schemas"]["GamLocationRDTO"];
                 };
             };
             /** @description Invalid request */
@@ -1835,7 +2306,7 @@ export interface operations {
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "GAM_LOCATION_ALREADY_EXISTS"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -1856,14 +2327,13 @@ export interface operations {
                  * @example {
                  *       "title": "Synthetic GAM value",
                  *       "description": "Synthetic GAM value",
-                 *       "locationId": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                 *       "gamLocationId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                  *       "requiredPermissionId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                  *       "beginDate": "2026-07-15T12:00:00Z",
-                 *       "endDate": "2026-07-15T12:00:00Z",
-                 *       "type": "GENERIC"
+                 *       "endDate": "2026-07-15T12:00:00Z"
                  *     }
                  */
-                "application/json": components["schemas"]["CreateEventDTO"];
+                "application/json": components["schemas"]["CreateGenericEventDTO"];
             };
         };
         responses: {
@@ -2017,7 +2487,7 @@ export interface operations {
                      *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *           "title": "Synthetic GAM value",
                      *           "description": "Synthetic GAM value",
-                     *           "location": {
+                     *           "gamLocation": {
                      *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *             "name": "Synthetic GAM value",
                      *             "street": "Synthetic GAM value",
@@ -3366,6 +3836,244 @@ export interface operations {
             };
         };
     };
+    revokeCoordinator: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["CoordinatorTransitionDTO"];
+            };
+        };
+        responses: {
+            /** @description Coordinator designation revoked */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409,
+                     *       "code": "CONFLICT"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    grantCoordinator: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["CoordinatorTransitionDTO"];
+            };
+        };
+        responses: {
+            /** @description Coordinator designation granted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The requested resource was not found. */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The requested resource was not found.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 404,
+                     *       "code": "NOT_FOUND"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409,
+                     *       "code": "CONFLICT"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
     deactivateMember: {
         parameters: {
             query?: never;
@@ -3717,6 +4425,95 @@ export interface operations {
                      *       "details": {},
                      *       "status": 409,
                      *       "code": "CONFLICT"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    listRoles: {
+        parameters: {
+            query?: {
+                /** @description Trimmed, case-insensitive and accent-sensitive Role-name substring; blank input returns HTTP 400. */
+                name?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "roles": [
+                     *         {
+                     *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "name": "Synthetic GAM value",
+                     *           "description": "Synthetic GAM value",
+                     *           "systemManaged": true
+                     *         }
+                     *       ]
+                     *     }
+                     */
+                    "*/*": components["schemas"]["RolesRDTO"];
+                };
+            };
+            /** @description Invalid request */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Invalid request",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 400,
+                     *       "code": "INVALID_REQUEST"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Authentication is required. */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "Authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401,
+                     *       "code": "UNAUTHORIZED"
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated account is not allowed to perform this operation. */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403,
+                     *       "code": "FORBIDDEN"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4273,7 +5070,7 @@ export interface operations {
                      *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *             "title": "Synthetic GAM value",
                      *             "description": "Synthetic GAM value",
-                     *             "location": {
+                     *             "gamLocation": {
                      *               "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *               "name": "Synthetic GAM value",
                      *               "street": "Synthetic GAM value",
@@ -4530,131 +5327,6 @@ export interface operations {
             };
         };
     };
-    getLocation: {
-        parameters: {
-            query?: never;
-            header?: never;
-            path: {
-                id: string;
-            };
-            cookie?: never;
-        };
-        requestBody?: never;
-        responses: {
-            /** @description OK */
-            200: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
-                     *       "name": "Synthetic GAM value",
-                     *       "street": "Synthetic GAM value",
-                     *       "city": "Synthetic GAM value",
-                     *       "state": "Synthetic GAM value",
-                     *       "postalCode": "Synthetic GAM value",
-                     *       "countryCode": "BR",
-                     *       "latitude": 1,
-                     *       "longitude": 1
-                     *     }
-                     */
-                    "*/*": components["schemas"]["LocationRDTO"];
-                };
-            };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description Authentication is required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The authenticated account is not allowed to perform this operation. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-        };
-    };
     getEvent: {
         parameters: {
             query?: never;
@@ -4677,7 +5349,7 @@ export interface operations {
                      *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *       "title": "Synthetic GAM value",
                      *       "description": "Synthetic GAM value",
-                     *       "location": {
+                     *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
@@ -4843,7 +5515,7 @@ export interface operations {
                      *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *             "title": "Synthetic GAM value",
                      *             "description": "Synthetic GAM value",
-                     *             "location": {
+                     *             "gamLocation": {
                      *               "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *               "name": "Synthetic GAM value",
                      *               "street": "Synthetic GAM value",

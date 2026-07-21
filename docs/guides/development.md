@@ -62,7 +62,16 @@ The shared Axios client uses `/api`, and Vite forwards those requests to `API_PR
 
 Before adding or changing a feature API operation, consult [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Its `paths` and `operations` entries identify the available backend routes and HTTP methods; its generated schema and operation types identify request and response shapes. Keep resource calls in the feature's `api/` module and map transport data to UI-specific models there or in the feature mapping module.
 
-This file is generated and must not be edited directly. The generation workflow and contract-version metadata are still pending documentation; until then, treat the checked-in artifact as the frontend route/type reference and report a missing or stale operation instead of recreating the backend contract by hand.
+This file is generated and must not be edited directly. The local regeneration command is documented below, while the release workflow and contract-version metadata are still pending; treat the checked-in artifact as the frontend route/type reference and report a missing or stale operation instead of recreating the backend contract by hand.
+
+To regenerate the local contract types from the running backend, start the backend on its configured local port (normally `8080`) and run:
+
+```sh
+npx openapi-typescript http://localhost:8080/api/openapi.json \
+  -o src/api/generated/gam-api.ts
+```
+
+Use the backend OpenAPI document URL, not `http://localhost:5173/api`: `/api` on the Vite origin is the browser proxy base, and the proxy removes that prefix before forwarding resource requests. The YAML document is also available at `http://localhost:8080/api/openapi.json.yaml`. Do not edit the generated file manually. The release artifact version, pinning, and contract-drift checks remain pending.
 
 ## User-facing presentation workflow
 

@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { getAccountRoles, searchAccounts } from './accounts'
+import { getAccountRoles, searchAccounts, searchRoles } from './accounts'
 
 const apiMocks = vi.hoisted(() => ({
   get: vi.fn(),
@@ -70,4 +70,15 @@ describe('getAccountRoles', () => {
       expect(apiMocks.get).toHaveBeenLastCalledWith('/accounts/account-id/roles')
     },
   )
+})
+
+describe('searchRoles', () => {
+  it('busca papéis pelo nome normalizado e retorna a lista', async () => {
+    apiMocks.get.mockResolvedValueOnce({ data: { roles: [role] } })
+
+    await expect(searchRoles('  membro  ')).resolves.toEqual([role])
+    expect(apiMocks.get).toHaveBeenLastCalledWith('/roles', {
+      params: { name: 'membro' },
+    })
+  })
 })

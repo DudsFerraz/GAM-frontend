@@ -9,6 +9,7 @@ import {
   getRole,
   getRolePermissions,
   searchAccounts,
+  searchRoles,
 } from '../api/accounts'
 import { accountAdminQueryKeys } from '../queryKeys'
 
@@ -20,11 +21,24 @@ export function useAccountRoles(accountId: string | null) {
   return useQuery({ queryKey: accountAdminQueryKeys.roles(accountId ?? ''), queryFn: () => getAccountRoles(accountId ?? ''), enabled: Boolean(accountId) })
 }
 
+export function useSearchRoles(name: string, enabled = true) {
+  const normalizedName = name.trim()
+
+  return useQuery({
+    queryKey: accountAdminQueryKeys.roleSearch(normalizedName),
+    queryFn: () => searchRoles(normalizedName),
+    enabled: enabled && Boolean(normalizedName),
+  })
+}
+
 export function useAssignAccountRole(accountId: string) {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: ({ roleId, reason }: { roleId: string; reason: string }) => assignAccountRole(accountId, roleId, reason),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: accountAdminQueryKeys.roles(accountId) }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: accountAdminQueryKeys.roles(accountId) })
+      void queryClient.invalidateQueries({ queryKey: [...accountAdminQueryKeys.all, 'search'] })
+    },
   })
 }
 
