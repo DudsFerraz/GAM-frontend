@@ -17,15 +17,16 @@ import type { Role } from '../api/accounts'
 import { useAssignAccountRole, useSearchRoles } from '../hooks/useAccountAdministration'
 import { assignRoleSchema, type AssignRoleValues } from '../schemas/accountRoleSchemas'
 
-type AccountRoleAssignmentSectionProps = {
+type UnusedAccountRoleAssignmentSectionProps = {
   accountId: string
   roles: Role[]
 }
 
-export function AccountRoleAssignmentSection({
+// Mantido temporariamente como referência do fluxo substituído pelas transições de membro.
+export function UnusedAccountRoleAssignmentSection({
   accountId,
   roles,
-}: AccountRoleAssignmentSectionProps) {
+}: UnusedAccountRoleAssignmentSectionProps) {
   const [roleSearchInput, setRoleSearchInput] = useState('')
   const [roleSearchTerm, setRoleSearchTerm] = useState('')
   const [roleToAssign, setRoleToAssign] = useState<Role | null>(null)

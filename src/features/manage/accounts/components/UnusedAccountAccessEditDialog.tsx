@@ -10,20 +10,21 @@ import {
 
 import type { Account } from '../api/accounts'
 import { useAccountRoles } from '../hooks/useAccountAdministration'
-import { AccountCurrentRolesSection } from './AccountCurrentRolesSection'
-import { AccountRoleAssignmentSection } from './AccountRoleAssignmentSection'
+import { UnusedAccountCurrentRolesSection } from './UnusedAccountCurrentRolesSection'
+import { UnusedAccountRoleAssignmentSection } from './UnusedAccountRoleAssignmentSection'
 
-type AccountAccessEditDialogProps = {
+type UnusedAccountAccessEditDialogProps = {
   account: Account | null
   canManageRoles: boolean
   onClose: () => void
 }
 
-export function AccountAccessEditDialog({
+// Mantido temporariamente como referência do fluxo substituído pelas transições de membro.
+export function UnusedAccountAccessEditDialog({
   account,
   canManageRoles,
   onClose,
-}: AccountAccessEditDialogProps) {
+}: UnusedAccountAccessEditDialogProps) {
   const rolesQuery = useAccountRoles(account?.id ?? null)
 
   if (!account || !canManageRoles) {
@@ -50,8 +51,8 @@ export function AccountAccessEditDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <AccountRoleAssignmentSection accountId={accountId} roles={roles} />
-        <AccountCurrentRolesSection
+        <UnusedAccountRoleAssignmentSection accountId={accountId} roles={roles} />
+        <UnusedAccountCurrentRolesSection
           accountId={accountId}
           isError={rolesQuery.isError}
           isLoading={rolesQuery.isLoading}

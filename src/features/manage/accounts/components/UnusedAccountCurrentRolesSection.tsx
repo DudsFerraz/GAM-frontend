@@ -15,7 +15,7 @@ import type { Role } from '../api/accounts'
 import { useDropAccountRole } from '../hooks/useAccountAdministration'
 import { dropRoleSchema, type DropRoleValues } from '../schemas/accountRoleSchemas'
 
-type AccountCurrentRolesSectionProps = {
+type UnusedAccountCurrentRolesSectionProps = {
   accountId: string
   roles: Role[]
   isLoading: boolean
@@ -23,13 +23,14 @@ type AccountCurrentRolesSectionProps = {
   onRetry: () => void
 }
 
-export function AccountCurrentRolesSection({
+// Mantido temporariamente como referência do fluxo substituído pelas transições de membro.
+export function UnusedAccountCurrentRolesSection({
   accountId,
   roles,
   isLoading,
   isError,
   onRetry,
-}: AccountCurrentRolesSectionProps) {
+}: UnusedAccountCurrentRolesSectionProps) {
   const [roleToDrop, setRoleToDrop] = useState<Role | null>(null)
   const dropMutation = useDropAccountRole(accountId)
   const dropForm = useForm<DropRoleValues>({

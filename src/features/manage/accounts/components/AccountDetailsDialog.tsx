@@ -1,4 +1,4 @@
-import { Mail, Pencil, Shield, UserRound } from 'lucide-react'
+import { Mail, Shield, UserRound } from 'lucide-react'
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
 import { Badge } from '@/components/ui/Badge'
@@ -14,20 +14,19 @@ import {
 import { getRolePresentation } from '@/features/account'
 
 import type { Account } from '../api/accounts'
+import { AccountCoordinatorTransitionSection } from './AccountCoordinatorTransitionSection'
 import { useAccountRoles } from '../hooks/useAccountAdministration'
 
 type AccountDetailsDialogProps = {
   account: Account | null
-  canManageRoles: boolean
+  canManageMemberTransitions: boolean
   onClose: () => void
-  onEdit: (account: Account) => void
 }
 
 export function AccountDetailsDialog({
   account,
-  canManageRoles,
+  canManageMemberTransitions,
   onClose,
-  onEdit,
 }: AccountDetailsDialogProps) {
   const rolesQuery = useAccountRoles(account?.id ?? null)
   const roles = rolesQuery.data?.roles ?? []
@@ -47,7 +46,7 @@ export function AccountDetailsDialog({
     >
       <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
-          <DialogTitle>Administrar conta</DialogTitle>
+          <DialogTitle>Detalhes da conta</DialogTitle>
           <DialogDescription>
             Consulte os dados e os tipos de acesso associados a esta conta.
           </DialogDescription>
@@ -116,16 +115,21 @@ export function AccountDetailsDialog({
           )}
         </section>
 
+        {canManageMemberTransitions
+          && !rolesQuery.isLoading
+          && !rolesQuery.isError
+          && account.id && (
+            <AccountCoordinatorTransitionSection
+              accountEmail={account.email}
+              accountId={account.id}
+              isCoordinator={roles.some((role) => role.name === 'COORD')}
+            />
+          )}
+
         <DialogFooter>
           <Button onClick={onClose} type="button" variant="outline">
             Fechar
           </Button>
-          {canManageRoles && (
-            <Button onClick={() => onEdit(account)} type="button">
-              <Pencil aria-hidden="true" className="h-4 w-4" />
-              Editar acessos
-            </Button>
-          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

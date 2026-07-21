@@ -28,7 +28,6 @@ import {
 import { isForbiddenError } from "@/lib/http";
 
 import type { Account } from "../api/accounts";
-import { AccountAccessEditDialog } from "../components/AccountAccessEditDialog";
 import { AccountDetailsDialog } from "../components/AccountDetailsDialog";
 import { useSearchAccounts } from "../hooks/useAccountAdministration";
 
@@ -38,12 +37,11 @@ export function ManageAccountsPage() {
   const [field, setField] = useState<"displayName" | "email">("displayName");
   const [page, setPage] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const [editingAccount, setEditingAccount] = useState<Account | null>(null);
   const { account } = useAccountInfo();
   const { permissions } = useAccountPermissions(account);
   const query = useSearchAccounts(searchTerm, field, page);
   const items = query.data?.items ?? [];
-  const canManageRoles = permissions.includes("ACCOUNT_ROLE_MANAGE");
+  const canManageMemberTransitions = permissions.includes("MEMBER_ACTIVATION");
 
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -111,11 +109,7 @@ export function ManageAccountsPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             {items.map((item, index) => (
               <Card
-                className={
-                  selectedAccount?.id === item.id || editingAccount?.id === item.id
-                    ? "gap-3 border-primary py-4"
-                    : "gap-3 py-4"
-                }
+                className={selectedAccount?.id === item.id ? "gap-3 border-primary py-4" : "gap-3 py-4"}
                 key={item.id ?? index}
               >
                 <CardHeader className="flex grid-cols-none flex-row items-start gap-3 px-5">
@@ -144,7 +138,6 @@ export function ManageAccountsPage() {
                     className="w-full"
                     disabled={!item.id}
                     onClick={() => {
-                      setEditingAccount(null);
                       setSelectedAccount(item);
                     }}
                     size="sm"
@@ -152,7 +145,7 @@ export function ManageAccountsPage() {
                       selectedAccount?.id === item.id ? "default" : "outline"
                     }
                   >
-                    Administrar conta
+                    Ver mais
                   </Button>
                 </CardFooter>
               </Card>
@@ -173,17 +166,8 @@ export function ManageAccountsPage() {
 
       <AccountDetailsDialog
         account={selectedAccount}
-        canManageRoles={canManageRoles}
+        canManageMemberTransitions={canManageMemberTransitions}
         onClose={() => setSelectedAccount(null)}
-        onEdit={(account) => {
-          setSelectedAccount(null);
-          setEditingAccount(account);
-        }}
-      />
-      <AccountAccessEditDialog
-        account={editingAccount}
-        canManageRoles={canManageRoles}
-        onClose={() => setEditingAccount(null)}
       />
     </div>
   );
