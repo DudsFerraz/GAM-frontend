@@ -15,6 +15,7 @@ import { AxiosInterceptor } from './AxiosInterceptor'
 const authMocks = vi.hoisted(() => ({
   expire: vi.fn(),
   refresh: vi.fn(),
+  synchronizeAccount: vi.fn(),
 }))
 
 vi.mock('../hooks/useAuth', () => ({
@@ -76,6 +77,7 @@ async function ignoreRejectedRequest(request: Promise<unknown>) {
 beforeEach(() => {
   clearAccessToken()
   authMocks.refresh.mockResolvedValue(undefined)
+  authMocks.synchronizeAccount.mockResolvedValue(undefined)
 })
 
 describe('AxiosInterceptor', () => {
@@ -114,7 +116,7 @@ describe('AxiosInterceptor', () => {
     expect(screen.getByRole('alert')).toHaveTextContent('Sessão Expirada')
   })
 
-  it('preserva 403 sem tentar renovar a sessão', async () => {
+  it('preserva 403, sem renovar a sessão, e sincroniza a conta uma vez', async () => {
     const adapter = vi.fn<AxiosAdapter>(async (config) => {
       throw createHttpError(config, 403)
     })
@@ -124,10 +126,25 @@ describe('AxiosInterceptor', () => {
 
     expect(authMocks.refresh).not.toHaveBeenCalled()
     expect(authMocks.expire).not.toHaveBeenCalled()
+    expect(authMocks.synchronizeAccount).toHaveBeenCalledOnce()
     expect(adapter).toHaveBeenCalledOnce()
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Acesso Negado: Você não tem acesso para realizar esta ação.',
     )
+  })
+
+  it('preserva o 403 mesmo quando a sincronização da conta falha', async () => {
+    authMocks.synchronizeAccount.mockRejectedValueOnce(new Error('indisponível'))
+    const adapter = vi.fn<AxiosAdapter>(async (config) => {
+      throw createHttpError(config, 403)
+    })
+    renderInterceptor()
+
+    await ignoreRejectedRequest(api.get('/members', { adapter }))
+
+    expect(authMocks.synchronizeAccount).toHaveBeenCalledOnce()
+    expect(authMocks.expire).not.toHaveBeenCalled()
+    expect(screen.getByRole('alert')).toHaveTextContent('Acesso Negado')
   })
 
   it('deixa os endpoints de sessão tratarem o próprio 401', async () => {

@@ -46,12 +46,10 @@ Logout obtains CSRF proof as needed and calls the logout endpoint. After success
 
 - `AuthProvider` owns `initializing`, `authenticated`, and `unauthenticated` state. Startup obtains `/auth/csrf`, posts `/auth/refresh`, retains the access token in memory, and loads `/accounts/me` before protected UI renders.
 - Login, refresh, and logout obtain fresh CSRF proof and echo it through the header named by the bootstrap response. Axios sends the browser-managed cookies with `withCredentials`.
-- Protected requests receive the in-memory bearer token. A `401` joins one in-instance refresh and replays each request at most once; authentication endpoints do not recursively refresh. A `403` remains forbidden and does not refresh.
+- Protected requests receive the in-memory bearer token. A `401` joins one in-instance refresh, coordinates concurrent tabs through an ephemeral channel and browser lock, and replays each request at most once. A waiting tab adopts the refreshed token only in memory and reloads its current Account; authentication endpoints do not recursively refresh. A `403` remains forbidden, does not refresh, and triggers one best-effort reload of the current Account to resynchronize capability visibility.
 - Capability visibility consumes the effective permission codes from `/accounts/me`. Role-permission queries are not the authorization source; they remain only where the Event form needs Permission records and keeps their identifiers internal.
-- Logout calls the backend, clears all local session state even if confirmation fails, and broadcasts an ephemeral logout event through `BroadcastChannel`.
+- Logout calls the backend, clears all local session state even if confirmation fails, and broadcasts an ephemeral logout event through `BroadcastChannel`. After an unconfirmed server-side logout, the login screen explains that the device session was closed but the server confirmation was unavailable.
 
 ## Remaining gaps
 
-- Refresh is single-flight within one application instance, but refresh attempts are not yet coordinated between tabs.
-- The logout operation tracks whether the server call was confirmed, but the current shell does not yet present an unconfirmed-logout warning to the user.
-- After an unexpected `403`, the UI preserves the forbidden outcome but does not yet reload `/accounts/me` once to resynchronize capability visibility.
+The accepted browser-session refinements described on this page are implemented. Future authentication changes still depend on the backend-owned browser-session contract.

@@ -8,16 +8,76 @@ import { AuthContext, type AuthContextValue } from './authContext'
 import type { AccountSession, AuthStatus, LoginInfo } from './types'
 
 const SESSION_CHANNEL = 'gam-auth-session'
+const REFRESH_LOCK = 'gam-auth-refresh'
+
+type SessionEvent =
+  | 'logout'
+  | { type: 'refresh-start'; id: string }
+  | { type: 'refresh-succeeded'; id: string; token: string }
+  | { type: 'refresh-failed'; id: string }
+
+type PendingRemoteRefresh = {
+  id: string
+  promise: Promise<string>
+  resolve: (token: string) => void
+  reject: (reason?: unknown) => void
+}
+
+type BrowserLockManager = {
+  request: <T>(
+    name: string,
+    options: { mode: 'exclusive' },
+    callback: () => T | Promise<T>,
+  ) => Promise<Awaited<T>>
+}
+
+function createPendingRemoteRefresh(id: string): PendingRemoteRefresh {
+  let resolve: (token: string) => void = () => undefined
+  let reject: (reason?: unknown) => void = () => undefined
+  const promise = new Promise<string>((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise
+    reject = rejectPromise
+  })
+
+  // A remote attempt can fail before this tab starts waiting for it.
+  void promise.catch(() => undefined)
+
+  return { id, promise, reject, resolve }
+}
+
+function isSessionEvent(value: unknown): value is SessionEvent {
+  if (value === 'logout') return true
+  if (typeof value !== 'object' || value === null || !('type' in value) || !('id' in value)) {
+    return false
+  }
+
+  if (value.type === 'refresh-start' || value.type === 'refresh-failed') {
+    return typeof value.id === 'string'
+  }
+
+  return value.type === 'refresh-succeeded'
+    && typeof value.id === 'string'
+    && 'token' in value
+    && typeof value.token === 'string'
+}
+
+function withRefreshLock<T>(callback: () => Promise<T>): Promise<T> {
+  if (typeof navigator === 'undefined') return callback()
+
+  const locks = (navigator as Navigator & { locks?: BrowserLockManager }).locks
+  return locks ? locks.request<T>(REFRESH_LOCK, { mode: 'exclusive' }, callback) : callback()
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
   const [status, setStatus] = useState<AuthStatus>('initializing')
   const [account, setAccount] = useState<AccountSession | null>(null)
-  // A ref to store the promise returned by the refresh function. This allows us to avoid making multiple refresh requests simultaneously.
+  const [hasUnconfirmedLogout, setHasUnconfirmedLogout] = useState(false)
   const refreshPromise = useRef<Promise<void> | null>(null)
-  // A ref to store the BroadcastChannel instance. 
-  // This allows us to send messages to other tabs when the user logs out.
+  const accountSynchronizationPromise = useRef<Promise<void> | null>(null)
   const channel = useRef<BroadcastChannel | null>(null)
+  const remoteRefresh = useRef<PendingRemoteRefresh | null>(null)
+  const refreshSequence = useRef(0)
 
   const expire = useCallback(() => {
     clearAccessToken()
@@ -27,47 +87,104 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     queryClient.removeQueries()
   }, [queryClient])
 
-  const refresh = useCallback(() => {
-    // Verifies if a refresh request is already in progress. If so, it returns the existing promise instead of creating a new one.
-    if (refreshPromise.current) return refreshPromise.current
+  const synchronizeAccount = useCallback(() => {
+    if (accountSynchronizationPromise.current) {
+      return accountSynchronizationPromise.current
+    }
 
-    // If no refresh request is in progress, it creates a new one. 
-    // The request attempts to refresh the session token and update the account information. If it fails, it calls the expire function to clear the session.
-    const request = (async () => {
-      try {
-        const { token } = await refreshSessionToken()
-        setAccessToken(token)
-        const currentAccount = await getCurrentAccount()
+    const request = getCurrentAccount()
+      .then((currentAccount) => {
         setAccount(currentAccount)
         setStatus('authenticated')
+      })
+      .finally(() => {
+        accountSynchronizationPromise.current = null
+      })
+
+    accountSynchronizationPromise.current = request
+    return request
+  }, [])
+
+  const postSessionEvent = useCallback((event: SessionEvent) => {
+    channel.current?.postMessage(event)
+  }, [])
+
+  const waitForRemoteRefresh = useCallback(async (pendingRefresh: PendingRemoteRefresh) => {
+    const token = await pendingRefresh.promise
+    setAccessToken(token)
+    await synchronizeAccount()
+  }, [synchronizeAccount])
+
+  const refresh = useCallback(() => {
+    if (refreshPromise.current) return refreshPromise.current
+
+    const request = (async () => {
+      try {
+        const pendingRefresh = remoteRefresh.current
+        if (pendingRefresh) {
+          await waitForRemoteRefresh(pendingRefresh)
+          return
+        }
+
+        await withRefreshLock(async () => {
+          const pendingAfterLock = remoteRefresh.current
+          if (pendingAfterLock) {
+            await waitForRemoteRefresh(pendingAfterLock)
+            return
+          }
+
+          const id = `refresh-${Date.now()}-${refreshSequence.current++}`
+          postSessionEvent({ type: 'refresh-start', id })
+
+          try {
+            const { token } = await refreshSessionToken()
+            setAccessToken(token)
+            await synchronizeAccount()
+            postSessionEvent({ type: 'refresh-succeeded', id, token })
+          } catch (error) {
+            postSessionEvent({ type: 'refresh-failed', id })
+            throw error
+          }
+        })
       } catch (error) {
         expire()
         throw error
       } finally {
-        // Regardless of whether the refresh request succeeds or fails, 
-        // it clears the stored promise to allow future refresh attempts.
         refreshPromise.current = null
       }
     })()
 
     refreshPromise.current = request
     return request
-  }, [expire])
+  }, [expire, postSessionEvent, synchronizeAccount, waitForRemoteRefresh])
 
-  // The first useEffect hook is used to attempt a session refresh when the component mounts.
-  useEffect(() => {
-    void refresh().catch(() => undefined)
-  }, [refresh])
-
-  // The second useEffect hook sets up a BroadcastChannel to listen for 
-  // logout messages from other tabs.
   useEffect(() => {
     if (typeof BroadcastChannel === 'undefined') return
 
-    // When a logout message is received, it calls the expire function to clear the session in the current tab.
     const authChannel = new BroadcastChannel(SESSION_CHANNEL)
     authChannel.onmessage = (event: MessageEvent<unknown>) => {
-      if (event.data === 'logout') expire()
+      if (!isSessionEvent(event.data)) return
+
+      if (event.data === 'logout') {
+        expire()
+        return
+      }
+
+      if (event.data.type === 'refresh-start') {
+        remoteRefresh.current = createPendingRemoteRefresh(event.data.id)
+        return
+      }
+
+      const pendingRefresh = remoteRefresh.current
+      if (!pendingRefresh || pendingRefresh.id !== event.data.id) return
+
+      remoteRefresh.current = null
+      if (event.data.type === 'refresh-succeeded') {
+        pendingRefresh.resolve(event.data.token)
+        return
+      }
+
+      pendingRefresh.reject(new Error('A renovação da sessão em outra aba não foi concluída.'))
     }
     channel.current = authChannel
 
@@ -77,13 +194,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [expire])
 
+  useEffect(() => {
+    void refresh().catch(() => undefined)
+  }, [refresh])
+
   const login = useCallback(async (info: LoginInfo) => {
-    // Clear cache
     queryClient.removeQueries()
-    // Establish session and set account
     const currentAccount = await establishSession(info)
     setAccount(currentAccount)
     setStatus('authenticated')
+    setHasUnconfirmedLogout(false)
   }, [queryClient])
 
   const logout = useCallback(async () => {
@@ -98,8 +218,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       channel.current?.postMessage('logout')
     }
 
+    setHasUnconfirmedLogout(!confirmed)
     return confirmed
   }, [expire])
+
+  const dismissUnconfirmedLogout = useCallback(() => {
+    setHasUnconfirmedLogout(false)
+  }, [])
 
   const value = useMemo<AuthContextValue>(() => ({
     account,
@@ -107,8 +232,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     login,
     logout,
     refresh,
+    synchronizeAccount,
     expire,
-  }), [account, expire, login, logout, refresh, status])
+    hasUnconfirmedLogout,
+    dismissUnconfirmedLogout,
+  }), [
+    account,
+    dismissUnconfirmedLogout,
+    expire,
+    hasUnconfirmedLogout,
+    login,
+    logout,
+    refresh,
+    status,
+    synchronizeAccount,
+  ])
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }

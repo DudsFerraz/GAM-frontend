@@ -7,6 +7,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { clearAccessToken, getAccessToken, setAccessToken } from '@/lib/http/accessToken'
 
 import { AuthProvider } from './AuthProvider'
+import { UnconfirmedLogoutWarning } from './components/UnconfirmedLogoutWarning'
 import { useAuth } from './hooks/useAuth'
 import type { AccountSession } from './types'
 
@@ -42,7 +43,7 @@ const account: AccountSession = {
 }
 
 function AuthHarness() {
-  const { account: currentAccount, logout, status } = useAuth()
+  const { account: currentAccount, hasUnconfirmedLogout, logout, refresh, status } = useAuth()
   const [logoutConfirmed, setLogoutConfirmed] = useState<boolean | null>(null)
 
   return (
@@ -52,12 +53,17 @@ function AuthHarness() {
       <span data-testid="logout-result">
         {logoutConfirmed === null ? 'não executado' : String(logoutConfirmed)}
       </span>
+      <span data-testid="unconfirmed-logout">{String(hasUnconfirmedLogout)}</span>
       <button
         type="button"
         onClick={() => void logout().then(setLogoutConfirmed)}
       >
         Sair
       </button>
+      <button type="button" onClick={() => void refresh()}>
+        Atualizar sessão
+      </button>
+      <UnconfirmedLogoutWarning />
     </div>
   )
 }
@@ -138,6 +144,38 @@ describe('AuthProvider', () => {
     expect(screen.getByTestId('status')).toHaveTextContent('unauthenticated')
     expect(getAccessToken()).toBeNull()
     expect(BroadcastChannelMock.instances[0]?.postMessage).toHaveBeenCalledWith('logout')
+    expect(screen.getByTestId('unconfirmed-logout')).toHaveTextContent('true')
+    expect(screen.getByRole('alert')).toHaveTextContent('Não foi possível confirmar a saída.')
+  })
+
+  it('adota a renovação de outra aba e recarrega a conta sem uma segunda chamada de refresh', async () => {
+    const user = userEvent.setup()
+    renderProvider()
+    await waitFor(() => {
+      expect(screen.getByTestId('status')).toHaveTextContent('authenticated')
+    })
+    sessionMocks.refreshSessionToken.mockClear()
+    sessionMocks.getCurrentAccount.mockClear()
+
+    const channel = BroadcastChannelMock.instances[0]
+    act(() => {
+      channel?.onmessage?.(new MessageEvent('message', {
+        data: { type: 'refresh-start', id: 'outra-aba' },
+      }))
+    })
+    await user.click(screen.getByRole('button', { name: 'Atualizar sessão' }))
+
+    expect(sessionMocks.refreshSessionToken).not.toHaveBeenCalled()
+    act(() => {
+      channel?.onmessage?.(new MessageEvent('message', {
+        data: { type: 'refresh-succeeded', id: 'outra-aba', token: 'token-compartilhado' },
+      }))
+    })
+
+    await waitFor(() => {
+      expect(getAccessToken()).toBe('token-compartilhado')
+    })
+    expect(sessionMocks.getCurrentAccount).toHaveBeenCalledOnce()
   })
 
   it('expira a sessão ao receber o evento efêmero de logout de outra aba', async () => {

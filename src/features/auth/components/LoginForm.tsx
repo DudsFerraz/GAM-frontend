@@ -9,6 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/Input';
 import { getErrorMessage } from '@/lib/http';
 import { FormError } from './FormError';
+import { UnconfirmedLogoutWarning } from './UnconfirmedLogoutWarning';
 import { useLogin } from '../hooks/useLogin';
 import { loginSchema, type LoginFormValues } from '../schemas/loginSchema';
 
@@ -44,6 +45,7 @@ export const LoginForm = () => {
 
   return (
     <AuthLayout>
+      <UnconfirmedLogoutWarning />
       <div className="mb-8 text-center sm:text-left">
         {/* Título */}
         <h2 className="font-heading text-3xl md:text-4xl font-bold tracking-tight text-foreground mb-2">

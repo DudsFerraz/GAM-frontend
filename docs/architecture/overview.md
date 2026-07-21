@@ -8,7 +8,7 @@
 
 TanStack Router generates `src/routeTree.gen.ts` from the file routes in `src/routes/`; do not edit that generated file. The root route installs the global Axios response-interceptor component and router devtools. Public routes currently live under `/auth`. Routes in `src/routes/_authenticated/` use a `beforeLoad` guard and render inside `AppLayout`; the `_authenticated` path segment is not part of the URL.
 
-`AuthProvider` starts in `initializing`, obtains CSRF proof, attempts refresh through the browser-managed cookie, and loads `/accounts/me` before protected UI may render. Access tokens stay in memory. The protected layout redirects only after bootstrap reaches `unauthenticated`; capability visibility consumes the effective permission codes returned by the current-Account context. See [browser authentication](../integration/authentication.md) for the remaining coordination and feedback gaps.
+`AuthProvider` starts in `initializing`, obtains CSRF proof, attempts refresh through the browser-managed cookie, and loads `/accounts/me` before protected UI may render. Access tokens stay in memory. Refreshes coordinate tabs through ephemeral browser primitives, and an unconfirmed logout is reported after redirecting to login. The protected layout redirects only after bootstrap reaches `unauthenticated`; capability visibility consumes the effective permission codes returned by the current-Account context. See [browser authentication](../integration/authentication.md) for the accepted boundary.
 
 ### Server state and API calls
 
@@ -214,7 +214,6 @@ This architecture is intentionally not a traditional Clean Architecture implemen
 
 ## Planned, not yet implemented
 
-- Cross-tab refresh coordination beyond logout broadcast, and visible reporting when server-side logout cannot be confirmed.
 - Formalized generation/version-selection workflow for the generated TypeScript transport types. The current generated artifact is already available at `src/api/generated/gam-api.ts`, but its repository workflow remains to be documented and accepted.
 
 ## Incremental refactoring guidance

@@ -58,7 +58,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 5. Implement the accepted browser authentication boundary
 
-**Status:** In progress. The checked-in contract exposes `GET /auth/csrf` and `GET /accounts/me`. Startup bootstrap, in-memory access tokens, CSRF-protected login/refresh/logout, current-Account loading, effective-permission visibility, in-instance single-flight refresh, bounded replay, and cross-tab logout broadcast are done. Cross-tab refresh coordination, unconfirmed-logout feedback, and one-time Account resynchronization after an unexpected `403` remain.
+**Status:** Done for the accepted browser-session boundary. The checked-in contract exposes `GET /auth/csrf` and `GET /accounts/me`. Startup bootstrap, in-memory access tokens, CSRF-protected login/refresh/logout, current-Account loading, effective-permission visibility, in-instance and cross-tab refresh coordination, bounded replay, cross-tab logout broadcast, unconfirmed-logout feedback, and one-time Account resynchronization after an unexpected `403` are implemented.
 
 - Introduce one authentication context/state with `initializing`, `authenticated`, and `unauthenticated` states.
 - Implement startup: CSRF bootstrap, refresh, in-memory access-token storage, then current Account loading.
@@ -68,7 +68,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 - Coordinate refresh and logout between tabs through an ephemeral browser mechanism.
 - Use current Account effective permissions for UI capability visibility.
 
-**Done when:** protected UI cannot render before bootstrap completes and no access token is persisted in browser storage. See [Browser authentication](../integration/authentication.md).
+**Done when:** protected UI cannot render before bootstrap completes, no access token is persisted in browser storage, and the accepted refresh, logout, and `403` synchronization behavior is covered. See [Browser authentication](../integration/authentication.md).
 
 ## 6. Establish the application shell and shared UI boundaries
 
@@ -103,7 +103,7 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 ## 8. Expand the application incrementally
 
-**Status:** In progress. The contract-backed management candidates have initial vertical slices and focused Vitest/Testing Library tooling now protects the main authentication, presentation, validation, mapping, and shared-component boundaries. Product validation, the remaining accepted browser-authentication gaps, release-contract verification, and follow-up usability refinement remain pending.
+**Status:** In progress. The contract-backed management candidates have initial vertical slices and focused Vitest/Testing Library tooling now protects the main authentication, presentation, validation, mapping, and shared-component boundaries. Product validation, release-contract verification, and follow-up usability refinement remain pending.
 
 - Start with one real end-to-end feature after the base contracts are ready, then add the next approved page/feature.
 - Keep protected routes dependent on completed authentication state rather than token decoding.
@@ -131,7 +131,7 @@ This table separates what the frontend already exposes from backend requirements
 
 | Backend capability | Current frontend coverage | Status |
 | --- | --- | --- |
-| Authentication and current Account | Bootstrap, login, registration, refresh, logout, `/accounts/me`, protected routes | In progress: three browser-session refinements remain |
+| Authentication and current Account | Bootstrap, login, registration, refresh, logout, `/accounts/me`, protected routes | Done for the accepted browser-session boundary |
 | Members and membership solicitations | All currently exposed controller operations have vertical UI flows | Done for current routes |
 | Accounts and Account-role operations | Search, role display, authorized role search/assignment/drop with internal IDs kept behind the selector boundary | Done for the current contract |
 | Events and Presences | Generic create/search/get and read-only Event/Member presence history | In progress: backend Event lifecycle and Presence write contracts |

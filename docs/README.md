@@ -19,7 +19,7 @@ The codebase is an early, pre-production implementation. It has same-origin brow
 
 ## Immediate scope
 
-Validate and refine the implemented contract-backed workflows, complete the remaining cross-tab and logout-feedback authentication refinements, and expand focused test coverage as those behaviors evolve. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
+Validate and refine the implemented contract-backed workflows and expand focused test coverage as those behaviors evolve. Preserve and improve the current code incrementally; do not turn this into a frontend rewrite.
 
 ## Ownership boundary
 

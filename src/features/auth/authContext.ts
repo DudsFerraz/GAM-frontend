@@ -8,7 +8,10 @@ export type AuthContextValue = {
   login: (info: LoginInfo) => Promise<void>
   logout: () => Promise<boolean>
   refresh: () => Promise<void>
+  synchronizeAccount: () => Promise<void>
   expire: () => void
+  hasUnconfirmedLogout: boolean
+  dismissUnconfirmedLogout: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)
