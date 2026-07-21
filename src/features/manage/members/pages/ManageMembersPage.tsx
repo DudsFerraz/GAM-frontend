@@ -48,7 +48,7 @@ export function ManageMembersPage() {
 
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
-  const canChangeStatus = permissions.includes('MEMBER_ACTIVATION')
+  const canManageMemberTransitions = permissions.includes('MEMBER_ACTIVATION')
   const canCreateMember = permissions.includes('MEMBER_MANAGE') && permissions.includes('ACCOUNT_SEARCH')
 
   useEffect(() => {
@@ -143,7 +143,7 @@ export function ManageMembersPage() {
       </div>
 
       <MemberDetailsDialog
-        canChangeStatus={canChangeStatus}
+        canManageMemberTransitions={canManageMemberTransitions}
         member={selectedMember}
         onClose={() => setSelectedMember(null)}
       />
