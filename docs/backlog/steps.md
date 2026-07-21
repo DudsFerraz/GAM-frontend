@@ -84,7 +84,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 ## 7. Deliver pages as vertical features
 
-**Status:** Done for the operations currently exposed by the checked-in backend contract. The initial vertical slices for Members, membership solicitations, business-facing Account access administration, Events and Presences, and Locations are implemented with generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, explicit asynchronous states, and Portuguese presentation mappings. They still depend on the remaining authentication refinements and the future backend operations listed below.
+**Status:** Done for the operations currently exposed by the checked-in backend contract. The initial vertical slices for Members, membership solicitations, business-facing Account consultation, Events and Presences, and Locations are implemented with generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, explicit asynchronous states, and Portuguese presentation mappings. They still depend on the remaining authentication refinements and the future backend operations listed below.
 
 For each accepted product feature, implement the full vertical slice in this order:
 
@@ -117,9 +117,9 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 The following status records current frontend behavior from the checked-in generated route reference. It does not claim that later product refinement, future backend routes, or the accepted authentication work is complete.
 
-1. **Member management — Done for current routes.** Search and lifecycle actions include direct registration (`POST /members`), a dedicated detail route (`GET /members/{id}`), activation/deactivation, and Member presence history (`GET /members/{id}/presences`).
+1. **Member management — Done for current routes.** Search and lifecycle actions include direct registration (`POST /members`), a dedicated detail route (`GET /members/{id}`), activation/deactivation, and Member presence history (`GET /members/{id}/presences`). Coordinator designation is available from the Account details dialog, which resolves the Member internally.
 2. **Membership solicitations — Done for current routes.** The Solicitation view provides self-service submission, authenticated scoped history/search, detail, and `MEMBER_MANAGE` approval/rejection.
-3. **Account access administration — Done for the current contract.** The Account view searches Accounts, lists translated access types, and authorized users can search available types by name, assign one with a reason, and remove an existing type. Assignment lookup and RBAC catalog inspection remain outside the UI.
+3. **Account consultation — Done for the current contract.** The Account view searches Accounts, lists translated access types, and offers exactly one coordinator-designation transition according to the current `COORD` role. Generic Account-role assignment, removal, assignment lookup, and RBAC catalog inspection remain outside the UI.
 4. **Events and attendance — Done for current routes; lifecycle pending.** The Event view creates/searches/views Events and the Event and Member detail routes show their respective Presence histories when authorized. The generic Event lifecycle operations described by the backend requirements are not in the current controller or generated contract.
 5. **Locations — In progress at contract level.** The current UI creates, lists, and opens `/locations` detail routes, and Event creation consumes Location options. The backend requirement defines the canonical resource as `/gam-locations` with update and removal operations; that contract alignment and the corresponding frontend actions remain pending.
 6. **Authorization reference data — Done for current use.** Role-permission reads remain an internal integration used to assemble Event audience choices. Raw Role/Permission catalog inspection is intentionally not a user-facing view.
@@ -133,7 +133,7 @@ This table separates what the frontend already exposes from backend requirements
 | --- | --- | --- |
 | Authentication and current Account | Bootstrap, login, registration, refresh, logout, `/accounts/me`, protected routes | Done for the accepted browser-session boundary |
 | Members and membership solicitations | All currently exposed controller operations have vertical UI flows | Done for current routes |
-| Accounts and Account-role operations | Search, role display, authorized role search/assignment/drop with internal IDs kept behind the selector boundary | Done for the current contract |
+| Accounts and Account-role operations | Search and translated role display; generic role assignment and removal are intentionally not exposed | Done for the current contract |
 | Events and Presences | Generic create/search/get and read-only Event/Member presence history | In progress: backend Event lifecycle and Presence write contracts |
 | Locations | Current `/locations` create/list/get flow | In progress: migrate to canonical `/gam-locations`, then add update/removal |
 | RBAC catalog | Internal permission reads for Event audience choices | Done for current use; no catalog screen is accepted |

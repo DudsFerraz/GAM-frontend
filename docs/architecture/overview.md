@@ -26,9 +26,9 @@ The authenticated home (`/home`) is a dashboard composition under `src/features/
 
 The management area currently provides these vertical views:
 
-- Member search and lifecycle actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
+- Member search and activation/deactivation actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission for accounts without `MEMBER_MANAGE`, detail, and `MEMBER_MANAGE` approval/rejection actions. Accounts with `MEMBER_MANAGE` do not see the self-service submission action because their workflow is to review requests or register Members directly.
-- Account search and business-facing access-type administration, including translated active types, authorized role search/assignment/removal, and no exposure of internal Role or Permission catalogs. Account details and access editing open in separate dialogs, while the account cards use a responsive two-column layout on larger screens.
+- Account search and consultation of translated access types. Account details open in a dialog, while the account cards use a responsive two-column layout on larger screens. The dialog has a dedicated coordinator-designation action that resolves the matching Member through the existing e-mail search, chooses grant or revoke from the current `COORD` role, and never exposes generic role editing.
 - Event search, authorized creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, and authorized Event-presence history.
 - Location list, creation, the dedicated detail view reached after creation, and external Google Maps links based on the location address or coordinates. The list does not expose a separate details action because the card already contains every Location field available in the contract.
 
@@ -59,7 +59,7 @@ src/
 │   ├── auth/            # Login, registration, token handling, and auth feedback
 │   ├── home/            # Public and authenticated home compositions
 │   └── manage/
-│       ├── accounts/    # Business-facing Account access administration
+│       ├── accounts/    # Business-facing Account consultation
 │       ├── events/      # Event creation/search/detail and Event presences
 │       ├── locations/   # Location creation/list/detail
 │       ├── members/     # Member management, detail, and Member presences

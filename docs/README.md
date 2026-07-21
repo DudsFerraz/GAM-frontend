@@ -15,7 +15,7 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Axios is the current HTTP client.
 - Vitest, jsdom, and Testing Library provide focused unit, integration, and component tests.
 
-The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences, membership solicitations and review, business-facing Account access administration, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); focused automated tests cover the most important frontend boundaries and implemented workflows.
+The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences and lifecycle transitions, membership solicitations and review, Account consultation with coordinator designation, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); focused automated tests cover the most important frontend boundaries and implemented workflows.
 
 ## Immediate scope
 

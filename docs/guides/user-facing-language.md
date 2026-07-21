@@ -14,7 +14,7 @@ This is a frontend presentation rule. The backend remains authoritative for API 
 - [`src/lib/http/errors.ts`](../../src/lib/http/errors.ts) derives user feedback from the stable error code, HTTP status, network condition, and operation context. It never renders the backend `message` or a JavaScript `Error.message`.
 - Date and country formatting lives in [`src/lib/format.ts`](../../src/lib/format.ts). Invalid values and unknown region codes receive safe Portuguese fallbacks rather than their raw transport representation.
 - The current Account profile shows identity and business-facing access types only. It does not show the Account UUID, effective permission codes, catalog metadata, or system-management flags.
-- Account administration shows translated access types in a details dialog and, for accounts with the relevant management permission, supports searching available types by name, assigning a selected type with a reason, and removing an existing type from a separate editing dialog. The selected role identifier remains internal; assignment lookup is not exposed.
+- Account consultation shows translated access types in a details dialog without generic role-editing controls. When authorized, the same dialog determines whether to offer coordinator designation or removal from the translated access types and collects a reason; identifiers stay internal. Member lifecycle dialogs collect a reason before activation or deactivation.
 - Direct Member registration selects an Account by name instead of asking for an Account UUID.
 - The membership-solicitation submission dialog presents Brazilian phone numbers with the `+55` prefix and a local mask, converting them to the API's international format only at the request boundary.
 - Location creation currently presents `Brasil` and keeps `BR` as an internal request value. Supporting additional countries requires a business-facing country selector; it must not reintroduce a free-form region-code field.
@@ -93,10 +93,10 @@ The July 2026 audit covered every current route and its dialogs or shared shell 
 | Authenticated shell and route fallbacks | Portuguese loading, forbidden, error, and not-found feedback; developer tools are development-only. |
 | Current Account profile (`/profile`) | Business identity and translated access types only; no UUIDs or granular permissions. |
 | Solicitation list/detail/submission (`/manage/solicitations`) | Situation values translated; mutation errors sanitized; the self-service submission action is hidden for accounts with `MEMBER_MANAGE`; the submission dialog fills the `+55` prefix automatically and shows the complete Brazilian phone format. |
-| Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search. |
+| Member list/detail/dialogs (`/manage/members/*`) | Situation and embedded Event types translated; technical identifiers removed; Account chosen through search; activation and deactivation require a business-facing reason. |
 | Event list/detail/creation (`/manage/events/*`) | Event details open in a dialog with translated situation, type, and audience; permission codes and backend labels are hidden; map links use coordinates or the localized address. |
 | Location list/detail/creation (`/manage/locations/*`) | Country presented by localized name; Location identifiers and region-code input hidden; the list does not repeat a details action because every available field is already visible; map links use coordinates or the localized address. |
-| Account administration (`/manage/accounts`) | Account details and access types are shown in dialogs; authorized search, assignment with reason, and removal are available in the editing dialog; no RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
+| Account consultation (`/manage/accounts`) | Account details and translated access types are shown in a dialog; the coordinator action is chosen from the current access types and requires a business-facing reason. The view has no generic role-editing controls, RBAC inspector, permission catalog, UUID entry, or assignment-identifier lookup. |
 
 Internal IDs still exist in route parameters, React keys, query keys, and API payloads. This is expected and is not user exposure.
 
