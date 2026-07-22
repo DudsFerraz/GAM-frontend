@@ -78,6 +78,18 @@ const PERMISSION_PRESENTATIONS: Readonly<
     label: 'Gerenciar eventos',
     description: 'Permite administrar eventos.',
   },
+  GAM_LOCATION_GET: {
+    label: 'Consultar locais',
+    description: 'Permite consultar locais cadastrados.',
+  },
+  GAM_LOCATION_CREATE: {
+    label: 'Cadastrar locais',
+    description: 'Permite cadastrar novos locais.',
+  },
+  GAM_LOCATION_MANAGE: {
+    label: 'Gerenciar locais',
+    description: 'Permite editar e remover locais.',
+  },
   PRESENCES_SEARCH: {
     label: 'Buscar presenças',
     description: 'Permite pesquisar registros de presença.',

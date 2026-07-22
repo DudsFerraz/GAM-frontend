@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { locationSchema } from './locationSchema'
+import { locationSchema, toLocationMutationPayload } from './locationSchema'
 
 const validLocation = {
   city: 'Campinas',
@@ -30,10 +30,23 @@ describe('locationSchema', () => {
     }).success).toBe(true)
   })
 
+  it('exige que latitude e longitude sejam informadas juntas', () => {
+    const result = locationSchema.safeParse({ ...validLocation, longitude: '' })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors).toMatchObject({
+        latitude: ['Informe latitude e longitude juntas.'],
+        longitude: ['Informe latitude e longitude juntas.'],
+      })
+    }
+  })
+
   it.each([
     ['latitude', '91', 'A latitude deve ficar entre -90 e 90.'],
     ['longitude', '-181', 'A longitude deve ficar entre -180 e 180.'],
-    ['latitude', 'não-numérico', 'Informe um número válido.'],
+    ['latitude', 'não-numérico', 'Informe um número válido com até 8 casas decimais.'],
+    ['longitude', '10.123456789', 'Informe um número válido com até 8 casas decimais.'],
   ] as const)('rejeita %s fora do contrato', (field, value, message) => {
     const result = locationSchema.safeParse({ ...validLocation, [field]: value })
 
@@ -47,7 +60,7 @@ describe('locationSchema', () => {
     const result = locationSchema.safeParse({
       ...validLocation,
       city: '',
-      countryCode: 'BRA',
+      countryCode: '1!',
       name: '',
       state: '',
     })
@@ -61,5 +74,11 @@ describe('locationSchema', () => {
         state: ['Informe o estado.'],
       })
     }
+  })
+
+  it('transforma os valores do formulário no corpo completo da mutação', () => {
+    expect(toLocationMutationPayload({ ...validLocation, latitude: '', longitude: '', street: '', postalCode: '' })).toEqual({
+      name: 'Sede do GAM', street: null, city: 'Campinas', state: 'SP', postalCode: null, countryCode: 'BR', latitude: null, longitude: null,
+    })
   })
 })

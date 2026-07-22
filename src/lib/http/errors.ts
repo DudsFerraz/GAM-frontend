@@ -8,6 +8,8 @@ const ERROR_CODE_MESSAGES: Readonly<Record<string, string>> = {
   DATA_INTEGRITY_ERROR: 'Os dados informados entram em conflito com um cadastro existente.',
   FORBIDDEN: 'Você não tem acesso para realizar esta ação.',
   FORBIDDEN_OPERATION: 'Esta ação não está disponível para sua conta.',
+  GAM_LOCATION_ALREADY_EXISTS: 'Já existe um local cadastrado com estes dados.',
+  GAM_LOCATION_IN_USE: 'Este local está associado a eventos e não pode ser removido.',
   ID_GENERATION_FAILED: 'Não foi possível concluir a operação. Tente novamente.',
   INTERNAL_ERROR: 'O serviço encontrou um problema. Tente novamente mais tarde.',
   INVALID_COMMAND: 'Não foi possível realizar esta ação com os dados informados.',

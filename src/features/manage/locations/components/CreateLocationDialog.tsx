@@ -4,12 +4,12 @@ import { useForm } from 'react-hook-form'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/Dialog'
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form'
-import { Input } from '@/components/ui/Input'
+import { Form } from '@/components/ui/Form'
 import { getErrorMessage } from '@/lib/http'
 
 import { useCreateLocation } from '../hooks/useLocations'
-import { locationSchema, type LocationFormValues } from '../schemas/locationSchema'
+import { locationSchema, toLocationMutationPayload, type LocationFormValues } from '../schemas/locationSchema'
+import { LocationFormFields } from './LocationFormFields'
 
 type Props = { open: boolean; onOpenChange: (open: boolean) => void; onCreated: (locationId: string) => void }
 
@@ -23,18 +23,8 @@ export function CreateLocationDialog({ open, onOpenChange, onCreated }: Props) {
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader><DialogTitle>Novo local</DialogTitle><DialogDescription>Cadastre um local que poderá ser associado a eventos.</DialogDescription></DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit((values) => { const parsed = locationSchema.parse(values); mutation.mutate({ name: parsed.name, street: parsed.street || undefined, city: parsed.city, state: parsed.state, postalCode: parsed.postalCode || undefined, countryCode: parsed.countryCode, latitude: parsed.latitude ? Number(parsed.latitude) : undefined, longitude: parsed.longitude ? Number(parsed.longitude) : undefined }, { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }) })}>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={form.control} name="name" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Nome</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="street" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Endereço</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="city" render={({ field }) => <FormItem><FormLabel>Cidade</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="state" render={({ field }) => <FormItem><FormLabel>Estado</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="postalCode" render={({ field }) => <FormItem><FormLabel>CEP / código postal</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <div className="grid gap-2"><p className="text-sm text-muted-foreground">País</p><p className="flex h-10 items-center rounded-md border bg-muted/30 px-3 text-sm">Brasil</p></div>
-              <input type="hidden" {...form.register('countryCode')} />
-              <FormField control={form.control} name="latitude" render={({ field }) => <FormItem><FormLabel>Latitude (opcional)</FormLabel><FormControl><Input inputMode="decimal" {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="longitude" render={({ field }) => <FormItem><FormLabel>Longitude (opcional)</FormLabel><FormControl><Input inputMode="decimal" {...field} /></FormControl><FormMessage /></FormItem>} />
-            </div>
+          <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate(toLocationMutationPayload(values), { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }))}>
+            <LocationFormFields form={form} />
             {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível criar o local.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
             <DialogFooter><Button onClick={() => changeOpen(false)} type="button" variant="outline">Cancelar</Button><Button disabled={mutation.isPending} type="submit">{mutation.isPending ? 'Criando...' : 'Criar local'}</Button></DialogFooter>
           </form>

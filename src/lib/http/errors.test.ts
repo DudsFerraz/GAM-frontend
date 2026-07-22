@@ -48,6 +48,16 @@ describe('getErrorMessage', () => {
     expect(message).not.toContain('Phone parsing')
   })
 
+  it('explica o conflito de remoção de local sem expor detalhes técnicos', () => {
+    const error = createAxiosError(409, {
+      code: 'GAM_LOCATION_IN_USE',
+      details: { eventReferenceCount: 2 },
+      message: 'GamLocation has active references',
+    })
+
+    expect(getErrorMessage(error)).toBe('Este local está associado a eventos e não pode ser removido.')
+  })
+
   it('usa feedback específico para credenciais inválidas', () => {
     expect(getErrorMessage(createAxiosError(401), 'authentication')).toBe(
       'E-mail ou senha inválidos. Confira os dados e tente novamente.',
