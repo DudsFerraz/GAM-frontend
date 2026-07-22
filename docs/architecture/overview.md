@@ -30,7 +30,7 @@ The management area currently provides these vertical views:
 - Authenticated membership-solicitation history, self-service submission for accounts without `MEMBER_MANAGE`, detail, and `MEMBER_MANAGE` approval/rejection actions. Accounts with `MEMBER_MANAGE` do not see the self-service submission action because their workflow is to review requests or register Members directly.
 - Account search and consultation of translated access types. Account details open in a dialog, while the account cards use a responsive two-column layout on larger screens. The dialog has a dedicated coordinator-designation action that resolves the matching Member through the existing e-mail search, chooses grant or revoke from the current `COORD` role, and never exposes generic role editing.
 - Event search, authorized creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, and authorized Event-presence history.
-- Location list, creation, the dedicated detail view reached after creation, and external Google Maps links based on the location address or coordinates. The list does not expose a separate details action because the card already contains every Location field available in the contract.
+- Location list, permission-aware creation, full-replacement editing, and reasoned removal through the canonical resource. Accounts with Location-management capability open the management dialog directly from each card; external Google Maps links use the location address or coordinates.
 
 Event and Location cards also expose external Google Maps links. These links use the Maps search URL and do not require a Google Maps API key; coordinates are preferred and the business address is used as a fallback.
 
@@ -61,7 +61,7 @@ src/
 │   └── manage/
 │       ├── accounts/    # Business-facing Account consultation
 │       ├── events/      # Event creation/search/detail and Event presences
-│       ├── locations/   # Location creation/list/detail
+│       ├── locations/   # Location creation/list/edit/removal
 │       ├── members/     # Member management, detail, and Member presences
 │       └── solicitations/ # Membership solicitation and review workflow
 ├── lib/
