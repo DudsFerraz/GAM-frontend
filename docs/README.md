@@ -31,9 +31,12 @@ The shared boundary follows [ADR-0005](https://github.com/DudsFerraz/GAM-Bakcken
 
 Read [architecture/overview.md](architecture/overview.md), [integration/authentication.md](integration/authentication.md), [integration/api.md](integration/api.md), [guides/development.md](guides/development.md), the [user-facing language and presentation boundary](guides/user-facing-language.md), and the ordered [implementation backlog](backlog/steps.md) before significant frontend work.
 
+For production delivery work, also read the frontend [deployment documentation](deploy/README.md). It adapts the backend-owned deployment contracts to the frontend build and static artifact without duplicating the canonical operations runbook.
+
 ## Documentation map
 
 - [`architecture/`](architecture/) documents the frontend structure and technical direction.
 - [`integration/`](integration/) documents the frontend's API and browser-authentication boundaries.
 - [`guides/`](guides/) contains contributor workflows.
+- [`deploy/`](deploy/) documents the frontend build artifact, production configuration boundary, and its place in the backend-owned release flow.
 - [`backlog/`](backlog/) contains planned work and its recommended implementation order.

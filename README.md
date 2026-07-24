@@ -9,6 +9,7 @@ Read the contributor documentation before significant work:
 - [Browser authentication](docs/integration/authentication.md)
 - [API integration](docs/integration/api.md)
 - [Development workflow](docs/guides/development.md)
+- [Frontend deployment](docs/deploy/README.md)
 - [Implementation backlog](docs/backlog/steps.md)
 
 ```sh
