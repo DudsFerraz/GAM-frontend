@@ -1,4 +1,10 @@
-import { useDeferredValue, useMemo, useState } from "react";
+import {
+  useDeferredValue,
+  useId,
+  useMemo,
+  useState,
+  type ChangeEvent,
+} from "react";
 import { Check, Search, UserRound } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/Alert";
@@ -18,6 +24,7 @@ import type { MemberListItem, SpecificationFilter } from "../types";
 type MemberSearchPickerProps = {
   disabled?: boolean;
   includeInactive?: boolean;
+  onSelectionClear: () => void;
   onSelect: (member: MemberListItem) => void;
   selectedMemberId?: string;
 };
@@ -25,11 +32,15 @@ type MemberSearchPickerProps = {
 export function MemberSearchPicker({
   disabled = false,
   includeInactive = false,
+  onSelectionClear,
   onSelect,
   selectedMemberId,
 }: MemberSearchPickerProps) {
   const [search, setSearch] = useState("");
+  const searchInputId = useId();
+  const normalizedSearch = search.trim();
   const deferredSearch = useDeferredValue(search.trim());
+  const isSearchDeferred = normalizedSearch !== deferredSearch;
   const filters = useMemo<SpecificationFilter[]>(() => {
     if (deferredSearch.length < 2) {
       return [];
@@ -49,23 +60,54 @@ export function MemberSearchPicker({
     pageParams: {
       page: 0,
       size: 8,
-      sort: ["firstName,asc", "surname,asc"],
     },
     showInactive: includeInactive,
   });
-  const members = filters.length > 0 ? (query.data?.items ?? []) : [];
+  const isLoadingCurrentSearch =
+    normalizedSearch.length >= 2 &&
+    (isSearchDeferred || query.isLoading || query.isPlaceholderData);
+  const isRefreshingCurrentSearch =
+    normalizedSearch.length >= 2 &&
+    !isSearchDeferred &&
+    !query.isLoading &&
+    !query.isPlaceholderData &&
+    query.isFetching;
+  const canShowCurrentResults =
+    normalizedSearch.length >= 2 &&
+    !isSearchDeferred &&
+    !query.isLoading &&
+    !query.isPlaceholderData &&
+    !query.isError;
+  const members = canShowCurrentResults ? (query.data?.items ?? []) : [];
+
+  const changeSearch = (event: ChangeEvent<HTMLInputElement>) => {
+    const nextSearch = event.target.value;
+
+    if (nextSearch !== search && selectedMemberId) {
+      onSelectionClear();
+    }
+
+    setSearch(nextSearch);
+  };
 
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <Label htmlFor="presence-member-search">Buscar membro</Label>
+        <Label htmlFor={searchInputId}>Buscar membro</Label>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search
+            aria-hidden="true"
+            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+          />
           <Input
+            autoComplete="off"
             disabled={disabled}
-            id="presence-member-search"
-            onChange={(event) => setSearch(event.target.value)}
+            id={searchInputId}
+            name="memberSearch"
+            onChange={changeSearch}
             placeholder="Digite o nome ou e-mail"
+            spellCheck={false}
+            type="search"
             value={search}
             className="pl-9"
           />
@@ -75,17 +117,42 @@ export function MemberSearchPicker({
         </p>
       </div>
 
-      {query.isLoading && (
-        <p className="text-sm text-muted-foreground">Buscando membros...</p>
+      {isLoadingCurrentSearch && (
+        <p
+          aria-live="polite"
+          className="text-sm text-muted-foreground"
+          role="status"
+        >
+          Buscando membros…
+        </p>
       )}
-      {query.isError && (
+      {isRefreshingCurrentSearch && (
+        <p
+          aria-live="polite"
+          className="text-sm text-muted-foreground"
+          role="status"
+        >
+          Atualizando resultados…
+        </p>
+      )}
+      {!isSearchDeferred && query.isError && filters.length > 0 && (
         <Alert variant="destructive">
           <AlertTitle>Não foi possível buscar membros.</AlertTitle>
-          <AlertDescription>{getErrorMessage(query.error)}</AlertDescription>
+          <AlertDescription className="space-y-3">
+            <p>{getErrorMessage(query.error)}</p>
+            <Button
+              disabled={query.isFetching}
+              onClick={() => void query.refetch()}
+              size="sm"
+              type="button"
+              variant="outline"
+            >
+              {query.isFetching ? 'Tentando novamente…' : 'Tentar novamente'}
+            </Button>
+          </AlertDescription>
         </Alert>
       )}
-      {!query.isLoading &&
-        !query.isError &&
+      {canShowCurrentResults &&
         filters.length > 0 &&
         members.length === 0 && (
           <p className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
@@ -113,7 +180,10 @@ export function MemberSearchPicker({
                   type="button"
                   variant={selected ? "secondary" : "outline"}
                 >
-                  <UserRound className="h-4 w-4 shrink-0" />
+                  <UserRound
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0"
+                  />
                   <span className="min-w-0 flex-1">
                     <span className="block font-medium">
                       {fullName || "Membro sem nome"}
@@ -133,7 +203,10 @@ export function MemberSearchPicker({
                     </Badge>
                   )}
                   {selected && (
-                    <Check className="h-4 w-4 shrink-0 text-primary" />
+                    <Check
+                      aria-hidden="true"
+                      className="h-4 w-4 shrink-0 text-primary"
+                    />
                   )}
                 </Button>
               </div>

@@ -57,9 +57,15 @@ export function RegisterPresenceDialog({
     defaultValues: { memberId: '', observations: '' },
   })
 
+  const resetDialog = () => {
+    setSelectedMember(null)
+    form.reset({ memberId: '', observations: '' })
+    mutation.reset()
+  }
+
   const changeOpen = (nextOpen: boolean) => {
     if (!nextOpen) {
-      mutation.reset()
+      resetDialog()
     }
     onOpenChange(nextOpen)
   }
@@ -69,6 +75,14 @@ export function RegisterPresenceDialog({
     form.setValue('memberId', member.id, {
       shouldDirty: true,
       shouldValidate: true,
+    })
+  }
+
+  const clearSelectedMember = () => {
+    setSelectedMember(null)
+    form.setValue('memberId', '', {
+      shouldDirty: true,
+      shouldValidate: form.formState.isSubmitted,
     })
   }
 
@@ -113,6 +127,7 @@ export function RegisterPresenceDialog({
             {canSearchMembers && (
               <MemberSearchPicker
                 includeInactive={canViewInactiveMembers}
+                onSelectionClear={clearSelectedMember}
                 onSelect={selectMember}
                 selectedMemberId={selectedMember?.id}
               />
@@ -159,7 +174,7 @@ export function RegisterPresenceDialog({
                 disabled={mutation.isPending || !canSearchMembers}
                 type="submit"
               >
-                {mutation.isPending ? 'Registrando...' : 'Registrar presença'}
+                {mutation.isPending ? 'Registrando…' : 'Registrar presença'}
               </Button>
             </DialogFooter>
           </form>
