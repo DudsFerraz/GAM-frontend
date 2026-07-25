@@ -44,6 +44,7 @@
 @layer base {
   :root {
     /* LIGHT MODE */
+    color-scheme: light;
     
     --background: #ffffff;
     --foreground: #0f172a; 
@@ -80,6 +81,7 @@
 
   .dark {
     /* DARK MODE */
+    color-scheme: dark;
     
     --background: #040b29; 
     --foreground: #f8fafc;
