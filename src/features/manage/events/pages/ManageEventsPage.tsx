@@ -42,7 +42,11 @@ export function ManageEventsPage({ selectedEventId, onSelectedEventIdChange }: M
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
   const canCreate = permissions.includes('EVENT_CREATE')
-  const { permissionRecords } = useAccountPermissionRecords(account, canCreate)
+  const {
+    isError: audiencePermissionsError,
+    isLoading: audiencePermissionsLoading,
+    permissionRecords,
+  } = useAccountPermissionRecords(account, canCreate)
   const query = useEvents(filters, page)
   const items = query.data?.items ?? []
   const audiencePermissions = permissionRecords.filter((permission) => permission.code === 'EVENT_GET_MEMBER' || permission.code === 'EVENT_GET_COORD')
@@ -70,7 +74,7 @@ export function ManageEventsPage({ selectedEventId, onSelectedEventIdChange }: M
       })}</div>}
       {query.data && <Pagination disabled={query.isFetching} itemLabel="eventos" onPageChange={setPage} page={query.data.page ?? page} totalElements={query.data.totalElements ?? items.length} totalPages={query.data.totalPages ?? 0} />}
       <EventDetailsDialog eventId={selectedEventId} onClose={() => onSelectedEventIdChange(null)} />
-      <CreateEventDialog audiencePermissions={audiencePermissions} onCreated={(eventId) => { setIsCreateOpen(false); void navigate({ to: '/manage/events/$eventId', params: { eventId } }) }} onOpenChange={setIsCreateOpen} open={isCreateOpen} />
+      <CreateEventDialog audiencePermissions={audiencePermissions} audiencePermissionsError={audiencePermissionsError} audiencePermissionsLoading={audiencePermissionsLoading} onCreated={(eventId) => { setIsCreateOpen(false); void navigate({ to: '/manage/events/$eventId', params: { eventId } }) }} onOpenChange={setIsCreateOpen} open={isCreateOpen} />
     </div>
   )
 }

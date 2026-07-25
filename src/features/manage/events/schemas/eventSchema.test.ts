@@ -16,6 +16,13 @@ describe('eventSchema', () => {
     expect(eventSchema.safeParse(validEvent).success).toBe(true)
   })
 
+  it('aceita um evento para o público geral', () => {
+    expect(eventSchema.safeParse({
+      ...validEvent,
+      requiredPermissionId: '',
+    }).success).toBe(true)
+  })
+
   it.each([
     ['2026-08-01T10:00', 'O término deve ser posterior ao início.'],
     ['2026-08-01T09:59', 'O término deve ser posterior ao início.'],
@@ -39,23 +46,33 @@ describe('eventSchema', () => {
     if (!result.success) {
       expect(result.error.flatten().fieldErrors).toMatchObject({
         locationId: ['Selecione um local válido.'],
-        requiredPermissionId: ['Selecione o público do evento.'],
+        requiredPermissionId: ['Selecione um público válido.'],
       })
     }
   })
 
-  it('limita título e descrição com mensagens explícitas', () => {
+  it('aceita título e descrição nos limites do contrato', () => {
     const result = eventSchema.safeParse({
       ...validEvent,
-      description: 'a'.repeat(2001),
-      title: 'a'.repeat(161),
+      description: 'a'.repeat(10000),
+      title: 'a'.repeat(255),
+    })
+
+    expect(result.success).toBe(true)
+  })
+
+  it('rejeita título e descrição acima dos limites do contrato', () => {
+    const result = eventSchema.safeParse({
+      ...validEvent,
+      description: 'a'.repeat(10001),
+      title: 'a'.repeat(256),
     })
 
     expect(result.success).toBe(false)
     if (!result.success) {
       expect(result.error.flatten().fieldErrors).toMatchObject({
-        description: ['A descrição deve ter no máximo 2.000 caracteres.'],
-        title: ['O título deve ter no máximo 160 caracteres.'],
+        description: ['A descrição deve ter no máximo 10.000 caracteres.'],
+        title: ['O título deve ter no máximo 255 caracteres.'],
       })
     }
   })

@@ -22,6 +22,7 @@ export function useAccountPermissionRecords(account: AccountResponse | null, ena
 
   return {
     permissionRecords: Array.from(records.values()),
+    isError: results.some((result) => result.isError),
     isLoading: results.some((result) => result.isLoading),
   }
 }
