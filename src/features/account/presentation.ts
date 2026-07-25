@@ -94,6 +94,18 @@ const PERMISSION_PRESENTATIONS: Readonly<
     label: 'Buscar presenças',
     description: 'Permite pesquisar registros de presença.',
   },
+  PRESENCE_REGISTER: {
+    label: 'Registrar presenças',
+    description: 'Permite registrar a participação de membros em eventos.',
+  },
+  PRESENCE_EDIT: {
+    label: 'Editar presenças',
+    description: 'Permite corrigir observações de presença.',
+  },
+  PRESENCE_REMOVE: {
+    label: 'Remover presenças',
+    description: 'Permite remover registros de presença incorretos.',
+  },
   ROLE_GET: {
     label: 'Consultar tipos de acesso',
     description: 'Permite consultar os tipos de acesso disponíveis.',

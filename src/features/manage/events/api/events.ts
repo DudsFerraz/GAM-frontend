@@ -10,7 +10,15 @@ export type EventReason = components["schemas"]["EventReasonDTO"];
 export type ReopenEvent = components["schemas"]["ReopenEventDTO"];
 export type EventStatus = NonNullable<Event["status"]>;
 export type EventType = NonNullable<Event["type"]>;
+export type Presence = components["schemas"]["PresenceRDTO"];
 export type PresencePage = components["schemas"]["PagedResponsePresenceRDTO"];
+export type RegisterPresence =
+  components["schemas"]["RegisterPresenceRequestDTO"];
+export type RegisteredPresence =
+  components["schemas"]["RegisterPresenceRDTO"];
+export type UpdatePresenceObservations =
+  components["schemas"]["UpdatePresenceObservationsDTO"];
+export type RemovePresence = components["schemas"]["RemovePresenceDTO"];
 
 export type EventFilters = {
   title: string;
@@ -112,4 +120,47 @@ export async function getEventPresences(
     paramsSerializer: { indexes: null },
   });
   return data;
+}
+
+export async function registerEventPresence(
+  eventId: string,
+  payload: RegisterPresence,
+): Promise<RegisteredPresence> {
+  const { data } = await api.post<RegisteredPresence>(
+    `/events/${eventId}/presences`,
+    payload,
+  );
+  return data;
+}
+
+export async function getEventPresence(
+  eventId: string,
+  memberId: string,
+): Promise<Presence> {
+  const { data } = await api.get<Presence>(
+    `/events/${eventId}/presences/${memberId}`,
+  );
+  return data;
+}
+
+export async function updateEventPresenceObservations(
+  eventId: string,
+  memberId: string,
+  payload: UpdatePresenceObservations,
+): Promise<Presence> {
+  const { data } = await api.patch<Presence>(
+    `/events/${eventId}/presences/${memberId}`,
+    payload,
+  );
+  return data;
+}
+
+export async function removeEventPresence(
+  eventId: string,
+  memberId: string,
+  payload: RemovePresence,
+): Promise<void> {
+  await api.delete(`/events/${eventId}/presences/${memberId}`, {
+    data: payload,
+  });
 }

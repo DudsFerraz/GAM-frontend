@@ -4,11 +4,15 @@ import {
   cancelEvent,
   createEvent,
   finalizeEvent,
+  getEventPresence,
   getEventPresences,
   lockEvent,
+  registerEventPresence,
+  removeEventPresence,
   removeEvent,
   reopenEvent,
   replaceEvent,
+  updateEventPresenceObservations,
 } from './events'
 
 const apiMocks = vi.hoisted(() => ({
@@ -119,5 +123,56 @@ describe('events API', () => {
     expect(apiMocks.delete).toHaveBeenCalledWith('/events/event-id', {
       data: { reason: 'Cadastro duplicado.' },
     })
+  })
+
+  it('registra e consulta uma presença pela relação de negócio', async () => {
+    const registeredPresence = {
+      event: { id: 'event-id' },
+      id: 'presence-id',
+      member: { id: 'member-id' },
+      observations: null,
+      registeredAt: '2026-08-01T13:10:00.000Z',
+    }
+    apiMocks.post.mockResolvedValueOnce({ data: registeredPresence })
+    apiMocks.get.mockResolvedValueOnce({ data: registeredPresence })
+
+    await registerEventPresence('event-id', {
+      memberId: 'member-id',
+      observations: null,
+    })
+    await getEventPresence('event-id', 'member-id')
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/events/event-id/presences',
+      { memberId: 'member-id', observations: null },
+    )
+    expect(apiMocks.get).toHaveBeenCalledWith(
+      '/events/event-id/presences/member-id',
+    )
+  })
+
+  it('edita observações e remove uma presença', async () => {
+    apiMocks.patch.mockResolvedValueOnce({ data: { id: 'presence-id' } })
+    apiMocks.delete.mockResolvedValueOnce({})
+
+    await updateEventPresenceObservations(
+      'event-id',
+      'member-id',
+      { observations: 'Chegou após o início.' },
+    )
+    await removeEventPresence(
+      'event-id',
+      'member-id',
+      { reason: 'Registro incorreto.' },
+    )
+
+    expect(apiMocks.patch).toHaveBeenCalledWith(
+      '/events/event-id/presences/member-id',
+      { observations: 'Chegou após o início.' },
+    )
+    expect(apiMocks.delete).toHaveBeenCalledWith(
+      '/events/event-id/presences/member-id',
+      { data: { reason: 'Registro incorreto.' } },
+    )
   })
 })

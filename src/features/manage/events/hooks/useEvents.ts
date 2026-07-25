@@ -12,13 +12,17 @@ import {
   getEvent,
   getEventPresences,
   lockEvent,
+  registerEventPresence,
+  removeEventPresence,
   removeEvent,
   reopenEvent,
   replaceEvent,
   searchEvents,
+  updateEventPresenceObservations,
   type EventFilters,
   type EventReplacement,
 } from "../api/events";
+import { memberQueryKeys } from "@/features/manage/members/queryKeys";
 import { eventQueryKeys } from "../queryKeys";
 
 export type EventLifecycleCommand =
@@ -119,5 +123,72 @@ export function useRemoveEvent() {
       removeEvent(eventId, { reason }),
     onSuccess: () =>
       queryClient.invalidateQueries({ queryKey: eventQueryKeys.all }),
+  });
+}
+
+// Invalidate presence history for both event and member queries after a mutation
+async function invalidatePresenceHistory(
+  queryClient: ReturnType<typeof useQueryClient>,
+  eventId: string,
+  memberId: string,
+) {
+  await Promise.all([
+    queryClient.invalidateQueries({
+      queryKey: eventQueryKeys.presenceLists(eventId),
+    }),
+    queryClient.invalidateQueries({
+      queryKey: memberQueryKeys.presenceLists(memberId),
+    }),
+  ]);
+}
+
+export function useRegisterEventPresence() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      memberId,
+      observations,
+    }: {
+      eventId: string;
+      memberId: string;
+      observations: string | null;
+    }) => registerEventPresence(eventId, { memberId, observations }),
+    onSuccess: (_, { eventId, memberId }) =>
+      invalidatePresenceHistory(queryClient, eventId, memberId),
+  });
+}
+
+export function useUpdateEventPresenceObservations() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      memberId,
+      observations,
+    }: {
+      eventId: string;
+      memberId: string;
+      observations: string | null;
+    }) => updateEventPresenceObservations(eventId, memberId, { observations }),
+    onSuccess: (_, { eventId, memberId }) =>
+      invalidatePresenceHistory(queryClient, eventId, memberId),
+  });
+}
+
+export function useRemoveEventPresence() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      eventId,
+      memberId,
+      reason,
+    }: {
+      eventId: string;
+      memberId: string;
+      reason: string;
+    }) => removeEventPresence(eventId, memberId, { reason }),
+    onSuccess: (_, { eventId, memberId }) =>
+      invalidatePresenceHistory(queryClient, eventId, memberId),
   });
 }

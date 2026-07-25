@@ -29,7 +29,7 @@ The management area currently provides these vertical views:
 - Member search and activation/deactivation actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission for accounts without `MEMBER_MANAGE`, detail, and `MEMBER_MANAGE` approval/rejection actions. Accounts with `MEMBER_MANAGE` do not see the self-service submission action because their workflow is to review requests or register Members directly.
 - Account search and consultation of translated access types. Account details open in a dialog, while the account cards use a responsive two-column layout on larger screens. The dialog has a dedicated coordinator-designation action that resolves the matching Member through the existing e-mail search, chooses grant or revoke from the current `COORD` role, and never exposes generic role editing.
-- Event search, authorized public or restricted creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, authorized Generic Event editing/lifecycle/removal, and authorized Event-presence history. Lifecycle actions are derived from the current status and remain restricted to `EVENT_MANAGE`; specialized Event types stay read-only in this common view.
+- Event search, authorized public or restricted creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, authorized Generic Event editing/lifecycle/removal, and Event-presence management. Registration uses business-facing Member search and follows the Event-type attendance window; observation editing and reasoned removal select an existing Presence from the authorized roster. Each action is shown only for its specific effective permission, successful mutations refresh the Event roster and Member history, and specialized Event types otherwise stay read-only in this common view.
 - Location list, permission-aware creation, full-replacement editing, and reasoned removal through the canonical resource. Accounts with Location-management capability open the management dialog directly from each card; external Google Maps links use the location address or coordinates.
 
 Event and Location cards also expose external Google Maps links. These links use the Maps search URL and do not require a Google Maps API key; coordinates are preferred and the business address is used as a fallback.
@@ -60,7 +60,7 @@ src/
 │   ├── home/            # Public and authenticated home compositions
 │   └── manage/
 │       ├── accounts/    # Business-facing Account consultation
-│       ├── events/      # Event creation/search/detail, Generic lifecycle, and Event presences
+│       ├── events/      # Event creation/search/detail, Generic lifecycle, and Presence management
 │       ├── locations/   # Location creation/list/edit/removal
 │       ├── members/     # Member management, detail, and Member presences
 │       └── solicitations/ # Membership solicitation and review workflow
@@ -92,6 +92,8 @@ Each feature owns the code that changes with its product capability. A feature m
 `features/manage/members/` is nested because `manage` represents the existing management area and `members` is the concrete vertical capability. A new feature should normally begin at `features/<feature>/`. Use an additional namespace such as `features/manage/<feature>/` only when it represents a real, stable product grouping rather than a technical category.
 
 Feature root `index.ts` files define narrow public APIs for routes, application composition, or another feature. Internal files should prefer direct relative imports and must not import their own feature through its barrel. Cross-feature imports should be rare and use the target feature's public API. The current member feature consumes Account types and role presentation through `features/account/index.ts` because the current Member response embeds Account data; this dependency should be revisited when generated transport types become available.
+
+Presence management has one intentional cross-feature boundary: the Event registration dialog consumes the Member feature's business-facing search selector, and successful Event Presence mutations invalidate the Member Presence-history query prefix. The selector never asks for or renders a UUID, and includes inactive Members only when `MEMBER_GET_NON_ACTIVE` permits that search visibility. Because the backend authorizes `PRESENCE_REGISTER`, `PRESENCE_EDIT`, and `PRESENCE_REMOVE` independently from `MEMBER_SEARCH` and `EVENT_GET_PRESENCES`, unusual custom permission combinations can expose an action permission without the read capability required to select its target safely. In that case the frontend keeps the action unavailable and explains the integration limitation instead of exposing a technical identifier; the backend remains the authorization authority.
 
 ### `src/routes`
 

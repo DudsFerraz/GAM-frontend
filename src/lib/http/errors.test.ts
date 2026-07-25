@@ -78,6 +78,30 @@ describe('getErrorMessage', () => {
     }))).toBe(expected)
   })
 
+  it.each([
+    [
+      'PRESENCE_ALREADY_REGISTERED',
+      'Este membro já possui presença registrada neste evento.',
+    ],
+    [
+      'PRESENCE_REGISTRATION_NOT_ALLOWED',
+      'O registro de presença não está disponível para este evento neste momento.',
+    ],
+    [
+      'PRESENCE_EDIT_NOT_ALLOWED',
+      'A situação atual do evento não permite editar esta presença.',
+    ],
+    [
+      'PRESENCE_REMOVAL_NOT_ALLOWED',
+      'A situação atual do evento não permite remover esta presença.',
+    ],
+  ])('traduz o conflito de presença %s', (code, expected) => {
+    expect(getErrorMessage(createAxiosError(409, {
+      code,
+      message: 'diagnóstico técnico',
+    }))).toBe(expected)
+  })
+
   it('usa feedback específico para credenciais inválidas', () => {
     expect(getErrorMessage(createAxiosError(401), 'authentication')).toBe(
       'E-mail ou senha inválidos. Confira os dados e tente novamente.',
