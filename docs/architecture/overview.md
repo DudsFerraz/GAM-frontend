@@ -95,6 +95,8 @@ Feature root `index.ts` files define narrow public APIs for routes, application 
 
 Presence management has one intentional cross-feature boundary: the Event registration dialog consumes the Member feature's business-facing search selector, and successful Event Presence mutations invalidate the Member Presence-history query prefix. The selector never asks for or renders a UUID, and includes inactive Members only when `MEMBER_GET_NON_ACTIVE` permits that search visibility. Because the backend authorizes `PRESENCE_REGISTER`, `PRESENCE_EDIT`, and `PRESENCE_REMOVE` independently from `MEMBER_SEARCH` and `EVENT_GET_PRESENCES`, unusual custom permission combinations can expose an action permission without the read capability required to select its target safely. In that case the frontend keeps the action unavailable and explains the integration limitation instead of exposing a technical identifier; the backend remains the authorization authority.
 
+Within the Event feature, `EventDetailPage` composes Event information and lifecycle management, while `EventPresencesSection` owns the Presence roster query, pagination, attendance-window feedback, mutation feedback, and registration/edit/removal dialogs. Roster cards and pagination remain gated by the current `EVENT_GET_PRESENCES` capability even when TanStack Query still holds older cached data.
+
 ### `src/routes`
 
 Routes are navigation adapters, not page-implementation directories. A route may define its path, loader, `beforeLoad` guard, search validation, route-level pending/error boundaries, and page composition. Reusable HTTP calls, query hooks, schemas, domain types, and substantial visual implementation belong to the owning feature.
