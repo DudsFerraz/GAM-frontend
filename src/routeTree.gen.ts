@@ -23,7 +23,7 @@ import { Route as AuthenticatedManageLocationsRouteImport } from './routes/_auth
 import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage/events'
 import { Route as AuthenticatedManageAccountsRouteImport } from './routes/_authenticated/manage/accounts'
 import { Route as AuthenticatedManageMembersMemberIdRouteImport } from './routes/_authenticated/manage/members/$memberId'
-import { Route as AuthenticatedManageEventsEventIdRouteImport } from './routes/_authenticated/manage/events/$eventId'
+import { Route as AuthenticatedManageEventsEventIdRouteImport } from './routes/_authenticated/manage/events_.$eventId'
 
 const ManageRoute = ManageRouteImport.update({
   id: '/manage',
@@ -102,9 +102,9 @@ const AuthenticatedManageMembersMemberIdRoute =
   } as any)
 const AuthenticatedManageEventsEventIdRoute =
   AuthenticatedManageEventsEventIdRouteImport.update({
-    id: '/$eventId',
-    path: '/$eventId',
-    getParentRoute: () => AuthenticatedManageEventsRoute,
+    id: '/manage/events_/$eventId',
+    path: '/manage/events/$eventId',
+    getParentRoute: () => AuthenticatedRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -116,7 +116,7 @@ export interface FileRoutesByFullPath {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/manage/accounts': typeof AuthenticatedManageAccountsRoute
-  '/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/manage/events': typeof AuthenticatedManageEventsRoute
   '/manage/locations': typeof AuthenticatedManageLocationsRoute
   '/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
   '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
@@ -132,7 +132,7 @@ export interface FileRoutesByTo {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/manage/accounts': typeof AuthenticatedManageAccountsRoute
-  '/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/manage/events': typeof AuthenticatedManageEventsRoute
   '/manage/locations': typeof AuthenticatedManageLocationsRoute
   '/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
   '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
@@ -150,11 +150,11 @@ export interface FileRoutesById {
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
   '/_authenticated/manage/accounts': typeof AuthenticatedManageAccountsRoute
-  '/_authenticated/manage/events': typeof AuthenticatedManageEventsRouteWithChildren
+  '/_authenticated/manage/events': typeof AuthenticatedManageEventsRoute
   '/_authenticated/manage/locations': typeof AuthenticatedManageLocationsRoute
   '/_authenticated/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
   '/_authenticated/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
-  '/_authenticated/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
+  '/_authenticated/manage/events_/$eventId': typeof AuthenticatedManageEventsEventIdRoute
   '/_authenticated/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
 }
 export interface FileRouteTypes {
@@ -205,7 +205,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manage/locations'
     | '/_authenticated/manage/members'
     | '/_authenticated/manage/solicitations'
-    | '/_authenticated/manage/events/$eventId'
+    | '/_authenticated/manage/events_/$eventId'
     | '/_authenticated/manage/members/$memberId'
   fileRoutesById: FileRoutesById
 }
@@ -316,30 +316,15 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageMembersMemberIdRouteImport
       parentRoute: typeof AuthenticatedManageMembersRoute
     }
-    '/_authenticated/manage/events/$eventId': {
-      id: '/_authenticated/manage/events/$eventId'
-      path: '/$eventId'
+    '/_authenticated/manage/events_/$eventId': {
+      id: '/_authenticated/manage/events_/$eventId'
+      path: '/manage/events/$eventId'
       fullPath: '/manage/events/$eventId'
       preLoaderRoute: typeof AuthenticatedManageEventsEventIdRouteImport
-      parentRoute: typeof AuthenticatedManageEventsRoute
+      parentRoute: typeof AuthenticatedRoute
     }
   }
 }
-
-interface AuthenticatedManageEventsRouteChildren {
-  AuthenticatedManageEventsEventIdRoute: typeof AuthenticatedManageEventsEventIdRoute
-}
-
-const AuthenticatedManageEventsRouteChildren: AuthenticatedManageEventsRouteChildren =
-  {
-    AuthenticatedManageEventsEventIdRoute:
-      AuthenticatedManageEventsEventIdRoute,
-  }
-
-const AuthenticatedManageEventsRouteWithChildren =
-  AuthenticatedManageEventsRoute._addFileChildren(
-    AuthenticatedManageEventsRouteChildren,
-  )
 
 interface AuthenticatedManageMembersRouteChildren {
   AuthenticatedManageMembersMemberIdRoute: typeof AuthenticatedManageMembersMemberIdRoute
@@ -360,20 +345,22 @@ interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedManageAccountsRoute: typeof AuthenticatedManageAccountsRoute
-  AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRouteWithChildren
+  AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRoute
   AuthenticatedManageLocationsRoute: typeof AuthenticatedManageLocationsRoute
   AuthenticatedManageMembersRoute: typeof AuthenticatedManageMembersRouteWithChildren
   AuthenticatedManageSolicitationsRoute: typeof AuthenticatedManageSolicitationsRoute
+  AuthenticatedManageEventsEventIdRoute: typeof AuthenticatedManageEventsEventIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedHomeRoute: AuthenticatedHomeRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedManageAccountsRoute: AuthenticatedManageAccountsRoute,
-  AuthenticatedManageEventsRoute: AuthenticatedManageEventsRouteWithChildren,
+  AuthenticatedManageEventsRoute: AuthenticatedManageEventsRoute,
   AuthenticatedManageLocationsRoute: AuthenticatedManageLocationsRoute,
   AuthenticatedManageMembersRoute: AuthenticatedManageMembersRouteWithChildren,
   AuthenticatedManageSolicitationsRoute: AuthenticatedManageSolicitationsRoute,
+  AuthenticatedManageEventsEventIdRoute: AuthenticatedManageEventsEventIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
