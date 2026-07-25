@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest'
 
-import { mapEventFormToCreateEvent } from './eventMappings'
+import {
+  mapEventEditFormToReplacement,
+  mapEventFormToCreateEvent,
+  mapEventToEditForm,
+} from './eventMappings'
 
 const validForm = {
   beginDate: '2026-08-01T10:00',
@@ -34,6 +38,55 @@ describe('mapEventFormToCreateEvent', () => {
     expect(payload).toMatchObject({
       description: validForm.description,
       requiredPermissionId: validForm.requiredPermissionId,
+    })
+  })
+})
+
+describe('mapeamento da edição de evento', () => {
+  it('preenche o formulário com datas locais e relações atuais', () => {
+    const event = {
+      beginDate: '2026-08-01T13:00:00.000Z',
+      description: 'Descrição atual',
+      endDate: '2026-08-01T14:00:00.000Z',
+      gamLocation: {
+        city: 'Piracicaba',
+        countryCode: 'BR',
+        id: validForm.locationId,
+        latitude: null,
+        longitude: null,
+        name: 'Sede',
+        postalCode: null,
+        state: 'SP',
+        street: null,
+      },
+      requiredPermission: {
+        code: 'EVENT_GET_MEMBER',
+        id: validForm.requiredPermissionId,
+      },
+      title: validForm.title,
+    }
+
+    expect(mapEventToEditForm(event)).toMatchObject({
+      description: event.description,
+      locationId: validForm.locationId,
+      reason: '',
+      requiredPermissionId: validForm.requiredPermissionId,
+      title: validForm.title,
+    })
+  })
+
+  it('omite público e motivo vazios em uma substituição pública', () => {
+    const payload = mapEventEditFormToReplacement({
+      ...validForm,
+      reason: '',
+      requiredPermissionId: '',
+    })
+
+    expect(payload).not.toHaveProperty('requiredPermissionId')
+    expect(payload).not.toHaveProperty('reason')
+    expect(payload).toMatchObject({
+      gamLocationId: validForm.locationId,
+      title: validForm.title,
     })
   })
 })

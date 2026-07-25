@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 
-import { eventSchema } from './eventSchema'
+import {
+  createEventEditSchema,
+  eventReasonSchema,
+  eventSchema,
+  reopenEventSchema,
+} from './eventSchema'
 
 const validEvent = {
   beginDate: '2026-08-01T10:00',
@@ -75,5 +80,38 @@ describe('eventSchema', () => {
         title: ['O título deve ter no máximo 255 caracteres.'],
       })
     }
+  })
+})
+
+describe('esquemas de gerenciamento do evento', () => {
+  it('exige motivo somente quando o público é alterado', () => {
+    const schema = createEventEditSchema(validEvent.requiredPermissionId)
+
+    expect(schema.safeParse({ ...validEvent, reason: '' }).success).toBe(true)
+
+    const result = schema.safeParse({
+      ...validEvent,
+      reason: '',
+      requiredPermissionId: '',
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.reason).toContain(
+        'Informe o motivo da alteração do público.',
+      )
+    }
+  })
+
+  it('valida motivos obrigatórios e o destino da reabertura', () => {
+    expect(eventReasonSchema.safeParse({ reason: '   ' }).success).toBe(false)
+    expect(reopenEventSchema.safeParse({
+      reason: 'Correção necessária.',
+      targetStatus: 'COMPLETED',
+    }).success).toBe(true)
+    expect(reopenEventSchema.safeParse({
+      reason: 'Correção necessária.',
+      targetStatus: 'SCHEDULED',
+    }).success).toBe(false)
   })
 })

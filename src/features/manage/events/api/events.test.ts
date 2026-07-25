@@ -1,17 +1,32 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { createEvent, getEventPresences } from './events'
+import {
+  cancelEvent,
+  createEvent,
+  finalizeEvent,
+  getEventPresences,
+  lockEvent,
+  removeEvent,
+  reopenEvent,
+  replaceEvent,
+} from './events'
 
 const apiMocks = vi.hoisted(() => ({
+  delete: vi.fn(),
   get: vi.fn(),
+  patch: vi.fn(),
   post: vi.fn(),
+  put: vi.fn(),
 }))
 
 vi.mock('@/lib/http', () => ({ api: apiMocks }))
 
 beforeEach(() => {
+  apiMocks.delete.mockReset()
   apiMocks.get.mockReset()
+  apiMocks.patch.mockReset()
   apiMocks.post.mockReset()
+  apiMocks.put.mockReset()
 })
 
 describe('events API', () => {
@@ -44,6 +59,65 @@ describe('events API', () => {
     expect(apiMocks.get).toHaveBeenCalledWith('/events/event-id/presences', {
       params: { page: 2, size: 12, sort: ['registeredAt,asc'] },
       paramsSerializer: { indexes: null },
+    })
+  })
+
+  it('substitui integralmente um evento genérico', async () => {
+    const payload = {
+      beginDate: '2026-08-01T13:00:00.000Z',
+      endDate: '2026-08-01T14:00:00.000Z',
+      gamLocationId: 'location-id',
+      reason: 'Correção da programação.',
+      title: 'Programação atualizada',
+    }
+    apiMocks.put.mockResolvedValueOnce({ data: { id: 'event-id' } })
+
+    await replaceEvent('event-id', payload)
+
+    expect(apiMocks.put).toHaveBeenCalledWith('/events/event-id', payload)
+  })
+
+  it('executa bloqueio e finalização sem corpo técnico', async () => {
+    apiMocks.patch.mockResolvedValue({ data: { id: 'event-id' } })
+
+    await lockEvent('event-id')
+    await finalizeEvent('event-id')
+
+    expect(apiMocks.patch).toHaveBeenNthCalledWith(1, '/events/event-id/lock')
+    expect(apiMocks.patch).toHaveBeenNthCalledWith(2, '/events/event-id/finalize')
+  })
+
+  it('envia os corpos de cancelamento e reabertura', async () => {
+    apiMocks.patch.mockResolvedValue({ data: { id: 'event-id' } })
+
+    await cancelEvent('event-id', { reason: 'Evento cancelado pela organização.' })
+    await reopenEvent('event-id', {
+      reason: 'Necessidade de corrigir as presenças.',
+      targetStatus: 'COMPLETED',
+    })
+
+    expect(apiMocks.patch).toHaveBeenNthCalledWith(
+      1,
+      '/events/event-id/cancel',
+      { reason: 'Evento cancelado pela organização.' },
+    )
+    expect(apiMocks.patch).toHaveBeenNthCalledWith(
+      2,
+      '/events/event-id/reopen',
+      {
+        reason: 'Necessidade de corrigir as presenças.',
+        targetStatus: 'COMPLETED',
+      },
+    )
+  })
+
+  it('remove um evento com o motivo no corpo da requisição', async () => {
+    apiMocks.delete.mockResolvedValueOnce({})
+
+    await removeEvent('event-id', { reason: 'Cadastro duplicado.' })
+
+    expect(apiMocks.delete).toHaveBeenCalledWith('/events/event-id', {
+      data: { reason: 'Cadastro duplicado.' },
     })
   })
 })

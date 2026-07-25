@@ -16,7 +16,7 @@ TanStack Router generates `src/routeTree.gen.ts` from the file routes in `src/ro
 
 Backend routes, operations, and transport types are referenced from the generated [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Feature API modules still own the calls made with the shared Axios client, while feature-specific view models and mappings remain outside the generated file. Do not edit the generated file manually. See [API integration](../integration/api.md) for the contract boundary and current limitations.
 
-The current-Account session uses the generated `CurrentAccountContextRDTO` returned by `/accounts/me`. Account administration still normalizes the generated `AccountRDTO.roles` wrapper at its boundary so response-shape compatibility does not leak into components. Navigation and capability checks use `/accounts/me` effective permission codes; per-Role permission reads remain only where the Event creation UI needs Permission records and keeps their identifiers internal.
+The current-Account session uses the generated `CurrentAccountContextRDTO` returned by `/accounts/me`. Account administration still normalizes the generated `AccountRDTO.roles` wrapper at its boundary so response-shape compatibility does not leak into components. Navigation and capability checks use `/accounts/me` effective permission codes; per-Role permission reads remain only where the Event creation and editing UI needs audience Permission records and keeps their identifiers internal.
 
 ### Forms, UI, and features
 
@@ -29,7 +29,7 @@ The management area currently provides these vertical views:
 - Member search and activation/deactivation actions, direct registration, a dedicated Member detail route, and paginated presence history. Member search starts with active members and can include inactive members through the persisted filter preference.
 - Authenticated membership-solicitation history, self-service submission for accounts without `MEMBER_MANAGE`, detail, and `MEMBER_MANAGE` approval/rejection actions. Accounts with `MEMBER_MANAGE` do not see the self-service submission action because their workflow is to review requests or register Members directly.
 - Account search and consultation of translated access types. Account details open in a dialog, while the account cards use a responsive two-column layout on larger screens. The dialog has a dedicated coordinator-designation action that resolves the matching Member through the existing e-mail search, chooses grant or revoke from the current `COORD` role, and never exposes generic role editing.
-- Event search, authorized creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, and authorized Event-presence history.
+- Event search, authorized public or restricted creation, an Event details dialog with the complete schedule and location data, a dedicated Event route, authorized Generic Event editing/lifecycle/removal, and authorized Event-presence history. Lifecycle actions are derived from the current status and remain restricted to `EVENT_MANAGE`; specialized Event types stay read-only in this common view.
 - Location list, permission-aware creation, full-replacement editing, and reasoned removal through the canonical resource. Accounts with Location-management capability open the management dialog directly from each card; external Google Maps links use the location address or coordinates.
 
 Event and Location cards also expose external Google Maps links. These links use the Maps search URL and do not require a Google Maps API key; coordinates are preferred and the business address is used as a fallback.
@@ -60,7 +60,7 @@ src/
 │   ├── home/            # Public and authenticated home compositions
 │   └── manage/
 │       ├── accounts/    # Business-facing Account consultation
-│       ├── events/      # Event creation/search/detail and Event presences
+│       ├── events/      # Event creation/search/detail, Generic lifecycle, and Event presences
 │       ├── locations/   # Location creation/list/edit/removal
 │       ├── members/     # Member management, detail, and Member presences
 │       └── solicitations/ # Membership solicitation and review workflow

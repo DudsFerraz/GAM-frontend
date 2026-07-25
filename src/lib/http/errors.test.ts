@@ -58,6 +58,26 @@ describe('getErrorMessage', () => {
     expect(getErrorMessage(error)).toBe('Este local está associado a eventos e não pode ser removido.')
   })
 
+  it.each([
+    [
+      'EVENT_HAS_PRESENCES',
+      'Remova as presenças ativas antes de remover este evento.',
+    ],
+    [
+      'EVENT_STATUS_TRANSITION_NOT_ALLOWED',
+      'A situação atual do evento não permite esta ação.',
+    ],
+    [
+      'EVENT_TYPE_NOT_MANAGEABLE',
+      'Este tipo de evento deve ser gerenciado pelo fluxo específico.',
+    ],
+  ])('traduz o conflito de evento %s', (code, expected) => {
+    expect(getErrorMessage(createAxiosError(409, {
+      code,
+      message: 'diagnóstico técnico',
+    }))).toBe(expected)
+  })
+
   it('usa feedback específico para credenciais inválidas', () => {
     expect(getErrorMessage(createAxiosError(401), 'authentication')).toBe(
       'E-mail ou senha inválidos. Confira os dados e tente novamente.',
