@@ -9,6 +9,10 @@ const ROLE_PRESENTATIONS: Readonly<
     label: 'Coordenação',
     description: 'Acesso às atividades de coordenação e administração do grupo.',
   },
+  ORATORIO_COORD: {
+    label: 'Coordenação do Oratório',
+    description: 'Acesso à organização e ao acompanhamento das atividades do Oratório.',
+  },
   MEMBER: {
     label: 'Membro',
     description: 'Acesso às atividades destinadas aos membros do grupo.',
@@ -41,6 +45,10 @@ const PERMISSION_PRESENTATIONS: Readonly<
   MEMBER_MANAGE: {
     label: 'Gerenciar membros',
     description: 'Permite administrar cadastros e solicitações de membresia.',
+  },
+  COORDINATOR_MANAGE: {
+    label: 'Gerenciar coordenação',
+    description: 'Permite conceder e revogar a designação de coordenação.',
   },
   ACCOUNT_GET: {
     label: 'Consultar contas',
@@ -105,6 +113,58 @@ const PERMISSION_PRESENTATIONS: Readonly<
   PRESENCE_REMOVE: {
     label: 'Remover presenças',
     description: 'Permite remover registros de presença incorretos.',
+  },
+  ORATORIO_GET: {
+    label: 'Consultar Oratórios',
+    description: 'Permite consultar informações das atividades do Oratório.',
+  },
+  ORATORIO_CREATE: {
+    label: 'Criar Oratórios',
+    description: 'Permite cadastrar atividades do Oratório.',
+  },
+  ORATORIO_MANAGE: {
+    label: 'Gerenciar Oratórios',
+    description: 'Permite administrar o planejamento e o ciclo das atividades do Oratório.',
+  },
+  ORATORIO_ATTENDANCE_GET: {
+    label: 'Consultar presenças do Oratório',
+    description: 'Permite consultar o acompanhamento de presenças do Oratório.',
+  },
+  ORATORIO_ATTENDANCE_MANAGE: {
+    label: 'Gerenciar presenças do Oratório',
+    description: 'Permite registrar e corrigir presenças nas atividades do Oratório.',
+  },
+  ORATORIO_COORD_MANAGE: {
+    label: 'Gerenciar coordenação do Oratório',
+    description: 'Permite conceder e revogar a designação de coordenação do Oratório.',
+  },
+  ORATORIANO_GET: {
+    label: 'Consultar oratorianos',
+    description: 'Permite buscar e consultar cadastros de oratorianos.',
+  },
+  ORATORIANO_REGISTER: {
+    label: 'Cadastrar oratorianos',
+    description: 'Permite cadastrar oratorianos.',
+  },
+  ORATORIANO_MANAGE: {
+    label: 'Gerenciar oratorianos',
+    description: 'Permite corrigir, remover e restaurar cadastros de oratorianos.',
+  },
+  ORATORIANO_FORM_GET: {
+    label: 'Consultar formulários de oratorianos',
+    description: 'Permite consultar os formulários de oratorianos.',
+  },
+  ORATORIANO_FORM_MANAGE: {
+    label: 'Gerenciar formulários de oratorianos',
+    description: 'Permite criar e administrar versões dos formulários de oratorianos.',
+  },
+  ORATORIANO_FORM_PDF_GENERATE: {
+    label: 'Gerar PDF de formulário de oratoriano',
+    description: 'Permite gerar versões em PDF dos formulários de oratorianos.',
+  },
+  ORATORIANO_FORM_ATTACHMENT_GET: {
+    label: 'Baixar formulários assinados de oratorianos',
+    description: 'Permite baixar anexos assinados dos formulários de oratorianos.',
   },
   ROLE_GET: {
     label: 'Consultar tipos de acesso',

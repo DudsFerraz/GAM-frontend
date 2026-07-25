@@ -1,7 +1,13 @@
 import type { RoleResponse } from './types';
 import { getRoleLabel } from './presentation'
 
-const ROLE_HIERARCHY = ['SUDO', 'COORD', 'MEMBER', 'VISITOR'];
+const ROLE_HIERARCHY = [
+  'SUDO',
+  'COORD',
+  'ORATORIO_COORD',
+  'MEMBER',
+  'VISITOR',
+];
 
 export const getMainRoleLabel = (roles: RoleResponse[]): string => {
   if (!roles || roles.length === 0) return '-';

@@ -60,6 +60,10 @@ describe('getErrorMessage', () => {
 
   it.each([
     [
+      'EVENT_AUDIENCE_PERMISSION_INVALID',
+      'Selecione um público válido para o evento.',
+    ],
+    [
       'EVENT_HAS_PRESENCES',
       'Remova as presenças ativas antes de remover este evento.',
     ],

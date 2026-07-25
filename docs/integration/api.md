@@ -20,6 +20,25 @@ The current contract authorizes Member search and Event Presence-list reads sepa
 
 The current backend serializes `AccountRDTO.roles` as a flat Role list, as required by the accepted Account-record contract, while the checked-in generated TypeScript artifact still models that field as an `AccountRolesRDTO` wrapper. The Account API adapters normalize either representation at the frontend boundary. The generated file remains untouched; its backend generation metadata must be corrected and regenerated separately.
 
+### Event and Presence contract alignment
+
+The current adapters deliberately preserve these regenerated-contract boundaries:
+
+| Frontend operation | Contract behavior |
+| --- | --- |
+| `POST /events` | Sends `CreateGenericEventDTO` and consumes the complete `EventRDTO` creation response. Public Events omit `requiredPermissionId`; restricted Events send the selected Permission identifier. The form accepts titles through 255 characters and descriptions through 10,000 characters. |
+| `PUT /events/{id}` | Fully replaces a Generic Event. The reason is optional for ordinary changes and required when the audience changes. |
+| `PATCH /events/{id}/cancel`, `/lock`, `/finalize`, and `/reopen` | Uses the intent-specific lifecycle route and the accepted body for that transition. |
+| `DELETE /events/{id}` | Sends the required removal reason in the request body. |
+| `GET /events/{eventId}/presences` | Consumes compact `PresenceRDTO` records and requests the accepted `registeredAt,asc` ordering. |
+| `GET /members/{memberId}/presences` | Consumes the same compact Presence representation and requests `registeredAt,desc`. |
+| `POST /events/{eventId}/presences` | Sends the selected Member and optional observations, then consumes `RegisterPresenceRDTO`. |
+| `GET /events/{eventId}/presences/{memberId}` | Provides the supporting individual lookup by the Event–Member business relation; it does not require a separate browser page. |
+| `PATCH /events/{eventId}/presences/{memberId}` | Replaces only the observations and consumes the updated compact Presence. |
+| `DELETE /events/{eventId}/presences/{memberId}` | Sends the required business reason and expects no response body. |
+
+Feature adapters use only the sort fields accepted by each route. They do not read removed nested Account or GamLocation data from compact Presence relationships. Event and Presence conflict codes cross the shared safe Portuguese error boundary; backend `message` and `details` remain diagnostic data and are never interface copy.
+
 ## Generated contract reference
 
 The current generated backend contract is [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts). Use its `paths`, `operations`, and schema types to discover available routes, HTTP operations, parameters, request bodies, and response shapes before implementing or changing a feature API module.
