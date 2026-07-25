@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, CalendarDays, Mail, MapPin, Phone, UserRound } from 'lucide-react'
+import { ArrowLeft, CalendarDays, Mail, Phone, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import { EmptyState, ErrorState, ForbiddenState, LoadingState } from '@/components/AsyncState'
@@ -7,12 +7,12 @@ import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { getEventStatusLabel, getEventTypeLabel } from '@/features/manage/events'
 import { formatDate, formatDateTime } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
 
 import { useMember } from '../hooks/useMember'
 import { useMemberPresences } from '../hooks/useMemberPresences'
-import { getEventTypeLabel } from '@/features/manage/events'
 import {
   getMemberStatusBadgeClassName,
   getMemberStatusLabel,
@@ -103,21 +103,33 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
         )}
         {presenceItems.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-2">
-            {presenceItems.map((presence, index) => (
-              <Card key={presence.id ?? `${presence.event?.id}-${index}`} className="gap-3 py-4">
+            {presenceItems.map((presence) => (
+              <Card key={presence.id} className="gap-3 py-4">
                 <CardContent className="space-y-2">
                   <div className="flex items-start justify-between gap-3">
-                    <h3 className="font-semibold">{presence.event?.title ?? 'Evento não informado'}</h3>
-                    {presence.event?.type && <Badge variant="outline">{getEventTypeLabel(presence.event.type)}</Badge>}
+                    <h3 className="font-semibold">{presence.event.title}</h3>
+                    <Badge variant={presence.event.status === 'CANCELLED' ? 'destructive' : 'outline'}>
+                      {getEventStatusLabel(presence.event.status)}
+                    </Badge>
                   </div>
-                  <p className="flex items-center gap-2 text-sm text-muted-foreground"><CalendarDays className="h-4 w-4" />{formatDateTime(presence.event?.beginDate)}</p>
-                  <p className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="h-4 w-4" />{presence.event?.gamLocation?.name ?? 'Local não informado'}</p>
-                  {presence.observations && <p className="text-sm">{presence.observations}</p>}
-                  {presence.event?.id && (
-                    <Button asChild size="sm" variant="link">
-                      <Link to="/manage/events/$eventId" params={{ eventId: presence.event.id }}>Ver evento</Link>
-                    </Button>
+                  <p className="text-sm text-muted-foreground">
+                    {getEventTypeLabel(presence.event.type)}
+                  </p>
+                  <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <CalendarDays className="h-4 w-4" />
+                    {formatDateTime(presence.event.beginDate)} até {formatDateTime(presence.event.endDate)}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Presença registrada em {formatDateTime(presence.registeredAt)}
+                  </p>
+                  {presence.observations && (
+                    <p className="whitespace-pre-wrap text-sm">{presence.observations}</p>
                   )}
+                  <Button asChild size="sm" variant="link">
+                    <Link to="/manage/events/$eventId" params={{ eventId: presence.event.id }}>
+                      Ver evento
+                    </Link>
+                  </Button>
                 </CardContent>
               </Card>
             ))}

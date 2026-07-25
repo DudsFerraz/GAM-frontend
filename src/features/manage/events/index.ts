@@ -1,5 +1,5 @@
 export { EventDetailPage } from './pages/EventDetailPage'
 export { ManageEventsPage } from './pages/ManageEventsPage'
-export { getEventTypeLabel } from './presentation'
+export { getEventStatusLabel, getEventTypeLabel } from './presentation'
 export { useEvents } from './hooks/useEvents'
 export type { Event } from './api/events'

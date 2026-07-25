@@ -8,7 +8,7 @@ export async function getMemberPresences(
   page: number,
 ): Promise<PresencePage> {
   const { data } = await api.get<PresencePage>(`/members/${memberId}/presences`, {
-    params: { page, size: 10, sort: ['createdAt,desc'] },
+    params: { page, size: 10, sort: ['registeredAt,desc'] },
     paramsSerializer: { indexes: null },
   })
   return data

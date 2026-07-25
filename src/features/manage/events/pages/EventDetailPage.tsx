@@ -38,7 +38,33 @@ export function EventDetailPage({ eventId }: { eventId: string }) {
         {presencesQuery.isLoading && <LoadingState title="Carregando presenças..." />}
         {presencesQuery.isError && (isForbiddenError(presencesQuery.error) ? <ForbiddenState /> : <ErrorState onRetry={() => void presencesQuery.refetch()} />)}
         {canViewPresences && !presencesQuery.isLoading && !presencesQuery.isError && presenceItems.length === 0 && <EmptyState title="Nenhuma presença registrada." />}
-        {presenceItems.length > 0 && <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{presenceItems.map((presence, index) => <Card className="gap-3 py-4" key={presence.id ?? index}><CardContent className="space-y-2"><div className="flex items-center gap-2"><UserRound className="h-4 w-4 text-primary" /><h3 className="font-semibold">{[presence.member?.firstName, presence.member?.surname].filter(Boolean).join(' ') || 'Membro'}</h3></div><p className="text-sm text-muted-foreground">{presence.member?.account?.email}</p>{presence.observations && <p className="text-sm">{presence.observations}</p>}{presence.member?.id && <Button asChild size="sm" variant="link"><Link params={{ memberId: presence.member.id }} to="/manage/members/$memberId">Ver membro</Link></Button>}</CardContent></Card>)}</div>}
+        {presenceItems.length > 0 && (
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            {presenceItems.map((presence) => (
+              <Card className="gap-3 py-4" key={presence.id}>
+                <CardContent className="space-y-3">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <UserRound className="h-4 w-4 shrink-0 text-primary" />
+                    <h3 className="truncate font-semibold">
+                      {[presence.member.firstName, presence.member.surname].join(' ')}
+                    </h3>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Presença registrada em {formatDateTime(presence.registeredAt)}
+                  </p>
+                  {presence.observations && (
+                    <p className="whitespace-pre-wrap text-sm">{presence.observations}</p>
+                  )}
+                  <Button asChild size="sm" variant="link">
+                    <Link params={{ memberId: presence.member.id }} to="/manage/members/$memberId">
+                      Ver membro
+                    </Link>
+                  </Button>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
         {presencesQuery.data && <Pagination disabled={presencesQuery.isFetching} itemLabel="presenças" onPageChange={setPage} page={presencesQuery.data.page ?? page} totalElements={presencesQuery.data.totalElements ?? presenceItems.length} totalPages={presencesQuery.data.totalPages ?? 0} />}
       </section>
     </div>

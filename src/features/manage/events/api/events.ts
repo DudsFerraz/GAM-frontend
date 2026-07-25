@@ -4,7 +4,7 @@ import { api } from "@/lib/http";
 export type Event = components["schemas"]["EventRDTO"];
 export type EventPage = components["schemas"]["PagedResponseEventRDTO"];
 export type CreateEvent = components["schemas"]["CreateGenericEventDTO"];
-export type CreatedEvent = components["schemas"]["CreateEventRDTO"];
+export type CreatedEvent = Event;
 export type EventStatus = NonNullable<Event["status"]>;
 export type EventType = NonNullable<Event["type"]>;
 export type PresencePage = components["schemas"]["PagedResponsePresenceRDTO"];
@@ -64,7 +64,7 @@ export async function getEventPresences(
   page: number,
 ): Promise<PresencePage> {
   const { data } = await api.get<PresencePage>(`/events/${eventId}/presences`, {
-    params: { page, size: 12, sort: ["createdAt,asc"] },
+    params: { page, size: 12, sort: ["registeredAt,asc"] },
     paramsSerializer: { indexes: null },
   });
   return data;
