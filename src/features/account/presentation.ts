@@ -148,7 +148,7 @@ const PERMISSION_PRESENTATIONS: Readonly<
   },
   ORATORIANO_MANAGE: {
     label: 'Gerenciar oratorianos',
-    description: 'Permite corrigir, remover e restaurar cadastros de oratorianos.',
+    description: 'Permite corrigir e remover cadastros de oratorianos.',
   },
   ORATORIANO_FORM_GET: {
     label: 'Consultar formulários de oratorianos',

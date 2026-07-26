@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  deleteOratoriano,
   getOratorianoAttendanceSummary,
   getOratorianoAttendances,
   registerOratoriano,
@@ -9,6 +10,7 @@ import {
 } from './oratorianos'
 
 const apiMocks = vi.hoisted(() => ({
+  delete: vi.fn(),
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
@@ -63,6 +65,21 @@ describe('API de Oratorianos', () => {
     expect(apiMocks.put).toHaveBeenCalledWith(
       '/oratorianos/oratoriano-id',
       payload,
+    )
+  })
+
+  it('exclui o cadastro com o motivo no corpo da requisição', async () => {
+    apiMocks.delete.mockResolvedValueOnce({ data: undefined })
+
+    await deleteOratoriano('oratoriano-id', {
+      reason: 'Cadastro criado para a pessoa errada.',
+    })
+
+    expect(apiMocks.delete).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano-id',
+      {
+        data: { reason: 'Cadastro criado para a pessoa errada.' },
+      },
     )
   })
 

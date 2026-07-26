@@ -1,11 +1,13 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import {
   CalendarDays,
+  CheckCircle2,
   ChevronRight,
   Phone,
   Plus,
   Search,
   UserRound,
+  X,
 } from 'lucide-react'
 import { useState, type FormEvent } from 'react'
 
@@ -16,6 +18,7 @@ import {
   LoadingState,
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import {
   Card,
@@ -38,10 +41,17 @@ import { RegisterOratorianoDialog } from '../components/RegisterOratorianoDialog
 import { useOratorianos } from '../hooks/useOratorianos'
 import { getOratorianoFullName } from '../presentation'
 
-export function ManageOratorianosPage() {
+export function ManageOratorianosPage({
+  initialDeletionNotice = false,
+}: {
+  initialDeletionNotice?: boolean
+}) {
   const [nameInput, setNameInput] = useState('')
   const [name, setName] = useState('')
   const [page, setPage] = useState(0)
+  const [isDeletionNoticeVisible, setIsDeletionNoticeVisible] = useState(
+    initialDeletionNotice,
+  )
   const navigate = useNavigate()
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
@@ -107,6 +117,28 @@ export function ManageOratorianosPage() {
           Buscar
         </Button>
       </form>
+
+      {isDeletionNoticeVisible && (
+        <Alert aria-live="polite" role="status">
+          <CheckCircle2 aria-hidden="true" />
+          <AlertTitle>Cadastro excluído.</AlertTitle>
+          <AlertDescription className="flex w-full flex-row items-start justify-between gap-3">
+            <span>
+              O Oratoriano não aparece mais nas consultas. As presenças
+              anteriores permanecem no histórico.
+            </span>
+            <Button
+              aria-label="Dispensar confirmação"
+              onClick={() => setIsDeletionNoticeVisible(false)}
+              size="icon-sm"
+              type="button"
+              variant="ghost"
+            >
+              <X aria-hidden="true" />
+            </Button>
+          </AlertDescription>
+        </Alert>
+      )}
 
       {query.isLoading && (
         <LoadingState title="Carregando Oratorianos..." />

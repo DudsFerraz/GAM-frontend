@@ -129,11 +129,15 @@ describe('getErrorMessage', () => {
     ],
     [
       'ORATORIANO_NAME_RESERVED',
-      'Já existe um cadastro ativo ou removido com esse nome. Procure a pessoa correta e, se necessário, solicite a restauração.',
+      'Já existe um cadastro ativo ou excluído com esse nome. Localize a pessoa correta antes de continuar.',
     ],
     [
       'ORATORIANO_DELETED',
-      'Este cadastro foi removido e não pode receber uma nova presença. Solicite a restauração antes de continuar.',
+      'Este cadastro foi excluído e não pode receber uma nova presença. Atualize a busca antes de continuar.',
+    ],
+    [
+      'ORATORIANO_HAS_IMMUTABLE_FORMS',
+      'Este cadastro possui uma ficha concluída, substituída ou revogada e não pode ser excluído.',
     ],
   ])('traduz o conflito do núcleo do Oratório %s', (code, expected) => {
     expect(getErrorMessage(createAxiosError(409, {

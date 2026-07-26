@@ -8,6 +8,8 @@ export type RegisterOratoriano =
   components['schemas']['RegisterOratorianoDTO']
 export type ReplaceOratoriano =
   components['schemas']['ReplaceOratorianoDTO']
+export type DeleteOratorianoReason =
+  components['schemas']['ReasonDTO']
 export type OratorianoAttendancePage =
   components['schemas']['PagedResponseAttendanceHistoryItemRDTO']
 export type OratorianoAttendanceSummary =
@@ -60,6 +62,15 @@ export async function replaceOratoriano(
     payload,
   )
   return data
+}
+
+export async function deleteOratoriano(
+  oratorianoId: string,
+  payload: DeleteOratorianoReason,
+): Promise<void> {
+  await api.delete(`/oratorianos/${oratorianoId}`, {
+    data: payload,
+  })
 }
 
 export async function getOratorianoAttendances(

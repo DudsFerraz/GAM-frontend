@@ -1,4 +1,5 @@
-import { Link } from '@tanstack/react-router'
+import { useQueryClient } from '@tanstack/react-query'
+import { Link, useNavigate } from '@tanstack/react-router'
 import {
   ArrowLeft,
   CalendarDays,
@@ -6,6 +7,7 @@ import {
   History,
   Pencil,
   Phone,
+  Trash2,
   UserRound,
 } from 'lucide-react'
 import { useState } from 'react'
@@ -38,6 +40,7 @@ import { isForbiddenError } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 
 import { EditOratorianoDialog } from '../components/EditOratorianoDialog'
+import { DeleteOratorianoDialog } from '../components/DeleteOratorianoDialog'
 import {
   useOratoriano,
   useOratorianoAttendances,
@@ -47,6 +50,7 @@ import {
   getAttendanceCount,
   getOratorianoFullName,
 } from '../presentation'
+import { oratorianoQueryKeys } from '../queryKeys'
 
 const MONTH_LABELS = [
   'Janeiro',
@@ -87,12 +91,18 @@ export function OratorianoDetailPage({
   const [year, setYear] = useState(currentPeriod.year)
   const [month, setMonth] = useState(currentPeriod.month)
   const [historyPage, setHistoryPage] = useState(0)
+  const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
   const canView = permissions.includes('ORATORIANO_GET')
   const canManage = permissions.includes('ORATORIANO_MANAGE')
   const canEditProfile = canView && canManage
   const [isEditOpen, setIsEditOpen] = useCapabilityBoundState(
+    canEditProfile,
+    false,
+  )
+  const [isDeleteOpen, setIsDeleteOpen] = useCapabilityBoundState(
     canEditProfile,
     false,
   )
@@ -159,14 +169,24 @@ export function OratorianoDetailPage({
           </p>
         </div>
         {canManage && (
-          <Button
-            onClick={() => setIsEditOpen(true)}
-            type="button"
-            variant="outline"
-          >
-            <Pencil aria-hidden="true" className="h-4 w-4" />
-            Editar perfil
-          </Button>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              onClick={() => setIsEditOpen(true)}
+              type="button"
+              variant="outline"
+            >
+              <Pencil aria-hidden="true" className="h-4 w-4" />
+              Editar perfil
+            </Button>
+            <Button
+              onClick={() => setIsDeleteOpen(true)}
+              type="button"
+              variant="destructive"
+            >
+              <Trash2 aria-hidden="true" className="h-4 w-4" />
+              Excluir cadastro
+            </Button>
+          </div>
         )}
       </div>
 
@@ -392,6 +412,24 @@ export function OratorianoDetailPage({
         oratoriano={oratoriano}
         oratorianoId={oratorianoId}
       />
+      {canManage && (
+        <DeleteOratorianoDialog
+          name={fullName}
+          onDeleted={() => {
+            void navigate({
+              search: { notice: 'oratoriano-excluido' },
+              to: '/manage/oratorios/oratorianos',
+            }).then(() => {
+              queryClient.removeQueries({
+                queryKey: oratorianoQueryKeys.detail(oratorianoId),
+              })
+            })
+          }}
+          onOpenChange={setIsDeleteOpen}
+          open={isDeleteOpen}
+          oratorianoId={oratorianoId}
+        />
+      )}
     </div>
   )
 }

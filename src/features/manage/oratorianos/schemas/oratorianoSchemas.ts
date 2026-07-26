@@ -97,6 +97,17 @@ const optionalReasonSchema = z
 
 export const registerOratorianoSchema = oratorianoNameSchema
 
+export const deleteOratorianoSchema = z.object({
+  reason: z
+    .string()
+    .trim()
+    .min(1, 'Informe o motivo da exclusão.')
+    .refine(
+      (reason) => Array.from(reason).length <= 2000,
+      'O motivo deve ter no máximo 2.000 caracteres.',
+    ),
+})
+
 export function createReplaceOratorianoSchema(current: {
   firstName?: string | null
   surname?: string | null
@@ -128,3 +139,5 @@ export type ReplaceOratorianoFormValues = z.input<
 export type ParsedReplaceOratorianoFormValues = z.output<
   ReturnType<typeof createReplaceOratorianoSchema>
 >
+export type DeleteOratorianoFormValues =
+  z.infer<typeof deleteOratorianoSchema>

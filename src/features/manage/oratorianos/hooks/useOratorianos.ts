@@ -6,6 +6,7 @@ import {
 } from '@tanstack/react-query'
 
 import {
+  deleteOratoriano,
   getOratoriano,
   getOratorianoAttendances,
   getOratorianoAttendanceSummary,
@@ -107,6 +108,32 @@ export function useReplaceOratoriano() {
       return queryClient.invalidateQueries({
         queryKey: oratorianoQueryKeys.lists(),
       })
+    },
+  })
+}
+
+export function useDeleteOratoriano() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      oratorianoId,
+      reason,
+    }: {
+      oratorianoId: string
+      reason: string
+    }) => deleteOratoriano(oratorianoId, { reason }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: oratorianoQueryKeys.lists(),
+        }),
+        queryClient.invalidateQueries({
+          // Oratórios already composes this feature; keep cache reconciliation
+          // at its stable root without reversing that dependency.
+          queryKey: ['oratorios'],
+        }),
+      ])
     },
   })
 }

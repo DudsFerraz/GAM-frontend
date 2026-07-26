@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   createReplaceOratorianoSchema,
+  deleteOratorianoSchema,
   registerOratorianoSchema,
 } from './oratorianoSchemas'
 
@@ -66,6 +67,20 @@ describe('schemas de Oratoriano', () => {
       ...base,
       firstName: 'Anna',
       reason: 'Correção do nome civil.',
+    }).success).toBe(true)
+  })
+
+  it('normaliza e exige motivo de exclusão com até 2.000 caracteres Unicode', () => {
+    expect(deleteOratorianoSchema.parse({
+      reason: '  Cadastro duplicado.  ',
+    })).toEqual({ reason: 'Cadastro duplicado.' })
+    expect(deleteOratorianoSchema.safeParse({ reason: '   ' }).success)
+      .toBe(false)
+    expect(deleteOratorianoSchema.safeParse({
+      reason: 'a'.repeat(2001),
+    }).success).toBe(false)
+    expect(deleteOratorianoSchema.safeParse({
+      reason: '🙂'.repeat(2000),
     }).success).toBe(true)
   })
 })
