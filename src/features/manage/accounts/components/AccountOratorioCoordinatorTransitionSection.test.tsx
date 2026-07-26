@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { AxiosError } from 'axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AccountOratorioCoordinatorTransitionSection } from './AccountOratorioCoordinatorTransitionSection'
@@ -186,6 +187,32 @@ describe('AccountOratorioCoordinatorTransitionSection', () => {
     expect(screen.getByText(title)).toBeInTheDocument()
     expect(
       screen.queryByRole('button', { name: /coordenação do Oratório/i }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('não pede identificador quando a consulta do vínculo é proibida', () => {
+    const forbiddenError = new AxiosError('diagnóstico técnico')
+    forbiddenError.response = { status: 403 } as never
+    hookMocks.useMemberByAccountEmail.mockReturnValue({
+      data: undefined,
+      error: forbiddenError,
+      isError: true,
+      isLoading: false,
+      refetch: vi.fn(),
+    })
+
+    renderSection()
+
+    expect(
+      screen.getByText(
+        'Não é possível selecionar este membro com segurança.',
+      ),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/a ação permanecerá indisponível/),
+    ).toBeInTheDocument()
+    expect(
+      screen.queryByRole('button', { name: 'Tentar novamente' }),
     ).not.toBeInTheDocument()
   })
 

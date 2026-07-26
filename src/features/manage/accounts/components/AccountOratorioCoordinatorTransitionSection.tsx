@@ -4,7 +4,12 @@ import { useState, type ReactNode } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { z } from 'zod'
 
-import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
+import {
+  EmptyState,
+  ErrorState,
+  ForbiddenState,
+  LoadingState,
+} from '@/components/AsyncState'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import {
@@ -21,7 +26,7 @@ import {
   useMemberByAccountEmail,
   useUpdateMemberOratorioCoordinator,
 } from '@/features/manage/members'
-import { getErrorMessage } from '@/lib/http'
+import { getErrorMessage, isForbiddenError } from '@/lib/http'
 
 import { accountAdminQueryKeys } from '../queryKeys'
 
@@ -99,7 +104,13 @@ export function AccountOratorioCoordinatorTransitionSection({
       />
     )
   } else if (memberQuery.isError) {
-    content = (
+    content = isForbiddenError(memberQuery.error) ? (
+      <ForbiddenState
+        className="min-h-28"
+        description="A consulta necessária ao vínculo não está disponível para sua conta, então a ação permanecerá indisponível."
+        title="Não é possível selecionar este membro com segurança."
+      />
+    ) : (
       <ErrorState
         className="min-h-28"
         description="Não foi possível verificar se esta conta está vinculada a um membro ativo."

@@ -148,6 +148,7 @@ describe('OratorianoDetailPage', () => {
     )
 
     expect(pageMocks.navigate).toHaveBeenCalledWith({
+      replace: true,
       search: { notice: 'oratoriano-excluido' },
       to: '/manage/oratorios/oratorianos',
     })

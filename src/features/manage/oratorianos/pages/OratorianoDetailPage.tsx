@@ -417,6 +417,7 @@ export function OratorianoDetailPage({
           name={fullName}
           onDeleted={() => {
             void navigate({
+              replace: true,
               search: { notice: 'oratoriano-excluido' },
               to: '/manage/oratorios/oratorianos',
             }).then(() => {
