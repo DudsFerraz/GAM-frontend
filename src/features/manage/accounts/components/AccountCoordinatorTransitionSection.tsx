@@ -80,8 +80,8 @@ export function AccountCoordinatorTransitionSection({
     )
   }
 
-  const memberId = memberQuery.data
-  if (!memberId) {
+  const member = memberQuery.data
+  if (!member) {
     return (
       <EmptyState
         className="min-h-24"
@@ -123,7 +123,7 @@ export function AccountCoordinatorTransitionSection({
             className="space-y-4"
             onSubmit={form.handleSubmit(({ reason }) => {
               coordinatorMutation.mutate(
-                { memberId, action, reason },
+                { memberId: member.id, action, reason },
                 {
                   onSuccess: () => {
                     form.reset()

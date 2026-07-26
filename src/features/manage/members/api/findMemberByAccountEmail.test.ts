@@ -13,10 +13,13 @@ beforeEach(() => {
 describe('findMemberByAccountEmail', () => {
   it('busca membros ativos e inativos pelo e-mail da conta', async () => {
     apiMocks.post.mockResolvedValueOnce({
-      data: { items: [{ id: 'member-id' }] },
+      data: { items: [{ id: 'member-id', status: 'ACTIVE' }] },
     })
 
-    await expect(findMemberByAccountEmail('maria@example.test')).resolves.toBe('member-id')
+    await expect(findMemberByAccountEmail('maria@example.test')).resolves.toEqual({
+      id: 'member-id',
+      status: 'ACTIVE',
+    })
     expect(apiMocks.post).toHaveBeenCalledWith(
       '/members/search',
       {
@@ -31,6 +34,14 @@ describe('findMemberByAccountEmail', () => {
 
   it('não inventa um identificador quando nenhum membro é encontrado', async () => {
     apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await expect(findMemberByAccountEmail('maria@example.test')).resolves.toBeNull()
+  })
+
+  it('descarta um resultado incompleto na fronteira de transporte', async () => {
+    apiMocks.post.mockResolvedValueOnce({
+      data: { items: [{ id: 'member-id' }] },
+    })
 
     await expect(findMemberByAccountEmail('maria@example.test')).resolves.toBeNull()
   })

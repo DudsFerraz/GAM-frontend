@@ -42,6 +42,9 @@ export function ManageAccountsPage() {
   const query = useSearchAccounts(searchTerm, field, page);
   const items = query.data?.items ?? [];
   const canManageMemberTransitions = permissions.includes("MEMBER_ACTIVATION");
+  const canManageOratorioCoordinators = permissions.includes(
+    "ORATORIO_COORD_MANAGE",
+  );
 
   const handleSearch = (event: FormEvent) => {
     event.preventDefault();
@@ -167,6 +170,7 @@ export function ManageAccountsPage() {
       <AccountDetailsDialog
         account={selectedAccount}
         canManageMemberTransitions={canManageMemberTransitions}
+        canManageOratorioCoordinators={canManageOratorioCoordinators}
         onClose={() => setSelectedAccount(null)}
       />
     </div>

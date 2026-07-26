@@ -3,7 +3,14 @@ import { api } from '@/lib/http'
 
 type MemberPageTransport = components['schemas']['PagedResponseMemberRDTO']
 
-export async function findMemberByAccountEmail(email: string): Promise<string | null> {
+export type MemberByAccountEmail = {
+  id: string
+  status: 'ACTIVE' | 'INACTIVE'
+}
+
+export async function findMemberByAccountEmail(
+  email: string,
+): Promise<MemberByAccountEmail | null> {
   const { data } = await api.post<MemberPageTransport>(
     '/members/search',
     {
@@ -15,5 +22,14 @@ export async function findMemberByAccountEmail(email: string): Promise<string | 
     { params: { page: 0, size: 1 } },
   )
 
-  return data.items?.[0]?.id ?? null
+  const member = data.items?.[0]
+
+  if (!member?.id || !member.status) {
+    return null
+  }
+
+  return {
+    id: member.id,
+    status: member.status,
+  }
 }
