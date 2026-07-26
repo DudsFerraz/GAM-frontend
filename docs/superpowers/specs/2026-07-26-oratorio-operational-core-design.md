@@ -11,16 +11,17 @@ O backend já expõe as rotas especializadas e o contrato frontend foi regenerad
 em `src/api/generated/gam-api.ts`. Esse arquivo permanece como referência de
 rotas e tipos de transporte e não será editado manualmente.
 
-### Comportamento atual
+### Ponto de partida registrado antes da implementação
 
-- A navegação autenticada possui áreas para solicitações, membros, eventos,
-  locais e contas, mas não possui uma área própria para Oratório.
-- A busca comum de Events já aceita o filtro de tipo `ORATORIO`.
-- A tela comum de Events apresenta Oratórios como Events somente para consulta;
-  as mutações genéricas são corretamente limitadas ao tipo `GENERIC`.
-- O frontend ainda não consome as rotas especializadas de ocorrência,
+- A navegação autenticada possuía áreas para solicitações, membros, eventos,
+  locais e contas, mas ainda não tinha uma área própria para Oratório.
+- A busca comum de Events já aceitava o filtro de tipo `ORATORIO`.
+- A tela comum de Events apresentava Oratórios como Events somente para
+  consulta; as mutações genéricas já eram corretamente limitadas ao tipo
+  `GENERIC`.
+- O frontend ainda não consumia as rotas especializadas de ocorrência,
   planejamento, equipes, tracker ou Oratorianos.
-- As permissões e apresentações portuguesas do novo catálogo já estão
+- As permissões e apresentações portuguesas do novo catálogo já estavam
   registradas no feature de Account.
 
 ### Fontes autoritativas
@@ -133,9 +134,9 @@ As rotas de interface serão:
 | `/manage/oratorios/$oratorioId/attendance` | Operar o tracker |
 | `/manage/oratorios/oratorianos/$oratorianoId` | Exibir e editar o perfil comum e a frequência |
 
-Um layout feature-local fornecerá a navegação entre `Ocorrências` e
-`Oratorianos`. A segunda seção só será exibida quando a conta possuir a
-capacidade de consultar Oratorianos.
+Um layout de rota em `src/components/`, por compor os dois features, fornecerá
+a navegação entre `Ocorrências` e `Oratorianos`. A segunda seção só será exibida
+quando a conta possuir a capacidade de consultar Oratorianos.
 
 Os arquivos de rota continuarão finos: parâmetros, composição do layout e
 importação das páginas públicas. `src/routeTree.gen.ts` não será editado
@@ -468,9 +469,13 @@ O motivo:
 
 Após sucesso, o detalhe será atualizado e as buscas serão invalidadas.
 
-O componente de telefone brasileiro existente poderá ser elevado a componente
-compartilhado, pois este será seu segundo uso real. A conversão para o formato
-aceito pela API continuará acontecendo somente na fronteira de envio.
+O campo de telefone aceitará o formato brasileiro local e números internacionais
+com DDI explícito, conforme `GamPhoneNumber`. A máscara brasileira existente
+continuará feature-local em Solicitações, pois torná-la obrigatória aqui
+rejeitaria números internacionais válidos. O frontend fará somente validações de
+forma que consiga sustentar sem duplicar uma biblioteca de telefonia; o backend
+continuará responsável por validar se o número é realmente discável e devolver
+o valor canônico E.164.
 
 ## Estado, cache e query keys
 
@@ -586,6 +591,7 @@ Testes unitários cobrirão:
 - motivo condicional à mudança de nome;
 - limites e caracteres válidos de `GamName`;
 - rejeição de data de nascimento futura em São Paulo;
+- aceitação de telefone brasileiro local ou internacional com DDI explícito;
 - campos opcionais do perfil;
 - matriz de ações de ciclo;
 - disponibilidade às 13h30 em São Paulo;

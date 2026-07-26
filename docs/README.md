@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This repository contains the GAM browser frontend: a static single-page application (SPA) for account access and the implemented operational views for members, membership solicitations, accounts and roles, events and attendance, and locations. It owns frontend source, UI behavior, the local development workflow, the frontend build, and frontend-only notes.
+This repository contains the GAM browser frontend: a static single-page application (SPA) for account access and the implemented operational views for members, membership solicitations, accounts and roles, events and attendance, Oratório and Oratorianos, and locations. It owns frontend source, UI behavior, the local development workflow, the frontend build, and frontend-only notes.
 
 Shared API, browser-session, deployment, operations, and domain contracts are owned by the [GAM backend repository](https://github.com/DudsFerraz/GAM-Bakckend-API). This repository links to those sources instead of copying their DTOs or requirements.
 
@@ -15,7 +15,7 @@ Shared API, browser-session, deployment, operations, and domain contracts are ow
 - Axios is the current HTTP client.
 - Vitest, jsdom, and Testing Library provide focused unit, integration, and component tests.
 
-The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences and lifecycle transitions, membership solicitations and review, Account consultation with coordinator designation, Events and attendance, and Locations. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); focused automated tests cover the most important frontend boundaries and implemented workflows.
+The codebase is an early, pre-production implementation. It has same-origin browser-session bootstrap, login and registration screens, a protected route group, a responsive application shell, a read-only current-Account profile, and contract-backed vertical views for member registration/search/detail/presences and lifecycle transitions, membership solicitations and review, Account consultation with coordinator designation, Events and attendance, the Oratório operational core and ordinary Oratoriano profiles, and Locations. The Oratório area currently covers occurrence creation/detail, fixed programming, planning, teams, lifecycle, the responsive Member/Oratoriano tracker, persistent present summaries, quick Oratoriano registration, and ordinary Oratoriano search/profile/frequency history. Additional forms, Oratório Coordinator designation, and Oratoriano deletion/restoration are not part of this implemented cycle. The generated backend contract is available at [`src/api/generated/gam-api.ts`](../src/api/generated/gam-api.ts); focused automated tests cover the most important frontend boundaries and implemented workflows.
 
 ## Immediate scope
 
