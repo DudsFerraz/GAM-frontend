@@ -18,12 +18,18 @@ import { Route as AuthLoginRouteImport } from './routes/auth/login'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as AuthenticatedHomeRouteImport } from './routes/_authenticated/home'
 import { Route as AuthenticatedManageSolicitationsRouteImport } from './routes/_authenticated/manage/solicitations'
+import { Route as AuthenticatedManageOratoriosRouteImport } from './routes/_authenticated/manage/oratorios'
 import { Route as AuthenticatedManageMembersRouteImport } from './routes/_authenticated/manage/members'
 import { Route as AuthenticatedManageLocationsRouteImport } from './routes/_authenticated/manage/locations'
 import { Route as AuthenticatedManageEventsRouteImport } from './routes/_authenticated/manage/events'
 import { Route as AuthenticatedManageAccountsRouteImport } from './routes/_authenticated/manage/accounts'
+import { Route as AuthenticatedManageOratoriosIndexRouteImport } from './routes/_authenticated/manage/oratorios.index'
+import { Route as AuthenticatedManageOratoriosOratorianosRouteImport } from './routes/_authenticated/manage/oratorios.oratorianos'
+import { Route as AuthenticatedManageOratoriosOratorioIdRouteImport } from './routes/_authenticated/manage/oratorios.$oratorioId'
 import { Route as AuthenticatedManageMembersMemberIdRouteImport } from './routes/_authenticated/manage/members/$memberId'
 import { Route as AuthenticatedManageEventsEventIdRouteImport } from './routes/_authenticated/manage/events_.$eventId'
+import { Route as AuthenticatedManageOratoriosOratorianosOratorianoIdRouteImport } from './routes/_authenticated/manage/oratorios.oratorianos_.$oratorianoId'
+import { Route as AuthenticatedManageOratoriosOratorioIdAttendanceRouteImport } from './routes/_authenticated/manage/oratorios.$oratorioId_.attendance'
 
 const ManageRoute = ManageRouteImport.update({
   id: '/manage',
@@ -70,6 +76,12 @@ const AuthenticatedManageSolicitationsRoute =
     path: '/manage/solicitations',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedManageOratoriosRoute =
+  AuthenticatedManageOratoriosRouteImport.update({
+    id: '/manage/oratorios',
+    path: '/manage/oratorios',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 const AuthenticatedManageMembersRoute =
   AuthenticatedManageMembersRouteImport.update({
     id: '/manage/members',
@@ -94,6 +106,24 @@ const AuthenticatedManageAccountsRoute =
     path: '/manage/accounts',
     getParentRoute: () => AuthenticatedRoute,
   } as any)
+const AuthenticatedManageOratoriosIndexRoute =
+  AuthenticatedManageOratoriosIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedManageOratoriosRoute,
+  } as any)
+const AuthenticatedManageOratoriosOratorianosRoute =
+  AuthenticatedManageOratoriosOratorianosRouteImport.update({
+    id: '/oratorianos',
+    path: '/oratorianos',
+    getParentRoute: () => AuthenticatedManageOratoriosRoute,
+  } as any)
+const AuthenticatedManageOratoriosOratorioIdRoute =
+  AuthenticatedManageOratoriosOratorioIdRouteImport.update({
+    id: '/$oratorioId',
+    path: '/$oratorioId',
+    getParentRoute: () => AuthenticatedManageOratoriosRoute,
+  } as any)
 const AuthenticatedManageMembersMemberIdRoute =
   AuthenticatedManageMembersMemberIdRouteImport.update({
     id: '/$memberId',
@@ -105,6 +135,18 @@ const AuthenticatedManageEventsEventIdRoute =
     id: '/manage/events_/$eventId',
     path: '/manage/events/$eventId',
     getParentRoute: () => AuthenticatedRoute,
+  } as any)
+const AuthenticatedManageOratoriosOratorianosOratorianoIdRoute =
+  AuthenticatedManageOratoriosOratorianosOratorianoIdRouteImport.update({
+    id: '/oratorianos_/$oratorianoId',
+    path: '/oratorianos/$oratorianoId',
+    getParentRoute: () => AuthenticatedManageOratoriosRoute,
+  } as any)
+const AuthenticatedManageOratoriosOratorioIdAttendanceRoute =
+  AuthenticatedManageOratoriosOratorioIdAttendanceRouteImport.update({
+    id: '/$oratorioId_/attendance',
+    path: '/$oratorioId/attendance',
+    getParentRoute: () => AuthenticatedManageOratoriosRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -119,9 +161,15 @@ export interface FileRoutesByFullPath {
   '/manage/events': typeof AuthenticatedManageEventsRoute
   '/manage/locations': typeof AuthenticatedManageLocationsRoute
   '/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
+  '/manage/oratorios': typeof AuthenticatedManageOratoriosRouteWithChildren
   '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
   '/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
   '/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
+  '/manage/oratorios/$oratorioId': typeof AuthenticatedManageOratoriosOratorioIdRoute
+  '/manage/oratorios/oratorianos': typeof AuthenticatedManageOratoriosOratorianosRoute
+  '/manage/oratorios/': typeof AuthenticatedManageOratoriosIndexRoute
+  '/manage/oratorios/$oratorioId/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
+  '/manage/oratorios/oratorianos/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -138,6 +186,11 @@ export interface FileRoutesByTo {
   '/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
   '/manage/events/$eventId': typeof AuthenticatedManageEventsEventIdRoute
   '/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
+  '/manage/oratorios/$oratorioId': typeof AuthenticatedManageOratoriosOratorioIdRoute
+  '/manage/oratorios/oratorianos': typeof AuthenticatedManageOratoriosOratorianosRoute
+  '/manage/oratorios': typeof AuthenticatedManageOratoriosIndexRoute
+  '/manage/oratorios/$oratorioId/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
+  '/manage/oratorios/oratorianos/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -153,9 +206,15 @@ export interface FileRoutesById {
   '/_authenticated/manage/events': typeof AuthenticatedManageEventsRoute
   '/_authenticated/manage/locations': typeof AuthenticatedManageLocationsRoute
   '/_authenticated/manage/members': typeof AuthenticatedManageMembersRouteWithChildren
+  '/_authenticated/manage/oratorios': typeof AuthenticatedManageOratoriosRouteWithChildren
   '/_authenticated/manage/solicitations': typeof AuthenticatedManageSolicitationsRoute
   '/_authenticated/manage/events_/$eventId': typeof AuthenticatedManageEventsEventIdRoute
   '/_authenticated/manage/members/$memberId': typeof AuthenticatedManageMembersMemberIdRoute
+  '/_authenticated/manage/oratorios/$oratorioId': typeof AuthenticatedManageOratoriosOratorioIdRoute
+  '/_authenticated/manage/oratorios/oratorianos': typeof AuthenticatedManageOratoriosOratorianosRoute
+  '/_authenticated/manage/oratorios/': typeof AuthenticatedManageOratoriosIndexRoute
+  '/_authenticated/manage/oratorios/$oratorioId_/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
+  '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -171,9 +230,15 @@ export interface FileRouteTypes {
     | '/manage/events'
     | '/manage/locations'
     | '/manage/members'
+    | '/manage/oratorios'
     | '/manage/solicitations'
     | '/manage/events/$eventId'
     | '/manage/members/$memberId'
+    | '/manage/oratorios/$oratorioId'
+    | '/manage/oratorios/oratorianos'
+    | '/manage/oratorios/'
+    | '/manage/oratorios/$oratorioId/attendance'
+    | '/manage/oratorios/oratorianos/$oratorianoId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -190,6 +255,11 @@ export interface FileRouteTypes {
     | '/manage/solicitations'
     | '/manage/events/$eventId'
     | '/manage/members/$memberId'
+    | '/manage/oratorios/$oratorioId'
+    | '/manage/oratorios/oratorianos'
+    | '/manage/oratorios'
+    | '/manage/oratorios/$oratorioId/attendance'
+    | '/manage/oratorios/oratorianos/$oratorianoId'
   id:
     | '__root__'
     | '/'
@@ -204,9 +274,15 @@ export interface FileRouteTypes {
     | '/_authenticated/manage/events'
     | '/_authenticated/manage/locations'
     | '/_authenticated/manage/members'
+    | '/_authenticated/manage/oratorios'
     | '/_authenticated/manage/solicitations'
     | '/_authenticated/manage/events_/$eventId'
     | '/_authenticated/manage/members/$memberId'
+    | '/_authenticated/manage/oratorios/$oratorioId'
+    | '/_authenticated/manage/oratorios/oratorianos'
+    | '/_authenticated/manage/oratorios/'
+    | '/_authenticated/manage/oratorios/$oratorioId_/attendance'
+    | '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -281,6 +357,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageSolicitationsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/manage/oratorios': {
+      id: '/_authenticated/manage/oratorios'
+      path: '/manage/oratorios'
+      fullPath: '/manage/oratorios'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/manage/members': {
       id: '/_authenticated/manage/members'
       path: '/manage/members'
@@ -309,6 +392,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageAccountsRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/manage/oratorios/': {
+      id: '/_authenticated/manage/oratorios/'
+      path: '/'
+      fullPath: '/manage/oratorios/'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosIndexRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
+    }
+    '/_authenticated/manage/oratorios/oratorianos': {
+      id: '/_authenticated/manage/oratorios/oratorianos'
+      path: '/oratorianos'
+      fullPath: '/manage/oratorios/oratorianos'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosOratorianosRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
+    }
+    '/_authenticated/manage/oratorios/$oratorioId': {
+      id: '/_authenticated/manage/oratorios/$oratorioId'
+      path: '/$oratorioId'
+      fullPath: '/manage/oratorios/$oratorioId'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosOratorioIdRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
+    }
     '/_authenticated/manage/members/$memberId': {
       id: '/_authenticated/manage/members/$memberId'
       path: '/$memberId'
@@ -322,6 +426,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/manage/events/$eventId'
       preLoaderRoute: typeof AuthenticatedManageEventsEventIdRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId': {
+      id: '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId'
+      path: '/oratorianos/$oratorianoId'
+      fullPath: '/manage/oratorios/oratorianos/$oratorianoId'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
+    }
+    '/_authenticated/manage/oratorios/$oratorioId_/attendance': {
+      id: '/_authenticated/manage/oratorios/$oratorioId_/attendance'
+      path: '/$oratorioId/attendance'
+      fullPath: '/manage/oratorios/$oratorioId/attendance'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosOratorioIdAttendanceRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
     }
   }
 }
@@ -341,6 +459,33 @@ const AuthenticatedManageMembersRouteWithChildren =
     AuthenticatedManageMembersRouteChildren,
   )
 
+interface AuthenticatedManageOratoriosRouteChildren {
+  AuthenticatedManageOratoriosOratorioIdRoute: typeof AuthenticatedManageOratoriosOratorioIdRoute
+  AuthenticatedManageOratoriosOratorianosRoute: typeof AuthenticatedManageOratoriosOratorianosRoute
+  AuthenticatedManageOratoriosIndexRoute: typeof AuthenticatedManageOratoriosIndexRoute
+  AuthenticatedManageOratoriosOratorioIdAttendanceRoute: typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
+  AuthenticatedManageOratoriosOratorianosOratorianoIdRoute: typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
+}
+
+const AuthenticatedManageOratoriosRouteChildren: AuthenticatedManageOratoriosRouteChildren =
+  {
+    AuthenticatedManageOratoriosOratorioIdRoute:
+      AuthenticatedManageOratoriosOratorioIdRoute,
+    AuthenticatedManageOratoriosOratorianosRoute:
+      AuthenticatedManageOratoriosOratorianosRoute,
+    AuthenticatedManageOratoriosIndexRoute:
+      AuthenticatedManageOratoriosIndexRoute,
+    AuthenticatedManageOratoriosOratorioIdAttendanceRoute:
+      AuthenticatedManageOratoriosOratorioIdAttendanceRoute,
+    AuthenticatedManageOratoriosOratorianosOratorianoIdRoute:
+      AuthenticatedManageOratoriosOratorianosOratorianoIdRoute,
+  }
+
+const AuthenticatedManageOratoriosRouteWithChildren =
+  AuthenticatedManageOratoriosRoute._addFileChildren(
+    AuthenticatedManageOratoriosRouteChildren,
+  )
+
 interface AuthenticatedRouteChildren {
   AuthenticatedHomeRoute: typeof AuthenticatedHomeRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
@@ -348,6 +493,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedManageEventsRoute: typeof AuthenticatedManageEventsRoute
   AuthenticatedManageLocationsRoute: typeof AuthenticatedManageLocationsRoute
   AuthenticatedManageMembersRoute: typeof AuthenticatedManageMembersRouteWithChildren
+  AuthenticatedManageOratoriosRoute: typeof AuthenticatedManageOratoriosRouteWithChildren
   AuthenticatedManageSolicitationsRoute: typeof AuthenticatedManageSolicitationsRoute
   AuthenticatedManageEventsEventIdRoute: typeof AuthenticatedManageEventsEventIdRoute
 }
@@ -359,6 +505,8 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedManageEventsRoute: AuthenticatedManageEventsRoute,
   AuthenticatedManageLocationsRoute: AuthenticatedManageLocationsRoute,
   AuthenticatedManageMembersRoute: AuthenticatedManageMembersRouteWithChildren,
+  AuthenticatedManageOratoriosRoute:
+    AuthenticatedManageOratoriosRouteWithChildren,
   AuthenticatedManageSolicitationsRoute: AuthenticatedManageSolicitationsRoute,
   AuthenticatedManageEventsEventIdRoute: AuthenticatedManageEventsEventIdRoute,
 }

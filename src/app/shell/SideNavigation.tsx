@@ -3,7 +3,7 @@ import { Link, useRouterState } from '@tanstack/react-router';
 import { cn } from '@/lib/utils';
 import gamLogo from '@/assets/logos/gam_logo.png';
 import gamLogoClaro from '@/assets/logos/gam_logo_claro.png';
-import { CalendarDays, FileClock, Home, MapPin, ShieldCheck, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, X, type LucideIcon } from 'lucide-react';
+import { CalendarDays, FileClock, Home, MapPin, ShieldCheck, Sun, Users, LogOut, ChevronLeft, ChevronRight, User as UserIcon, Loader2, Menu, X, type LucideIcon } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/Avatar';
 import { Button } from '@/components/ui/Button';
 import { useAccountInfo, useAccountPermissions } from '@/features/account';
@@ -14,7 +14,8 @@ type NavItem = {
   label: string;
   icon: LucideIcon;
   href: string;
-  requiredPermission?: string; 
+  requiredPermission?: string;
+  requiredAnyPermissions?: string[];
 };
 
 const NAV_ITEMS: NavItem[] = [
@@ -39,6 +40,12 @@ const NAV_ITEMS: NavItem[] = [
     icon: CalendarDays,
     href: '/manage/events',
     requiredPermission: 'EVENT_SEARCH',
+  },
+  {
+    label: 'Oratório',
+    icon: Sun,
+    href: '/manage/oratorios',
+    requiredAnyPermissions: ['ORATORIO_GET', 'ORATORIANO_GET'],
   },
   {
     label: 'Locais',
@@ -72,6 +79,11 @@ export const SideNavigation = () => {
     if (!user) return [];
     
     return NAV_ITEMS.filter((item) => {
+      if (item.requiredAnyPermissions) {
+        return item.requiredAnyPermissions.some((permission) =>
+          permissions.includes(permission),
+        );
+      }
       if (!item.requiredPermission) return true;
       return permissions.includes(item.requiredPermission);
     });

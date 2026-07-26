@@ -106,6 +106,42 @@ describe('getErrorMessage', () => {
     }))).toBe(expected)
   })
 
+  it.each([
+    [
+      'ORATORIO_DATE_ALREADY_EXISTS',
+      'Já existe um Oratório cadastrado nesta data.',
+    ],
+    [
+      'ORATORIO_LOCATION_UNAVAILABLE',
+      'O local configurado para o Oratório não está disponível.',
+    ],
+    [
+      'ORATORIO_HAS_ACTIVE_ATTENDANCE',
+      'Remova as presenças ativas antes de excluir este Oratório.',
+    ],
+    [
+      'ORATORIO_LIFECYCLE_CONFLICT',
+      'A situação atual do Oratório não permite esta ação.',
+    ],
+    [
+      'ORATORIO_TEAM_MEMBER_INACTIVE',
+      'Somente membros ativos podem receber uma nova atribuição de equipe.',
+    ],
+    [
+      'ORATORIANO_NAME_RESERVED',
+      'Já existe um cadastro ativo ou removido com esse nome. Procure a pessoa correta e, se necessário, solicite a restauração.',
+    ],
+    [
+      'ORATORIANO_DELETED',
+      'Este cadastro foi removido e não pode receber uma nova presença. Solicite a restauração antes de continuar.',
+    ],
+  ])('traduz o conflito do núcleo do Oratório %s', (code, expected) => {
+    expect(getErrorMessage(createAxiosError(409, {
+      code,
+      message: 'diagnóstico técnico',
+    }))).toBe(expected)
+  })
+
   it('usa feedback específico para credenciais inválidas', () => {
     expect(getErrorMessage(createAxiosError(401), 'authentication')).toBe(
       'E-mail ou senha inválidos. Confira os dados e tente novamente.',

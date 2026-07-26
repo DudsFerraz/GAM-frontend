@@ -73,6 +73,7 @@ export function ManageEventsPage({
   const { permissions } = useAccountPermissions(account);
   const canCreate = permissions.includes("EVENT_CREATE");
   const canManage = permissions.includes("EVENT_MANAGE");
+  const canViewOratorios = permissions.includes("ORATORIO_GET");
   const {
     isError: audiencePermissionsError,
     isLoading: audiencePermissionsLoading,
@@ -189,6 +190,8 @@ export function ManageEventsPage({
             const mapUrl = getEventMapUrl(item.gamLocation);
             const canManageEvent =
               canManage && item.type === "GENERIC" && Boolean(item.id);
+            const opensSpecializedOratorio =
+              canViewOratorios && item.type === "ORATORIO" && Boolean(item.id);
 
             return (
               <Card
@@ -197,10 +200,20 @@ export function ManageEventsPage({
                 key={item.id ?? index}
               >
                 {item.id && (
-                  <CardActionArea
-                    aria-label={`Ver detalhes de ${item.title ?? "evento"}`}
-                    onClick={() => onSelectedEventIdChange(item.id ?? null)}
-                  />
+                  opensSpecializedOratorio ? (
+                    <CardActionArea asChild>
+                      <Link
+                        aria-label={`Abrir Oratório ${item.title ?? ""}`.trim()}
+                        params={{ oratorioId: item.id }}
+                        to="/manage/oratorios/$oratorioId"
+                      />
+                    </CardActionArea>
+                  ) : (
+                    <CardActionArea
+                      aria-label={`Ver detalhes de ${item.title ?? "evento"}`}
+                      onClick={() => onSelectedEventIdChange(item.id ?? null)}
+                    />
+                  )
                 )}
                 <CardHeader className="pointer-events-none relative z-[1] flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
                   <div className="min-w-0">
