@@ -33,7 +33,17 @@ export function ManageSolicitationsPage() {
   const { permissions } = useAccountPermissions(account)
   const canReview = permissions.includes('MEMBER_MANAGE')
   const query = useSolicitations(status, page)
+  const approvedSolicitationsQuery = useSolicitations(
+    'APPROVED',
+    0,
+    Boolean(account) && !canReview,
+  )
   const items = query.data?.items ?? []
+  const hasMemberId = approvedSolicitationsQuery.data?.items?.some(
+    (solicitation) => Boolean(solicitation.memberId),
+  ) ?? false
+  const canSubmitSolicitation =
+    !canReview && approvedSolicitationsQuery.isSuccess && !hasMemberId
 
   return (
     <div className="space-y-6 py-2 sm:py-4">
@@ -43,7 +53,12 @@ export function ManageSolicitationsPage() {
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Solicitações</h1>
           <p className="mt-1 text-sm text-muted-foreground">Consulte seu histórico ou analise solicitações.</p>
         </div>
-        {!canReview && <Button onClick={() => setIsSubmitOpen(true)}><Plus className="h-4 w-4" />Nova solicitação</Button>}
+        {canSubmitSolicitation && (
+          <Button onClick={() => setIsSubmitOpen(true)}>
+            <Plus aria-hidden="true" className="h-4 w-4" />
+            Nova solicitação
+          </Button>
+        )}
       </div>
 
       <div className="max-w-xs rounded-xl border bg-card p-4">
@@ -121,7 +136,12 @@ export function ManageSolicitationsPage() {
       )}
       {query.data && <Pagination disabled={query.isFetching} itemLabel="solicitações" onPageChange={setPage} page={query.data.page ?? page} totalElements={query.data.totalElements ?? items.length} totalPages={query.data.totalPages ?? 0} />}
 
-      {!canReview && <SubmitSolicitationDialog onOpenChange={setIsSubmitOpen} open={isSubmitOpen} />}
+      {canSubmitSolicitation && (
+        <SubmitSolicitationDialog
+          onOpenChange={setIsSubmitOpen}
+          open={isSubmitOpen}
+        />
+      )}
       <SolicitationDetailsDialog canReview={canReview} id={selectedId} onClose={() => setSelectedId(null)} />
     </div>
   )

@@ -9,10 +9,15 @@ import {
 } from '../api/solicitations'
 import { solicitationQueryKeys } from '../queryKeys'
 
-export function useSolicitations(status: SolicitationStatus | 'ALL', page: number) {
+export function useSolicitations(
+  status: SolicitationStatus | 'ALL',
+  page: number,
+  enabled = true,
+) {
   return useQuery({
     queryKey: solicitationQueryKeys.search(status, page),
     queryFn: () => searchSolicitations(status, page),
+    enabled,
     placeholderData: keepPreviousData,
   })
 }
