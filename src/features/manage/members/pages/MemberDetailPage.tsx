@@ -1,12 +1,25 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, CalendarDays, Mail, Phone, UserRound } from 'lucide-react'
+import {
+  ArrowLeft,
+  CalendarDays,
+  ChevronRight,
+  Mail,
+  Phone,
+  UserRound,
+} from 'lucide-react'
 import { useState } from 'react'
 
 import { EmptyState, ErrorState, ForbiddenState, LoadingState } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card'
 import { getEventStatusLabel, getEventTypeLabel } from '@/features/manage/events'
 import { formatDate, formatDateTime } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
@@ -104,13 +117,30 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
         {presenceItems.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-2">
             {presenceItems.map((presence) => (
-              <Card key={presence.id} className="gap-3 py-4">
-                <CardContent className="space-y-2">
+              <Card
+                className="gap-3 py-4"
+                interactive
+                key={presence.id}
+              >
+                <CardActionArea asChild>
+                  <Link
+                    aria-label={`Ver evento ${presence.event.title}`}
+                    params={{ eventId: presence.event.id }}
+                    to="/manage/events/$eventId"
+                  />
+                </CardActionArea>
+                <CardContent className="pointer-events-none relative z-[1] space-y-2">
                   <div className="flex items-start justify-between gap-3">
                     <h3 className="font-semibold">{presence.event.title}</h3>
-                    <Badge variant={presence.event.status === 'CANCELLED' ? 'destructive' : 'outline'}>
-                      {getEventStatusLabel(presence.event.status)}
-                    </Badge>
+                    <div className="flex shrink-0 items-center gap-2">
+                      <Badge variant={presence.event.status === 'CANCELLED' ? 'destructive' : 'outline'}>
+                        {getEventStatusLabel(presence.event.status)}
+                      </Badge>
+                      <ChevronRight
+                        aria-hidden="true"
+                        className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+                      />
+                    </div>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     {getEventTypeLabel(presence.event.type)}
@@ -125,11 +155,6 @@ export function MemberDetailPage({ memberId }: MemberDetailPageProps) {
                   {presence.observations && (
                     <p className="whitespace-pre-wrap text-sm">{presence.observations}</p>
                   )}
-                  <Button asChild size="sm" variant="link">
-                    <Link to="/manage/events/$eventId" params={{ eventId: presence.event.id }}>
-                      Ver evento
-                    </Link>
-                  </Button>
                 </CardContent>
               </Card>
             ))}

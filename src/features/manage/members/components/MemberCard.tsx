@@ -1,9 +1,13 @@
-import type { KeyboardEvent } from 'react'
-import { Calendar, Mail, User } from 'lucide-react'
+import { Calendar, ChevronRight, Mail, User } from 'lucide-react'
 
 import { Avatar, AvatarFallback } from '@/components/ui/Avatar'
 import { Badge } from '@/components/ui/Badge'
-import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/Card'
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardHeader,
+} from '@/components/ui/Card'
 import { cn } from '@/lib/utils'
 
 import type { MemberListItem } from '../types'
@@ -45,34 +49,25 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
   const fullName = [member.firstName, member.surname].filter(Boolean).join(' ')
   const statusLabel = getMemberStatusLabel(member.status)
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'Enter' && event.key !== ' ') {
-      return
-    }
-
-    event.preventDefault()
-    onClick(member)
-  }
-
   return (
     <Card
-      aria-label={`Ver detalhes de ${fullName}`}
       className={cn(
-        'group relative flex h-full cursor-pointer flex-col overflow-hidden border-border bg-card transition-shadow hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2',
+        'flex h-full flex-col overflow-hidden border-border bg-card',
         className,
       )}
-      onClick={() => onClick(member)}
-      onKeyDown={handleKeyDown}
-      role="button"
-      tabIndex={0}
+      interactive
     >
-      <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-2">
+      <CardActionArea
+        aria-label={`Ver detalhes de ${fullName}`}
+        onClick={() => onClick(member)}
+      />
+      <CardHeader className="pointer-events-none relative z-[1] flex flex-row items-center gap-4 space-y-0 pb-2">
         <Avatar className="h-12 w-12 border-2 border-border">
           <AvatarFallback className="bg-primary/10 text-primary">
-            <User size={20} />
+            <User aria-hidden="true" size={20} />
           </AvatarFallback>
         </Avatar>
-        <div className="flex flex-col overflow-hidden">
+        <div className="flex min-w-0 flex-1 flex-col overflow-hidden">
           <h3 className="truncate font-semibold text-foreground" title={fullName}>
             {fullName}
           </h3>
@@ -80,8 +75,12 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
             {member.displayName}
           </p>
         </div>
+        <ChevronRight
+          aria-hidden="true"
+          className="h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+        />
       </CardHeader>
-      <CardContent className="flex-1 pb-2">
+      <CardContent className="pointer-events-none relative z-[1] flex-1 pb-2">
         <div className="flex flex-col gap-2 text-sm text-muted-foreground">
           <div className="flex items-center gap-2">
             <Calendar aria-hidden="true" className="text-primary/70" size={14} />
@@ -106,11 +105,6 @@ export function MemberCard({ member, onClick, className }: MemberCardProps) {
           </Badge>
         </div>
       </CardContent>
-      <CardFooter className="mt-auto pb-4 pt-0">
-        <span className="mt-2 w-full rounded-md px-3 py-2 text-center text-xs font-medium text-primary transition-colors group-hover:bg-primary/5">
-          Ver detalhes
-        </span>
-      </CardFooter>
     </Card>
   )
 }

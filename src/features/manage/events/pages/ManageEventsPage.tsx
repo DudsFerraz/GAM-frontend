@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import {
   CalendarDays,
-  Eye,
+  ChevronRight,
   MapPin,
   Plus,
   Search,
@@ -20,6 +20,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
+  CardActionArea,
   CardContent,
   CardFooter,
   CardHeader,
@@ -190,8 +191,18 @@ export function ManageEventsPage({
               canManage && item.type === "GENERIC" && Boolean(item.id);
 
             return (
-              <Card className="gap-4 py-5" key={item.id ?? index}>
-                <CardHeader className="flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
+              <Card
+                className="gap-4 py-5"
+                interactive={Boolean(item.id)}
+                key={item.id ?? index}
+              >
+                {item.id && (
+                  <CardActionArea
+                    aria-label={`Ver detalhes de ${item.title ?? "evento"}`}
+                    onClick={() => onSelectedEventIdChange(item.id ?? null)}
+                  />
+                )}
+                <CardHeader className="pointer-events-none relative z-[1] flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
                   <div className="min-w-0">
                     <CardTitle className="truncate">
                       {item.title ?? "Evento sem título"}
@@ -200,32 +211,40 @@ export function ManageEventsPage({
                       {getEventTypeLabel(item.type)}
                     </p>
                   </div>
-                  {item.status && (
-                    <Badge
-                      variant={
-                        item.status === "CANCELLED"
-                          ? "destructive"
-                          : "secondary"
-                      }
-                    >
-                      {getEventStatusLabel(item.status)}
-                    </Badge>
-                  )}
+                  <div className="flex shrink-0 items-center gap-2">
+                    {item.status && (
+                      <Badge
+                        variant={
+                          item.status === "CANCELLED"
+                            ? "destructive"
+                            : "secondary"
+                        }
+                      >
+                        {getEventStatusLabel(item.status)}
+                      </Badge>
+                    )}
+                    {item.id && (
+                      <ChevronRight
+                        aria-hidden="true"
+                        className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+                      />
+                    )}
+                  </div>
                 </CardHeader>
-                <CardContent className="space-y-2 px-5 text-sm">
+                <CardContent className="pointer-events-none relative z-[1] space-y-2 px-5 text-sm">
                   <p className="flex items-center gap-2 text-muted-foreground">
-                    <CalendarDays className="h-4 w-4" />
+                    <CalendarDays aria-hidden="true" className="h-4 w-4" />
                     {formatDateTime(item.beginDate)}
                   </p>
                   <p className="flex items-center gap-2 text-muted-foreground">
-                    <MapPin className="h-4 w-4" />
+                    <MapPin aria-hidden="true" className="h-4 w-4" />
                     {item.gamLocation?.name ?? "Local não informado"}
                   </p>
                   <p className="line-clamp-2">
                     {item.description || "Sem descrição."}
                   </p>
                 </CardContent>
-                <CardFooter className="flex flex-col gap-2 px-5 sm:flex-row sm:items-center">
+                <CardFooter className="relative z-10 flex flex-col gap-2 px-5 sm:flex-row sm:items-center">
                   {mapUrl ? (
                     <Button
                       asChild
@@ -245,42 +264,23 @@ export function ManageEventsPage({
                       Mapa indisponível
                     </Button>
                   )}
-                  {item.id && (
-                    <div className="flex w-full gap-2 sm:w-auto">
-                      <Button
-                        aria-label={`Ver detalhes de ${item.title ?? "evento"}`}
-                        className="flex-1 sm:flex-none"
-                        onClick={() => onSelectedEventIdChange(item.id ?? null)}
-                        size="icon-sm"
-                        title="Ver detalhes"
-                        variant="outline"
+                  {canManageEvent && item.id && (
+                    <Button
+                      asChild
+                      className="w-full sm:w-auto"
+                      size="sm"
+                      title="Gerenciar evento"
+                      variant="outline"
+                    >
+                      <Link
+                        aria-label={`Gerenciar ${item.title ?? "evento"}`}
+                        params={{ eventId: item.id }}
+                        to="/manage/events/$eventId"
                       >
-                        <Eye className="h-4 w-4" />
-                        <span className="sr-only">
-                          Ver detalhes de {item.title ?? "evento"}
-                        </span>
-                      </Button>
-                      {canManageEvent && (
-                        <Button
-                          asChild
-                          className="flex-1 sm:flex-none"
-                          size="icon-sm"
-                          title="Gerenciar evento"
-                          variant="outline"
-                        >
-                          <Link
-                            aria-label={`Gerenciar ${item.title ?? "evento"}`}
-                            params={{ eventId: item.id }}
-                            to="/manage/events/$eventId"
-                          >
-                            <Settings2 className="h-4 w-4" />
-                            <span className="sr-only">
-                              Gerenciar {item.title ?? "evento"}
-                            </span>
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
+                        <Settings2 aria-hidden="true" className="h-4 w-4" />
+                        Gerenciar
+                      </Link>
+                    </Button>
                   )}
                 </CardFooter>
               </Card>

@@ -1,11 +1,17 @@
-import { FileClock, Plus, UserRound } from 'lucide-react'
+import { ChevronRight, FileClock, Plus, UserRound } from 'lucide-react'
 import { useState } from 'react'
 
 import { EmptyState, ErrorState, ForbiddenState, LoadingState } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/Card'
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/Card'
 import { Label } from '@/components/ui/Label'
 import { Select } from '@/components/ui/Select'
 import { useAccountInfo, useAccountPermissions } from '@/features/account'
@@ -53,13 +59,62 @@ export function ManageSolicitationsPage() {
       {items.length > 0 && (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {items.map((item, index) => (
-            <Card key={item.id ?? index} className="gap-4 py-5">
-              <CardHeader className="flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
-                <div><CardTitle>{[item.firstName, item.surname].filter(Boolean).join(' ') || 'Solicitação'}</CardTitle><p className="mt-1 flex items-center gap-1 text-xs text-muted-foreground"><UserRound className="h-3.5 w-3.5" />{item.account?.displayName ?? 'Conta não informada'}</p></div>
-                {item.status && <Badge variant={item.status === 'REJECTED' ? 'destructive' : 'secondary'}>{getSolicitationStatusLabel(item.status)}</Badge>}
+            <Card
+              className="gap-4 py-5"
+              interactive={Boolean(item.id)}
+              key={item.id ?? index}
+            >
+              {item.id && (
+                <CardActionArea
+                  aria-label={`Ver detalhes da solicitação de ${
+                    [item.firstName, item.surname].filter(Boolean).join(' ') ||
+                    'membresia'
+                  }`}
+                  onClick={() => setSelectedId(item.id ?? null)}
+                />
+              )}
+              <CardHeader className="pointer-events-none relative z-[1] flex grid-cols-none flex-row items-start justify-between gap-3 px-5">
+                <div className="min-w-0">
+                  <CardTitle className="truncate">
+                    {[item.firstName, item.surname]
+                      .filter(Boolean)
+                      .join(' ') || 'Solicitação'}
+                  </CardTitle>
+                  <p className="mt-1 flex items-center gap-1 truncate text-xs text-muted-foreground">
+                    <UserRound
+                      aria-hidden="true"
+                      className="h-3.5 w-3.5 shrink-0"
+                    />
+                    {item.account?.displayName ?? 'Conta não informada'}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {item.status && (
+                    <Badge
+                      variant={
+                        item.status === 'REJECTED'
+                          ? 'destructive'
+                          : 'secondary'
+                      }
+                    >
+                      {getSolicitationStatusLabel(item.status)}
+                    </Badge>
+                  )}
+                  {item.id && (
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="h-4 w-4 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+                    />
+                  )}
+                </div>
               </CardHeader>
-              <CardContent className="space-y-2 px-5 text-sm"><p className="flex items-center gap-2 text-muted-foreground"><FileClock className="h-4 w-4" />{formatDateTime(item.submittedAt)}</p><p className="line-clamp-2">{item.justification}</p></CardContent>
-              <CardFooter className="px-5"><Button className="w-full" disabled={!item.id} onClick={() => item.id && setSelectedId(item.id)} size="sm" variant="outline">Ver detalhes</Button></CardFooter>
+              <CardContent className="pointer-events-none relative z-[1] space-y-2 px-5 text-sm">
+                <p className="flex items-center gap-2 text-muted-foreground">
+                  <FileClock aria-hidden="true" className="h-4 w-4" />
+                  {formatDateTime(item.submittedAt)}
+                </p>
+                <p className="line-clamp-2">{item.justification}</p>
+              </CardContent>
             </Card>
           ))}
         </div>

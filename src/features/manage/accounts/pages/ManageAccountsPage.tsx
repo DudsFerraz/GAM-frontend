@@ -1,4 +1,4 @@
-import { Mail, Search, UserRound } from "lucide-react";
+import { ChevronRight, Mail, Search, UserRound } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import {
@@ -12,8 +12,8 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
   Card,
+  CardActionArea,
   CardContent,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
@@ -110,9 +110,18 @@ export function ManageAccountsPage() {
             {items.map((item, index) => (
               <Card
                 className={selectedAccount?.id === item.id ? "gap-3 border-primary py-4" : "gap-3 py-4"}
+                interactive={Boolean(item.id)}
                 key={item.id ?? index}
               >
-                <CardHeader className="flex grid-cols-none flex-row items-start gap-3 px-5">
+                {item.id && (
+                  <CardActionArea
+                    aria-label={`Ver detalhes de ${item.displayName ?? "conta"}`}
+                    onClick={() => {
+                      setSelectedAccount(item);
+                    }}
+                  />
+                )}
+                <CardHeader className="pointer-events-none relative z-[1] flex grid-cols-none flex-row items-start gap-3 px-5">
                   <div className="rounded-full bg-primary/10 p-2 text-primary">
                     <UserRound aria-hidden="true" className="h-5 w-5" />
                   </div>
@@ -125,29 +134,20 @@ export function ManageAccountsPage() {
                       {item.email ?? "E-mail não informado"}
                     </p>
                   </div>
+                  {item.id && (
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+                    />
+                  )}
                 </CardHeader>
-                <CardContent className="flex flex-wrap gap-1 px-5">
+                <CardContent className="pointer-events-none relative z-[1] flex flex-wrap gap-1 px-5">
                   {item.roles.map((role, roleIndex) => (
                     <Badge key={role.id ?? roleIndex} variant="outline">
                       {getRoleLabel(role)}
                     </Badge>
                   ))}
                 </CardContent>
-                <CardFooter className="px-5">
-                  <Button
-                    className="w-full"
-                    disabled={!item.id}
-                    onClick={() => {
-                      setSelectedAccount(item);
-                    }}
-                    size="sm"
-                    variant={
-                      selectedAccount?.id === item.id ? "default" : "outline"
-                    }
-                  >
-                    Ver mais
-                  </Button>
-                </CardFooter>
               </Card>
             ))}
           </div>

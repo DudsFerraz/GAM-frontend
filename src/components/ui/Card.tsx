@@ -1,15 +1,44 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 
 import { cn } from "@/lib/utils"
 
-function Card({ className, ...props }: React.ComponentProps<"div">) {
+function Card({
+  className,
+  interactive = false,
+  ...props
+}: React.ComponentProps<"div"> & { interactive?: boolean }) {
   return (
     <div
       data-slot="card"
+      data-interactive={interactive || undefined}
       className={cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        "relative bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm",
+        interactive &&
+          "group cursor-pointer transition-[border-color,box-shadow] hover:border-primary/40 hover:shadow-md focus-within:border-primary/50 focus-within:shadow-md",
         className
       )}
+      {...props}
+    />
+  )
+}
+
+function CardActionArea({
+  asChild = false,
+  className,
+  type,
+  ...props
+}: React.ComponentProps<"button"> & { asChild?: boolean }) {
+  const Comp = asChild ? Slot : "button"
+
+  return (
+    <Comp
+      data-slot="card-action-area"
+      className={cn(
+        "absolute inset-0 z-0 cursor-pointer touch-manipulation rounded-[inherit] border-0 bg-transparent p-0 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:cursor-default",
+        className
+      )}
+      type={asChild ? undefined : (type ?? "button")}
       {...props}
     />
   )
@@ -83,6 +112,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
 
 export {
   Card,
+  CardActionArea,
   CardHeader,
   CardFooter,
   CardTitle,

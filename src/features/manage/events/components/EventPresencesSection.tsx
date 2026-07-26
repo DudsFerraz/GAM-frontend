@@ -1,5 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Pencil, Trash2, UserPlus, UserRound } from "lucide-react";
+import {
+  ChevronRight,
+  Pencil,
+  Trash2,
+  UserPlus,
+  UserRound,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 
 import {
@@ -11,7 +17,7 @@ import {
 import { Pagination } from "@/components/Pagination";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
-import { Card, CardContent } from "@/components/ui/Card";
+import { Card, CardActionArea, CardContent } from "@/components/ui/Card";
 import { formatDateTime } from "@/lib/format";
 import { isForbiddenError } from "@/lib/http";
 
@@ -160,8 +166,22 @@ export function EventPresencesSection({
         {canViewPresences && presenceItems.length > 0 && (
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {presenceItems.map((presence) => (
-              <Card className="gap-3 py-4" key={presence.id}>
-                <CardContent className="space-y-3">
+              <Card
+                className="gap-3 py-4"
+                interactive
+                key={presence.id}
+              >
+                <CardActionArea asChild>
+                  <Link
+                    aria-label={`Ver membro ${[
+                      presence.member.firstName,
+                      presence.member.surname,
+                    ].join(" ")}`}
+                    params={{ memberId: presence.member.id }}
+                    to="/manage/members/$memberId"
+                  />
+                </CardActionArea>
+                <CardContent className="pointer-events-none relative z-[1] space-y-3">
                   <div className="flex min-w-0 items-center gap-2">
                     <UserRound
                       aria-hidden="true"
@@ -173,6 +193,10 @@ export function EventPresencesSection({
                         presence.member.surname,
                       ].join(" ")}
                     </h3>
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5 motion-reduce:transform-none motion-reduce:transition-none"
+                    />
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Presença registrada em{" "}
@@ -183,17 +207,9 @@ export function EventPresencesSection({
                       {presence.observations}
                     </p>
                   )}
-                  <Button asChild size="sm" variant="link">
-                    <Link
-                      params={{ memberId: presence.member.id }}
-                      to="/manage/members/$memberId"
-                    >
-                      Ver membro
-                    </Link>
-                  </Button>
                   {presenceChangesAvailable &&
                     (canEditPresences || canRemovePresences) && (
-                      <div className="flex flex-wrap gap-2">
+                      <div className="pointer-events-auto relative z-10 flex flex-wrap gap-2">
                         {canEditPresences && (
                           <Button
                             aria-label={`Editar observações da presença de ${presence.member.firstName}`}
