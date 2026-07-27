@@ -120,7 +120,7 @@ export const SideNavigation = () => {
     </div>
     <aside 
       className={cn(
-        "relative flex flex-col h-screen border-r border-border bg-background text-foreground transition-all duration-300 ease-in-out z-40",
+        "relative hidden h-screen flex-col border-r border-border bg-background text-foreground transition-all duration-300 ease-in-out md:flex md:shrink-0 z-40",
         isCollapsed ? "w-20" : "w-[280px]"
       )}
     >
