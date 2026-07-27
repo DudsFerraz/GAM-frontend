@@ -51,6 +51,7 @@ const NAV_ITEMS: NavItem[] = [
     label: 'Locais',
     icon: MapPin,
     href: '/manage/locations',
+    requiredPermission: 'GAM_LOCATION_GET',
   },
   {
     label: 'Contas e acessos',

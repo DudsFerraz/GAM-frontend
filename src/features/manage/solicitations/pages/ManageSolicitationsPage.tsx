@@ -42,14 +42,13 @@ export function ManageSolicitationsPage() {
   const hasMemberId = approvedSolicitationsQuery.data?.items?.some(
     (solicitation) => Boolean(solicitation.memberId),
   ) ?? false
-  const canSubmitSolicitation =
-    !canReview && approvedSolicitationsQuery.isSuccess && !hasMemberId
+  const canSubmitSolicitation = !canReview && !hasMemberId
 
   return (
     <div className="space-y-6 py-2 sm:py-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-sm font-medium text-primary">Membresia</p>
+          <p className="text-sm font-medium text-primary">Participação como membro</p>
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">Solicitações</h1>
           <p className="mt-1 text-sm text-muted-foreground">Consulte seu histórico ou analise solicitações.</p>
         </div>
@@ -83,7 +82,7 @@ export function ManageSolicitationsPage() {
                 <CardActionArea
                   aria-label={`Ver detalhes da solicitação de ${
                     [item.firstName, item.surname].filter(Boolean).join(' ') ||
-                    'membresia'
+                    'participação como membro'
                   }`}
                   onClick={() => setSelectedId(item.id ?? null)}
                 />

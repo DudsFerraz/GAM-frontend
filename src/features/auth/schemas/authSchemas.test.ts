@@ -26,17 +26,17 @@ describe('loginSchema', () => {
 
 describe('registerSchema', () => {
   const validRegistration = {
-    confirmPassword: 'segredo',
+    confirmPassword: 'segredo8',
     displayName: 'Conta GAM',
     email: 'conta@example.test',
-    password: 'segredo',
+    password: 'segredo8',
   }
 
   it('aceita um cadastro válido', () => {
     expect(registerSchema.safeParse(validRegistration).success).toBe(true)
   })
 
-  it('rejeita nome e senha curtos com feedback em português', () => {
+  it('rejeita nome e senha com menos de oito caracteres com feedback em português', () => {
     const result = registerSchema.safeParse({
       ...validRegistration,
       confirmPassword: '123',
@@ -48,8 +48,23 @@ describe('registerSchema', () => {
     if (!result.success) {
       expect(result.error.flatten().fieldErrors).toMatchObject({
         displayName: ['O nome deve ter pelo menos 3 caracteres'],
-        password: ['A senha deve ter pelo menos 6 caracteres'],
+        password: ['A senha deve ter pelo menos 8 caracteres'],
       })
+    }
+  })
+
+  it('rejeita senha de sete caracteres', () => {
+    const result = registerSchema.safeParse({
+      ...validRegistration,
+      confirmPassword: '1234567',
+      password: '1234567',
+    })
+
+    expect(result.success).toBe(false)
+    if (!result.success) {
+      expect(result.error.flatten().fieldErrors.password).toContain(
+        'A senha deve ter pelo menos 8 caracteres',
+      )
     }
   })
 

@@ -102,4 +102,19 @@ describe('ManageSolicitationsPage', () => {
     ).toBeInTheDocument()
     expect(screen.getByTestId('submit-solicitation-dialog')).toBeInTheDocument()
   })
+
+  it('mantém a nova solicitação disponível enquanto o histórico aprovado não foi confirmado', () => {
+    mocks.useSolicitations.mockReturnValue({
+      ...solicitationQuery([]),
+      data: undefined,
+      isLoading: true,
+      isSuccess: false,
+    })
+
+    render(<ManageSolicitationsPage />)
+
+    expect(
+      screen.getByRole('button', { name: 'Nova solicitação' }),
+    ).toBeInTheDocument()
+  })
 })

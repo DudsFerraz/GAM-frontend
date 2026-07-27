@@ -39,8 +39,8 @@ export function SubmitSolicitationDialog({ open, onOpenChange }: Props) {
     <Dialog open={open} onOpenChange={changeOpen}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Nova solicitação de membresia</DialogTitle>
-          <DialogDescription>Envie seus dados para análise da coordenação. O envio não concede membresia automaticamente.</DialogDescription>
+          <DialogTitle>Nova solicitação para participação como membro</DialogTitle>
+          <DialogDescription>Envie seus dados para análise da coordenação. O envio não concede a participação como membro automaticamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
