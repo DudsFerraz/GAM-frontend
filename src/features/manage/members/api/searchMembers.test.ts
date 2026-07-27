@@ -32,7 +32,7 @@ describe('searchMembers', () => {
     })
 
     const result = await searchMembers(
-      [{ field: 'name', value: 'Maria', comparationMethod: 'LIKE' }],
+      [{ field: 'name', value: 'Maria', comparisonMethod: 'LIKE' }],
       {
         page: 2,
         size: 20,
@@ -44,8 +44,8 @@ describe('searchMembers', () => {
       '/members/search',
       {
         filters: [
-          { field: 'name', value: 'Maria', comparationMethod: 'LIKE' },
-          { field: 'status', value: ['ACTIVE'], comparationMethod: 'IN' },
+          { field: 'name', value: 'Maria', comparisonMethod: 'LIKE' },
+          { field: 'status', value: ['ACTIVE'], comparisonMethod: 'IN' },
         ],
       },
       {
@@ -77,7 +77,7 @@ describe('searchMembers', () => {
         filters: [{
           field: 'status',
           value: ['ACTIVE', 'INACTIVE'],
-          comparationMethod: 'IN',
+          comparisonMethod: 'IN',
         }],
       },
       expect.any(Object),
@@ -86,17 +86,17 @@ describe('searchMembers', () => {
 
   it('preserva um filtro explícito válido e substitui um inválido pelo padrão seguro', async () => {
     await searchMembers(
-      [{ field: 'status', value: 'INACTIVE', comparationMethod: 'EQUALS' }],
+      [{ field: 'status', value: 'INACTIVE', comparisonMethod: 'EQUALS' }],
     )
     expect(apiMocks.post.mock.calls[0]?.[1]).toEqual({
-      filters: [{ field: 'status', value: 'INACTIVE', comparationMethod: 'EQUALS' }],
+      filters: [{ field: 'status', value: 'INACTIVE', comparisonMethod: 'EQUALS' }],
     })
 
     await searchMembers(
-      [{ field: 'status', value: 'ARCHIVED', comparationMethod: 'EQUALS' }],
+      [{ field: 'status', value: 'ARCHIVED', comparisonMethod: 'EQUALS' }],
     )
     expect(apiMocks.post.mock.calls[1]?.[1]).toEqual({
-      filters: [{ field: 'status', value: ['ACTIVE'], comparationMethod: 'IN' }],
+      filters: [{ field: 'status', value: ['ACTIVE'], comparisonMethod: 'IN' }],
     })
   })
 

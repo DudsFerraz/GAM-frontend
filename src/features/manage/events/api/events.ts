@@ -35,19 +35,19 @@ export async function searchEvents(
     apiFilters.push({
       field: "title",
       value: filters.title.trim(),
-      comparationMethod: "LIKE",
+      comparisonMethod: "LIKE",
     });
   if (filters.status !== "ALL")
     apiFilters.push({
       field: "status",
       value: filters.status,
-      comparationMethod: "EQUALS",
+      comparisonMethod: "EQUALS",
     });
   if (filters.type !== "ALL")
     apiFilters.push({
       field: "type",
       value: filters.type,
-      comparationMethod: "EQUALS",
+      comparisonMethod: "EQUALS",
     });
   const { data } = await api.post<EventPage>(
     "/events/search",

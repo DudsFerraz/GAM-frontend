@@ -15,8 +15,8 @@ export async function findMemberByAccountEmail(
     '/members/search',
     {
       filters: [
-        { field: 'email', value: email, comparationMethod: 'EQUALS' },
-        { field: 'status', value: ['ACTIVE', 'INACTIVE'], comparationMethod: 'IN' },
+        { field: 'email', value: email, comparisonMethod: 'EQUALS' },
+        { field: 'status', value: ['ACTIVE', 'INACTIVE'], comparisonMethod: 'IN' },
       ],
     },
     { params: { page: 0, size: 1 } },

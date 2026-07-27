@@ -10,7 +10,7 @@ export type SearchFilter = NonNullable<
   components['schemas']['SearchDTO']['filters']
 >[number]
 
-export type ComparationMethod = SearchFilter['comparationMethod']
+export type ComparisonMethod = SearchFilter['comparisonMethod']
 
 export type SpecificationFilter = SearchFilter & {
   value: string

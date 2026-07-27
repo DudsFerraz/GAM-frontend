@@ -12,7 +12,7 @@ export async function searchSolicitations(
 ): Promise<SolicitationPage> {
   const filters = status === 'ALL'
     ? []
-    : [{ field: 'status', value: status, comparationMethod: 'EQUALS' as const }]
+    : [{ field: 'status', value: status, comparisonMethod: 'EQUALS' as const }]
   const { data } = await api.post<SolicitationPage>(
     '/membership-solicitations/search',
     { filters },

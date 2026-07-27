@@ -13,7 +13,7 @@ export type Permission = components['schemas']['PermissionRDTO']
 
 export async function searchAccounts(term: string, field: 'displayName' | 'email', page: number): Promise<AccountPage> {
   const filters = term.trim()
-    ? [{ field, value: term.trim(), comparationMethod: 'LIKE' as const }]
+    ? [{ field, value: term.trim(), comparisonMethod: 'LIKE' as const }]
     : []
   const { data } = await api.post<AccountPageTransport>('/accounts/search', { filters }, {
     params: { page, size: 10, sort: ['displayName,asc'] },

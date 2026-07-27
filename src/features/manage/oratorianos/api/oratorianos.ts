@@ -26,7 +26,7 @@ export async function searchOratorianos(
       ? [{
           field: 'name',
           value: normalizedName,
-          comparationMethod: 'LIKE',
+          comparisonMethod: 'LIKE',
         }]
       : []
   const { data } = await api.post<OratorianoPage>(

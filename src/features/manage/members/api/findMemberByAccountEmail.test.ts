@@ -24,8 +24,8 @@ describe('findMemberByAccountEmail', () => {
       '/members/search',
       {
         filters: [
-          { field: 'email', value: 'maria@example.test', comparationMethod: 'EQUALS' },
-          { field: 'status', value: ['ACTIVE', 'INACTIVE'], comparationMethod: 'IN' },
+          { field: 'email', value: 'maria@example.test', comparisonMethod: 'EQUALS' },
+          { field: 'status', value: ['ACTIVE', 'INACTIVE'], comparisonMethod: 'IN' },
         ],
       },
       { params: { page: 0, size: 1 } },

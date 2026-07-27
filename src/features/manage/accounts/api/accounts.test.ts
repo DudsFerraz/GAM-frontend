@@ -40,7 +40,7 @@ describe('searchAccounts', () => {
         filters: [{
           field: 'displayName',
           value: 'Conta',
-          comparationMethod: 'LIKE',
+          comparisonMethod: 'LIKE',
         }],
       },
       {

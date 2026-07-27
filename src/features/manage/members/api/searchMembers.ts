@@ -26,11 +26,11 @@ function isSupportedMemberStatusFilter(filter: SearchFilter): boolean {
     return true
   }
 
-  if (filter.comparationMethod === 'EQUALS') {
+  if (filter.comparisonMethod === 'EQUALS') {
     return isMemberStatus(filter.value)
   }
 
-  if (filter.comparationMethod === 'IN') {
+  if (filter.comparisonMethod === 'IN') {
     return Array.isArray(filter.value)
       && filter.value.length > 0
       && filter.value.every(isMemberStatus)
@@ -55,7 +55,7 @@ function toMemberSearchFilters(
     {
       field: 'status',
       value: showInactive ? [...MEMBER_STATUSES] : ['ACTIVE'],
-      comparationMethod: 'IN',
+      comparisonMethod: 'IN',
     },
   ]
 }

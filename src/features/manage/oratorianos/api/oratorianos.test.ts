@@ -32,7 +32,7 @@ describe('API de Oratorianos', () => {
       '/oratorianos/search',
       {
         filters: [{
-          comparationMethod: 'LIKE',
+          comparisonMethod: 'LIKE',
           field: 'name',
           value: 'Ana Souza',
         }],

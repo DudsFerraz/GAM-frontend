@@ -50,7 +50,7 @@ export function MemberSearchPicker({
       {
         field: deferredSearch.includes("@") ? "email" : "name",
         value: deferredSearch,
-        comparationMethod: "LIKE",
+        comparisonMethod: "LIKE",
       },
     ];
   }, [deferredSearch]);

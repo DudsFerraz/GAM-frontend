@@ -3,7 +3,7 @@ import { Search, Filter, ArrowUpDown, X, Plus, Check, ArrowUp, ArrowDown, Users 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
-import type { ComparationMethod, SpecificationFilter } from '../../types';
+import type { ComparisonMethod, SpecificationFilter } from '../../types';
 import type { FieldConfig, SortCriteria } from './types';
 
 const ALL_OPERATORS: Record<string, string> = {
@@ -41,7 +41,7 @@ export const SearchAndFilter = ({
   const filterableFields = useMemo(() => config.filter(c => c.filterable !== false), [config]);
   const [selectedFieldKey, setSelectedFieldKey] = useState(filterableFields[0]?.key || '');
   
-  const [selectedOperator, setSelectedOperator] = useState<ComparationMethod>('EQUALS');
+  const [selectedOperator, setSelectedOperator] = useState<ComparisonMethod>('EQUALS');
   const [filterValue, setFilterValue] = useState('');
 
   const onSearchRef = useRef(onSearch);
@@ -63,7 +63,7 @@ export const SearchAndFilter = ({
       filters.push({
         field: mainFilterField,
         value: mainSearchValue,
-        comparationMethod: 'LIKE'
+        comparisonMethod: 'LIKE'
       });
     }
 
@@ -79,7 +79,7 @@ export const SearchAndFilter = ({
     
     const newConfig = config.find(c => c.key === newFieldKey);
     if (newConfig) {
-      const defaultOp = (newConfig.allowedOperators?.[0] as ComparationMethod) 
+      const defaultOp = (newConfig.allowedOperators?.[0] as ComparisonMethod)
         || (newConfig.inputType === 'text' ? 'LIKE' : 'EQUALS');
       
       setSelectedOperator(defaultOp);
@@ -93,7 +93,7 @@ export const SearchAndFilter = ({
     const newFilter: SpecificationFilter = {
       field: selectedFieldKey,
       value: filterValue,
-      comparationMethod: selectedOperator,
+      comparisonMethod: selectedOperator,
     };
 
     setActiveFilters((prev) => [...prev, newFilter]);
@@ -291,7 +291,7 @@ export const SearchAndFilter = ({
               <select 
                 className="w-full h-10 px-3 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-2 focus:ring-ring"
                 value={selectedOperator}
-                onChange={(e) => setSelectedOperator(e.target.value as ComparationMethod)}
+                onChange={(e) => setSelectedOperator(e.target.value as ComparisonMethod)}
               >
                 {availableOperators.map(op => (
                   <option key={op.key} value={op.key}>{op.label}</option>
@@ -318,7 +318,7 @@ export const SearchAndFilter = ({
             {activeFilters.map((filter, idx) => (
               <div key={idx} className="flex items-center gap-2 bg-secondary/50 text-secondary-foreground px-3 py-1 rounded-md text-sm border border-border animate-in fade-in zoom-in-95 duration-200">
                 <span className="font-medium text-foreground">{getFieldLabel(filter.field)}</span>
-                <span className="text-muted-foreground text-xs lowercase">{ALL_OPERATORS[filter.comparationMethod]}</span>
+                <span className="text-muted-foreground text-xs lowercase">{ALL_OPERATORS[filter.comparisonMethod]}</span>
                 <span className="font-bold">{getDisplayValue(filter)}</span>
                 <button onClick={() => handleRemoveFilter(idx)} className="text-muted-foreground hover:text-destructive transition-colors ml-1">
                   <X className="h-3 w-3" />
