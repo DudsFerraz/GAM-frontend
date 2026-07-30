@@ -2,7 +2,7 @@
 
 ## Status
 
-Design aceito para implementação. Esta especificação registra comportamento planejado e não descreve a apresentação atual da listagem.
+Design implementado na listagem comum de Events. Esta especificação registra a decisão visual e a fonte tipada que sustentam o comportamento atual.
 
 ## Contexto
 

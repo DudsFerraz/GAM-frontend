@@ -36,6 +36,7 @@ import {
 } from "@/features/account";
 import { formatDateTime } from "@/lib/format";
 import { isForbiddenError } from "@/lib/http";
+import { cn } from "@/lib/utils";
 
 import type { EventFilters, EventStatus, EventType } from "../api/events";
 import { CreateEventDialog } from "../components/CreateEventDialog";
@@ -43,10 +44,10 @@ import { EventDetailsDialog } from "../components/EventDetailsDialog";
 import { useEvents } from "../hooks/useEvents";
 import {
   EVENT_STATUS_LABELS,
-  EVENT_TYPE_LABELS,
+  EVENT_TYPE_PRESENTATIONS,
   getEventMapUrl,
   getEventStatusLabel,
-  getEventTypeLabel,
+  getEventTypePresentation,
 } from "../presentation";
 
 const initialFilters: EventFilters = {
@@ -161,11 +162,13 @@ export function ManageEventsPage({
             value={filters.type}
           >
             <option value="ALL">Todos</option>
-            {Object.entries(EVENT_TYPE_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
+            {Object.entries(EVENT_TYPE_PRESENTATIONS).map(
+              ([value, presentation]) => (
+                <option key={value} value={value}>
+                  {presentation.label}
+                </option>
+              ),
+            )}
           </Select>
         </div>
         <Button type="submit">
@@ -188,6 +191,7 @@ export function ManageEventsPage({
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {items.map((item, index) => {
             const mapUrl = getEventMapUrl(item.gamLocation);
+            const typePresentation = getEventTypePresentation(item.type);
             const canManageEvent =
               canManage && item.type === "GENERIC" && Boolean(item.id);
             const opensSpecializedOratorio =
@@ -195,7 +199,10 @@ export function ManageEventsPage({
 
             return (
               <Card
-                className="gap-4 py-5"
+                className={cn(
+                  "gap-4 py-5",
+                  typePresentation.cardAccentClassName,
+                )}
                 interactive={Boolean(item.id)}
                 key={item.id ?? index}
               >
@@ -220,8 +227,19 @@ export function ManageEventsPage({
                     <CardTitle className="truncate">
                       {item.title ?? "Evento sem título"}
                     </CardTitle>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      {getEventTypeLabel(item.type)}
+                    <p
+                      className={cn(
+                        "mt-1 flex items-center gap-1.5 text-sm",
+                        typePresentation.typeMarkerClassName,
+                      )}
+                    >
+                      {typePresentation.emphasized && (
+                        <span
+                          aria-hidden="true"
+                          className="h-1.5 w-1.5 shrink-0 rounded-full bg-current"
+                        />
+                      )}
+                      <span>{typePresentation.label}</span>
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
