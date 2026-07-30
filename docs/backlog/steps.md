@@ -6,7 +6,9 @@ Pages and features must come from accepted product requirements. This document d
 
 **Status convention:** `Done` means the behavior is implemented in the frontend and covered by the current local checks. `In progress` includes work blocked by a backend contract or route that is not available yet. This audit was updated on 25 July 2026 against the current frontend code, the checked-in generated contract, backend controllers, and accepted backend requirements.
 
-## 1. Stabilize the current frontend baseline
+## Implementation roadmap
+
+### 1. Stabilize the current frontend baseline
 
 **Status:** Done. The existing TypeScript and ESLint errors are resolved, and the local lint and production-build commands pass.
 
@@ -17,7 +19,7 @@ Pages and features must come from accepted product requirements. This document d
 
 **Done when:** `npm run lint` and `npm run build` pass.
 
-## 2. Establish the backend-owned OpenAPI contract
+### 2. Establish the backend-owned OpenAPI contract
 
 **Status:** In progress. The backend owns the generated contract and documents the `/api` base, live documentation, release artifact, linting, and compatibility flow. The checked-in generated frontend reference is sufficient for local development, but no versioned backend `openapi.yaml` release artifact and compatibility baseline are recorded for frontend consumption yet.
 
@@ -32,7 +34,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 **Done when:** a versioned backend OpenAPI artifact is available, its compatibility baseline is configured, and the frontend records the supported version. See [API integration](../integration/api.md), the backend-owned [OpenAPI requirement](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/requirements/platform/openapi-and-frontend-api-documentation.md), and the [web contract](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/requirements/platform/web-delivery-and-frontend-contract.md).
 
-## 3. Consume the selected OpenAPI version in the frontend
+### 3. Consume the selected OpenAPI version in the frontend
 
 **Status:** In progress. The frontend consumes [`src/api/generated/gam-api.ts`](../../src/api/generated/gam-api.ts) as its generated route and transport-type reference for local development. Pinning a release asset, regenerating from that immutable artifact, and verifying the generated output in the release workflow remain pending.
 
@@ -45,7 +47,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 **Done when:** frontend API calls compile against generated transport types from one pinned contract version, and the release check detects contract drift before publication.
 
-## 4. Create the same-origin API infrastructure
+### 4. Create the same-origin API infrastructure
 
 **Status:** Done for the current frontend integration. The shared client uses `/api`, Vite forwards that prefix to a server-only configurable local backend target, and current feature adapters use resource-relative paths from the checked-in contract. Contract release pinning remains tracked in steps 2 and 3.
 
@@ -56,7 +58,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 **Done when:** local browser requests stay on the Vite origin and reach the backend through `/api`, without CORS.
 
-## 5. Implement the accepted browser authentication boundary
+### 5. Implement the accepted browser authentication boundary
 
 **Status:** Done for the accepted browser-session boundary. The checked-in contract exposes `GET /auth/csrf` and `GET /accounts/me`. Startup bootstrap, in-memory access tokens, CSRF-protected login/refresh/logout, current-Account loading, effective-permission visibility, in-instance and cross-tab refresh coordination, bounded replay, cross-tab logout broadcast, unconfirmed-logout feedback, and one-time Account resynchronization after an unexpected `403` are implemented.
 
@@ -70,7 +72,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 **Done when:** protected UI cannot render before bootstrap completes, no access token is persisted in browser storage, and the accepted refresh, logout, and `403` synchronization behavior is covered. See [Browser authentication](../integration/authentication.md).
 
-## 6. Establish the application shell and shared UI boundaries
+### 6. Establish the application shell and shared UI boundaries
 
 **Status:** Done. The authenticated shell, responsive navigation, theme control, and reusable asynchronous-state components are established. Feature pages can compose them without copying application layout or feedback states.
 
@@ -82,7 +84,7 @@ Do not create a competing handwritten OpenAPI file in this repository. The front
 
 **Done when:** new pages can use one consistent application shell and shared UI vocabulary without copying layout or state-feedback logic.
 
-## 7. Deliver pages as vertical features
+### 7. Deliver pages as vertical features
 
 **Status:** In progress against the checked-in backend contract. The vertical slices for Members, membership solicitations, business-facing Account consultation, Generic Event creation and lifecycle, Presence management, the Oratório operational core, ordinary Oratoriano profiles, and Locations are implemented with generated transport types, feature API modules, TanStack Query, React Hook Form/Zod for submitted data, responsive routes, explicit asynchronous states, and Portuguese presentation mappings. Presence registration, observation editing, and reasoned removal use their three specific permissions and refresh both Event and Member Presence histories. The specialized Oratório tracker persists individual relations and reconciles its rosters and persistent summary. Custom permission combinations that grant a write without the read capability needed for safe target selection remain documented contract-integration limitations.
 
@@ -101,7 +103,7 @@ Keep business-specific components, hooks, query keys, API mappers, and form sche
 
 **Done when:** the feature works from route to API response with a clear UI state for every expected outcome.
 
-## 8. Expand the application incrementally
+### 8. Expand the application incrementally
 
 **Status:** In progress. The contract-backed management candidates have initial vertical slices and focused Vitest/Testing Library tooling now protects the main authentication, presentation, validation, mapping, and shared-component boundaries. Product validation, release-contract verification, and follow-up usability refinement remain pending.
 
