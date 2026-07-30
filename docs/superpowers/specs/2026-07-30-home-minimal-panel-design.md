@@ -46,11 +46,14 @@ The panel does not contain supporting introduction copy, action buttons, operati
 The accepted composition is option C, the overlaid-card direction:
 
 - The existing dark-blue GAM hero treatment remains the visual foundation.
+- The panel fills the complete usable content height inside the authenticated shell while preserving the shell's existing outer margins.
+- No unused page-background area remains below the panel at desktop heights.
 - Identity content occupies the left portion of the panel.
-- The mission carousel appears as a distinct, compact image card overlapping the lower-right area.
+- The mission carousel appears as a distinct image card overlapping the lower-right area and acts as the panel's dominant secondary element.
 - Overlap is used only for the mission card; no additional floating decoration or card is added.
 - The mission card retains the current home card's image-first treatment and does not copy the full-height login layout.
-- Spacing and contrast must keep the greeting, access indicator, quotation, and carousel control readable in light and dark themes.
+- On ordinary desktop widths, the mission card occupies approximately 44–48% of the panel width and about 60% of its height.
+- Spacing and contrast must keep the greeting, access indicator, and quotation readable in light and dark themes.
 
 ## Mission carousel
 
@@ -70,8 +73,7 @@ The home carousel:
 - shows only the image, the `Nosso propósito` label, and the current quotation;
 - omits the existing explanatory paragraph;
 - does not add navigation links or calls to action;
-- provides one visually discreet pause/continue control with an explicit accessible name;
-- pauses while the user requests it;
+- does not offer pause, playback, or manual-navigation controls;
 - remains static and does not auto-advance when reduced motion is preferred.
 
 The transition must avoid layout shifts. Alternative text must not redundantly announce decorative imagery when the visible quotation already conveys the slide's content.
@@ -80,17 +82,19 @@ The transition must avoid layout shifts. Alternative text must not redundantly a
 
 At widths of 768 px and above:
 
+- the GAM panel fills the usable shell height without creating page scrolling solely because of its own size;
 - the mission carousel is present;
 - the card is overlaid in the panel's lower-right area;
 - identity content keeps sufficient width and must not collide with the card;
+- the card uses proportional width and height rather than a small fixed-height treatment;
 - the panel may reduce the overlay proportion on intermediate widths while preserving the same hierarchy.
 
 Below 768 px:
 
-- the entire mission carousel is absent, including image, quotation, label, and pause control;
+- the entire mission carousel is absent, including image, quotation, and label;
 - the carousel timer and transition behavior do not run;
 - no space is reserved for the removed card;
-- the panel becomes shorter and contains only its label, greeting, and main access type.
+- the panel still fills the usable shell height and contains only its label, greeting, and main access type.
 
 The breakpoint behavior must respond when the viewport crosses 768 px without requiring a page reload.
 
@@ -120,7 +124,7 @@ No event- or solicitation-specific loading, empty, error, or retry state remains
 - The route file remains thin and continues to compose the authenticated home feature.
 - `AuthenticatedHomePage` coordinates the current-Account boundary and the single panel.
 - The dashboard panel owns its visual composition.
-- The mission carousel is a focused component with its timer, reduced-motion behavior, pause state, and responsive lifecycle isolated from Account data.
+- The mission carousel is a focused component with its timer, reduced-motion behavior, and responsive lifecycle isolated from Account data.
 - The four shared slide definitions live outside both the authentication and home feature folders so neither feature imports from the other.
 - Home components that become unused after the redesign are removed only when repository search confirms they have no remaining consumer.
 
@@ -130,7 +134,6 @@ No generic carousel framework or new UI library is introduced.
 
 - The panel uses a semantic heading structure headed by the personalized page heading.
 - The access type is readable text and does not rely on iconography alone.
-- The pause/continue control is keyboard accessible, visibly focusable, and announces its current action in Brazilian Portuguese.
 - Automatic advancement is disabled for `prefers-reduced-motion: reduce`.
 - Contrast remains sufficient over every supplied image.
 - Hidden mobile carousel content is not present in the accessibility tree.
@@ -143,7 +146,7 @@ Focused tests should prove observable behavior:
 - removed shortcuts, buttons, metrics, event list, and explanatory copy are absent;
 - event and solicitation hooks are no longer invoked by `/home`;
 - the carousel cycles through the shared slides at the accepted interval on eligible widths;
-- pause/continue and reduced-motion behavior stop automatic advancement;
+- reduced-motion behavior stops automatic advancement;
 - below 768 px the carousel is absent and no interval is active;
 - crossing the breakpoint mounts or removes the carousel correctly;
 - loading and unavailable Account states remain explicit.
@@ -162,7 +165,9 @@ The redesign is complete when:
 2. No quick access, event summary, solicitation summary, action button, or upcoming-event list remains.
 3. The panel shows the authenticated person's greeting and translated main access type.
 4. The overlaid mission card uses the four accepted login images and quotations on widths of at least 768 px.
-5. The mission card and all of its behavior are absent below 768 px without reserving space.
-6. The page no longer requests event or solicitation data.
-7. Motion, pause, keyboard focus, contrast, and Account loading/error boundaries meet the behavior defined above.
-8. Relevant tests, lint, and build pass without regressions.
+5. The panel fills the usable shell height with the shell margins preserved and no page-background void below it.
+6. The mission card is proportionally larger, occupying roughly half the desktop panel width and about 60% of its height.
+7. The mission card and all of its behavior are absent below 768 px without reserving space.
+8. The page no longer requests event or solicitation data.
+9. Motion, contrast, and Account loading/error boundaries meet the behavior defined above.
+10. Relevant tests, lint, and build pass without regressions.
