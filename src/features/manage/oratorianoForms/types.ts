@@ -6,6 +6,7 @@ export type OratorianoFormHistoryPage =
   components['schemas']['PagedResponseFormHistoryRDTO']
 export type OratorianoFormDetail = components['schemas']['FormRDTO']
 export type OratorianoFormDraft = components['schemas']['FormDraftDTO']
+export type OratorianoFormReason = components['schemas']['ReasonDTO']
 export type CreateOratorianoFormRequest =
   components['schemas']['CreateFormDTO']
 export type OratorianoFormStatus = NonNullable<

@@ -2,12 +2,14 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   createOratorianoForm,
+  deleteOratorianoFormDraft,
   getOratorianoFormDetail,
   getOratorianoFormHistory,
   replaceOratorianoFormDraft,
 } from './oratorianoForms'
 
 const apiMocks = vi.hoisted(() => ({
+  delete: vi.fn(),
   get: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
@@ -16,6 +18,7 @@ const apiMocks = vi.hoisted(() => ({
 vi.mock('@/lib/http', () => ({ api: apiMocks }))
 
 beforeEach(() => {
+  apiMocks.delete.mockReset()
   apiMocks.get.mockReset()
   apiMocks.post.mockReset()
   apiMocks.put.mockReset()
@@ -157,6 +160,42 @@ describe('API de substituição integral do rascunho', () => {
       'oratoriano-id',
       'form-id',
       {},
+    )).rejects.toBe(error)
+  })
+})
+
+describe('API de exclusão do rascunho', () => {
+  it('usa DELETE, path codificado e body na configuração do Axios', async () => {
+    apiMocks.delete.mockResolvedValueOnce({ status: 204 })
+
+    await deleteOratorianoFormDraft('oratoriano/id', 'form id', {
+      reason: 'Ficha criada para a pessoa errada.',
+    })
+
+    expect(apiMocks.delete).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano%2Fid/forms/form%20id',
+      { data: { reason: 'Ficha criada para a pessoa errada.' } },
+    )
+  })
+
+  it('aceita 204 sem tentar interpretar body de resposta', async () => {
+    apiMocks.delete.mockResolvedValueOnce({ status: 204 })
+
+    await expect(deleteOratorianoFormDraft(
+      'oratoriano-id',
+      'form-id',
+      { reason: 'Motivo válido.' },
+    )).resolves.toBeUndefined()
+  })
+
+  it('preserva falha para a camada de apresentação segura', async () => {
+    const error = new Error('diagnóstico privado')
+    apiMocks.delete.mockRejectedValueOnce(error)
+
+    await expect(deleteOratorianoFormDraft(
+      'oratoriano-id',
+      'form-id',
+      { reason: 'Motivo válido.' },
     )).rejects.toBe(error)
   })
 })

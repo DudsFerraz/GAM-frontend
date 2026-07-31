@@ -42,6 +42,7 @@ import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 
 import { EditOratorianoDialog } from '../components/EditOratorianoDialog'
 import { DeleteOratorianoDialog } from '../components/DeleteOratorianoDialog'
+import { OratorianoProfileNotice } from '../components/OratorianoProfileNotice'
 import {
   useOratoriano,
   useOratorianoAttendances,
@@ -52,6 +53,7 @@ import {
   getOratorianoFullName,
 } from '../presentation'
 import { oratorianoQueryKeys } from '../queryKeys'
+import type { OratorianoProfileNotice as OratorianoProfileNoticeValue } from '../profileNotices'
 
 const MONTH_LABELS = [
   'Janeiro',
@@ -84,9 +86,13 @@ function getSaoPauloYearAndMonth(): { month: number; year: number } {
 }
 
 export function OratorianoDetailPage({
+  initialNotice,
   oratorianoId,
+  onNoticeDismiss,
 }: {
+  initialNotice?: OratorianoProfileNoticeValue
   oratorianoId: string
+  onNoticeDismiss?: () => void
 }) {
   const currentPeriod = getSaoPauloYearAndMonth()
   const [year, setYear] = useState(currentPeriod.year)
@@ -107,6 +113,7 @@ export function OratorianoDetailPage({
     canEditProfile,
     false,
   )
+  const [isNoticeDismissed, setIsNoticeDismissed] = useState(false)
   const canViewOratorios = permissions.includes('ORATORIO_GET')
   const canViewForms = permissions.includes('ORATORIANO_FORM_GET')
   const canManageForms = canViewForms
@@ -193,6 +200,16 @@ export function OratorianoDetailPage({
           </div>
         )}
       </div>
+
+      {initialNotice && !isNoticeDismissed && (
+        <OratorianoProfileNotice
+          notice={initialNotice}
+          onDismiss={() => {
+            setIsNoticeDismissed(true)
+            onNoticeDismiss?.()
+          }}
+        />
+      )}
 
       <Card>
         <CardHeader>

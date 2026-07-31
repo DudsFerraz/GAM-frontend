@@ -71,4 +71,31 @@ describe('ManageOratorianosPage', () => {
 
     expect(screen.queryByRole('status')).not.toBeInTheDocument()
   })
+
+  it('apresenta o aviso específico para a exclusão do rascunho', async () => {
+    const user = userEvent.setup()
+    const onNoticeDismiss = vi.fn()
+    render(
+      <ManageOratorianosPage
+        initialNotice="oratoriano-form-rascunho-excluido"
+        onNoticeDismiss={onNoticeDismiss}
+      />,
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'O rascunho foi excluído.',
+    )
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'A ficha adicional não aparece mais no histórico.',
+    )
+    expect(screen.queryByText('oratoriano-form-rascunho-excluido'))
+      .not.toBeInTheDocument()
+
+    await user.click(
+      screen.getByRole('button', { name: 'Dispensar confirmação' }),
+    )
+
+    expect(onNoticeDismiss).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
 })

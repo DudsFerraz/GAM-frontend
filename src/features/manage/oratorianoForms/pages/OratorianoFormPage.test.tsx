@@ -10,6 +10,7 @@ import { oratorianoFormQueryKeys } from '../queryKeys'
 import { OratorianoFormPage } from './OratorianoFormPage'
 
 const pageMocks = vi.hoisted(() => ({
+  navigate: vi.fn(),
   useAccountInfo: vi.fn(),
   useAccountPermissions: vi.fn(),
   useOratoriano: vi.fn(),
@@ -20,6 +21,7 @@ vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: PropsWithChildren) => (
     <a href="/perfil-sintetico">{children}</a>
   ),
+  useNavigate: () => pageMocks.navigate,
 }))
 
 vi.mock('@/features/account', () => ({
@@ -33,6 +35,9 @@ vi.mock('@/features/manage/oratorianos', () => ({
     surname?: string
   }) => [value?.firstName, value?.surname].filter(Boolean).join(' ')
     || 'Nome não informado',
+  ORATORIANO_PROFILE_NOTICE: {
+    formDraftDeleted: 'oratoriano-form-rascunho-excluido',
+  },
   useOratoriano: pageMocks.useOratoriano,
 }))
 
@@ -41,9 +46,18 @@ vi.mock('../hooks/useOratorianoForms', () => ({
 }))
 
 vi.mock('../components/OratorianoFormEditor', () => ({
-  OratorianoFormEditor: ({ detail }: { detail: { status?: string } }) => (
+  OratorianoFormEditor: ({
+    detail,
+    onDeleted,
+  }: {
+    detail: { status?: string }
+    onDeleted?: () => Promise<void>
+  }) => (
     <div data-testid="oratoriano-form-editor">
-      Editor em cinco etapas · {detail.status}
+      <span>Editor em cinco etapas · {detail.status}</span>
+      <button onClick={() => void onDeleted?.()} type="button">
+        Confirmar exclusão simulada
+      </button>
     </div>
   ),
 }))
@@ -134,6 +148,8 @@ function renderPage({
 }
 
 beforeEach(() => {
+  pageMocks.navigate.mockReset()
+  pageMocks.navigate.mockResolvedValue(undefined)
   refetch.mockReset()
   pageMocks.useAccountInfo.mockReset()
   pageMocks.useAccountInfo.mockReturnValue({ account: { id: 'account-id' } })
@@ -262,6 +278,58 @@ describe('OratorianoFormPage', () => {
       .toHaveTextContent('COMPLETED')
   })
 
+  it('navega após a confirmação e só remove o workspace depois da navegação', async () => {
+    pageMocks.useAccountPermissions.mockReturnValue({
+      permissions: [
+        'ORATORIANO_FORM_GET',
+        'ORATORIANO_FORM_MANAGE',
+        'ORATORIANO_GET',
+      ],
+    })
+    let resolveNavigation: (() => void) | undefined
+    pageMocks.navigate.mockImplementationOnce(
+      () => new Promise<void>((resolve) => {
+        resolveNavigation = resolve
+      }),
+    )
+    const queryClient = createQueryClient()
+    const removeQueries = vi.spyOn(queryClient, 'removeQueries')
+    const view = renderPage({ queryClient })
+
+    await userEvent.click(
+      screen.getByRole('button', { name: 'Confirmar exclusão simulada' }),
+    )
+    expect(pageMocks.navigate).toHaveBeenCalledWith({
+      params: { oratorianoId: 'oratoriano-id' },
+      replace: true,
+      search: { notice: 'oratoriano-form-rascunho-excluido' },
+      to: '/manage/oratorios/oratorianos/$oratorianoId',
+    })
+    expect(removeQueries).not.toHaveBeenCalled()
+
+    resolveNavigation?.()
+    await waitFor(() => expect(removeQueries).toHaveBeenCalledTimes(3))
+    expect(removeQueries).toHaveBeenNthCalledWith(1, {
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.detail('oratoriano-id', 'form-id'),
+    })
+    expect(removeQueries).toHaveBeenNthCalledWith(2, {
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.snapshots(
+        'oratoriano-id',
+        'form-id',
+      ),
+    })
+    expect(removeQueries).toHaveBeenNthCalledWith(3, {
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.attachments(
+        'oratoriano-id',
+        'form-id',
+      ),
+    })
+    view.unmount()
+  })
+
   it.each([
     ['COMPLETED', 'Concluída', 'Esta ficha foi concluída'],
     ['SUPERSEDED', 'Substituída', 'Esta é uma versão histórica substituída'],
@@ -318,6 +386,7 @@ describe('OratorianoFormPage', () => {
       'form-id',
       false,
       true,
+      false,
     )
     expect(screen.queryByText('Marina Alves')).not.toBeInTheDocument()
   })
@@ -329,6 +398,7 @@ describe('OratorianoFormPage', () => {
       'oratoriano-id',
       'form-id',
       true,
+      false,
       false,
     )
     expect(screen.getByText(

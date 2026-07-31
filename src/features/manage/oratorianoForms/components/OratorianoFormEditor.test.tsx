@@ -1,4 +1,4 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { act, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,7 +9,11 @@ const mocks = vi.hoisted(() => ({
   mutate: vi.fn(),
   proceed: vi.fn(),
   reset: vi.fn(),
+  deleteOptions: {
+    value: undefined as { onDeleted?: () => Promise<void> } | undefined,
+  },
   useBlocker: vi.fn(),
+  useDeleteOratorianoFormDraft: vi.fn(),
   useReplaceOratorianoFormDraft: vi.fn(),
 }))
 
@@ -21,6 +25,7 @@ vi.mock('../hooks/useOratorianoForms', async (importOriginal) => {
   const original = await importOriginal<typeof import('../hooks/useOratorianoForms')>()
   return {
     ...original,
+    useDeleteOratorianoFormDraft: mocks.useDeleteOratorianoFormDraft,
     useReplaceOratorianoFormDraft: mocks.useReplaceOratorianoFormDraft,
   }
 })
@@ -35,7 +40,7 @@ function mutationState(overrides: Record<string, unknown> = {}) {
   }
 }
 
-const detail = {
+const detail: ParsedOratorianoFormDetail = {
   createdAt: '2026-03-15T21:42:00Z',
   data: {
     firstName: 'Marina',
@@ -46,7 +51,7 @@ const detail = {
   origin: 'DIRECT_SYSTEM_ENTRY',
   status: 'DRAFT',
   version: 3,
-} satisfies ParsedOratorianoFormDetail
+}
 
 function renderEditor(detailValue = detail) {
   return render(
@@ -65,11 +70,53 @@ beforeEach(() => {
   mocks.reset.mockReset()
   mocks.useBlocker.mockReset()
   mocks.useBlocker.mockReturnValue({ status: 'idle' })
+  mocks.useDeleteOratorianoFormDraft.mockReset()
+  mocks.deleteOptions.value = undefined
+  mocks.useDeleteOratorianoFormDraft.mockImplementation((
+    _oratorianoId,
+    _formId,
+    options,
+  ) => {
+    mocks.deleteOptions.value = options
+    return mutationState()
+  })
   mocks.useReplaceOratorianoFormDraft.mockReset()
   mocks.useReplaceOratorianoFormDraft.mockReturnValue(mutationState())
 })
 
 describe('OratorianoFormEditor', () => {
+  it('oferece a exclusão somente para um rascunho editável', () => {
+    renderEditor()
+
+    expect(screen.getByRole('button', { name: 'Excluir rascunho' }))
+      .toBeInTheDocument()
+  })
+
+  it('não mostra a exclusão quando a ficha deixa de ser editável', () => {
+    renderEditor({ ...detail, status: 'COMPLETED' })
+
+    expect(screen.queryByRole('button', { name: 'Excluir rascunho' }))
+      .not.toBeInTheDocument()
+  })
+
+  it('remove a proteção de saída antes da navegação pós-exclusão', async () => {
+    const user = userEvent.setup()
+    renderEditor()
+    await user.type(screen.getByRole('textbox', { name: 'RG' }), '123')
+
+    const dirtyBlockerOptions = mocks.useBlocker.mock.calls.at(-1)?.[0]
+    expect(dirtyBlockerOptions.shouldBlockFn()).toBe(true)
+
+    await act(async () => {
+      await mocks.deleteOptions.value?.onDeleted?.()
+    })
+
+    const navigationBlockerOptions = mocks.useBlocker.mock.calls.at(-1)?.[0]
+    expect(navigationBlockerOptions.disabled).toBe(true)
+    expect(navigationBlockerOptions.enableBeforeUnload()).toBe(false)
+    expect(navigationBlockerOptions.shouldBlockFn()).toBe(false)
+  })
+
   it('renderiza as cinco etapas no stepper horizontal aprovado', () => {
     renderEditor()
 

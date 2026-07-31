@@ -5,13 +5,20 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 import { AxiosError } from 'axios'
+import { useCallback, useRef, useSyncExternalStore } from 'react'
 
 import {
   createOratorianoForm,
+  deleteOratorianoFormDraft,
   getOratorianoFormDetail,
   getOratorianoFormHistory,
   replaceOratorianoFormDraft,
 } from '../api/oratorianoForms'
+import {
+  disableOratorianoFormDetail,
+  isOratorianoFormDetailDisabled,
+  subscribeToOratorianoFormDetailState,
+} from '../detailState'
 import { parseOratorianoFormDetail } from '../parseFormDetail'
 import {
   ORATORIANO_FORM_HISTORY_PAGE_SIZE,
@@ -20,6 +27,7 @@ import {
 import type {
   OratorianoFormDraft,
   OratorianoFormOrigin,
+  OratorianoFormReason,
 } from '../types'
 
 export function useOratorianoFormHistory(
@@ -48,14 +56,23 @@ export function useOratorianoFormDetail(
   formId: string,
   canView: boolean,
   openedExplicitly: boolean,
+  disabled = false,
 ) {
+  const detailDisabled = useSyncExternalStore(
+    subscribeToOratorianoFormDetailState,
+    () => isOratorianoFormDetailDisabled(oratorianoId, formId),
+    () => false,
+  )
+
   return useQuery({
     queryKey: oratorianoFormQueryKeys.detail(oratorianoId, formId),
     queryFn: () => getOratorianoFormDetail(oratorianoId, formId),
     enabled: Boolean(oratorianoId)
       && Boolean(formId)
       && canView
-      && openedExplicitly,
+      && openedExplicitly
+      && !disabled
+      && !detailDisabled,
     refetchOnReconnect: false,
     refetchOnWindowFocus: false,
     retry: false,
@@ -114,6 +131,74 @@ export function useReplaceOratorianoFormDraft(
       })
     },
   })
+}
+
+type DeleteOratorianoFormDraftOptions = {
+  onDeleted?: () => Promise<void> | void
+}
+
+export function useDeleteOratorianoFormDraft(
+  oratorianoId: string,
+  formId: string,
+  options: DeleteOratorianoFormDraftOptions = {},
+) {
+  const queryClient = useQueryClient()
+  const detailKey = oratorianoFormQueryKeys.detail(oratorianoId, formId)
+  const submissionInFlight = useRef(false)
+
+  const mutation = useMutation({
+    mutationFn: (payload: OratorianoFormReason) => (
+      deleteOratorianoFormDraft(oratorianoId, formId, payload)
+    ),
+    onError: async (error) => {
+      if (!isConflictError(error)) return
+
+      await queryClient.invalidateQueries({
+        exact: true,
+        queryKey: detailKey,
+        refetchType: 'none',
+      })
+      await queryClient.refetchQueries({ exact: true, queryKey: detailKey })
+    },
+    onSuccess: async () => {
+      disableOratorianoFormDetail(oratorianoId, formId)
+      await queryClient.cancelQueries({ exact: true, queryKey: detailKey })
+      await queryClient.invalidateQueries({
+        queryKey: oratorianoFormQueryKeys.histories(),
+      })
+      await options.onDeleted?.()
+    },
+  })
+
+  const guardedMutate: typeof mutation.mutate = useCallback(
+    (variables, mutateOptions) => {
+      if (submissionInFlight.current || mutation.isPending) return
+
+      submissionInFlight.current = true
+      mutation.mutate(variables, {
+        ...mutateOptions,
+        onSettled: (
+          data,
+          error,
+          settledVariables,
+          onMutateResult,
+          context,
+        ) => {
+          submissionInFlight.current = false
+          mutateOptions?.onSettled?.(
+            data,
+            error,
+            settledVariables,
+            onMutateResult,
+            context,
+          )
+        },
+      })
+    },
+    [mutation],
+  )
+
+  return { ...mutation, mutate: guardedMutate }
 }
 
 export function isConflictError(error: unknown): boolean {

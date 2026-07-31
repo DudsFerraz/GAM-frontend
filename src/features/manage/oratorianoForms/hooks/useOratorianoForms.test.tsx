@@ -11,7 +11,13 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { oratorianoFormQueryKeys } from '../queryKeys'
 import {
+  clearDisabledOratorianoFormDetail,
+  disableOratorianoFormDetail,
+  isOratorianoFormDetailDisabled,
+} from '../detailState'
+import {
   useCreateOratorianoForm,
+  useDeleteOratorianoFormDraft,
   useOratorianoFormDetail,
   useOratorianoFormHistory,
   useReplaceOratorianoFormDraft,
@@ -19,6 +25,7 @@ import {
 
 const apiMocks = vi.hoisted(() => ({
   createOratorianoForm: vi.fn(),
+  deleteOratorianoFormDraft: vi.fn(),
   getOratorianoFormDetail: vi.fn(),
   getOratorianoFormHistory: vi.fn(),
   replaceOratorianoFormDraft: vi.fn(),
@@ -40,7 +47,9 @@ function createHarness() {
 }
 
 beforeEach(() => {
+  clearDisabledOratorianoFormDetail('oratoriano-id', 'form-id')
   apiMocks.createOratorianoForm.mockReset()
+  apiMocks.deleteOratorianoFormDraft.mockReset()
   apiMocks.getOratorianoFormDetail.mockReset()
   apiMocks.getOratorianoFormHistory.mockReset()
   apiMocks.replaceOratorianoFormDraft.mockReset()
@@ -109,6 +118,23 @@ describe('useOratorianoFormHistory', () => {
 })
 
 describe('useOratorianoFormDetail', () => {
+  it('não consulta um detalhe marcado como excluído', () => {
+    disableOratorianoFormDetail('oratoriano-id', 'form-id')
+    const { wrapper } = createHarness()
+
+    renderHook(
+      () => useOratorianoFormDetail(
+        'oratoriano-id',
+        'form-id',
+        true,
+        true,
+      ),
+      { wrapper },
+    )
+
+    expect(apiMocks.getOratorianoFormDetail).not.toHaveBeenCalled()
+  })
+
   it('usa a chave sensível exata e consulta somente após abertura explícita', async () => {
     apiMocks.getOratorianoFormDetail.mockResolvedValueOnce({ data: {} })
     const { queryClient, wrapper } = createHarness()
@@ -225,6 +251,40 @@ describe('useOratorianoFormDetail', () => {
 })
 
 describe('mutações do rascunho', () => {
+  it('refaz a leitura autoritativa após conflito ao excluir', async () => {
+    const conflict = Object.assign(new AxiosError(), {
+      response: { status: 409 },
+    })
+    apiMocks.getOratorianoFormDetail
+      .mockResolvedValueOnce({ data: {}, id: 'form-id', status: 'DRAFT' })
+      .mockResolvedValueOnce({
+        data: {},
+        id: 'form-id',
+        status: 'COMPLETED',
+      })
+    apiMocks.deleteOratorianoFormDraft.mockRejectedValueOnce(conflict)
+    const { wrapper } = createHarness()
+    const { result } = renderHook(() => ({
+      detail: useOratorianoFormDetail(
+        'oratoriano-id', 'form-id', true, true,
+      ),
+      mutation: useDeleteOratorianoFormDraft(
+        'oratoriano-id', 'form-id',
+      ),
+    }), { wrapper })
+
+    await waitFor(() => expect(result.current.detail.isSuccess).toBe(true))
+    act(() => result.current.mutation.mutate({ reason: 'Motivo de conflito.' }))
+
+    await waitFor(() => expect(result.current.mutation.isError).toBe(true))
+    await waitFor(() => {
+      expect(apiMocks.getOratorianoFormDetail).toHaveBeenCalledTimes(2)
+    })
+    expect(result.current.detail.data?.status).toBe('COMPLETED')
+    expect(isOratorianoFormDetailDisabled('oratoriano-id', 'form-id'))
+      .toBe(false)
+  })
+
   it('cria, valida, semeia o detalhe e invalida o histórico', async () => {
     apiMocks.createOratorianoForm.mockResolvedValueOnce({
       data: {},
@@ -302,5 +362,106 @@ describe('mutações do rascunho', () => {
       expect(apiMocks.getOratorianoFormDetail).toHaveBeenCalledTimes(2)
     })
     expect(result.current.detail.data?.data.firstName).toBe('Atualizado')
+  })
+
+  it('exclui sem optimistic update, desabilita o detalhe e navega só depois do histórico', async () => {
+    const detailKey = oratorianoFormQueryKeys.detail(
+      'oratoriano-id',
+      'form-id',
+    )
+    const cachedDetail = { id: 'form-id', status: 'DRAFT' }
+    const onDeleted = vi.fn()
+    apiMocks.deleteOratorianoFormDraft.mockResolvedValueOnce(undefined)
+    const { queryClient, wrapper } = createHarness()
+    queryClient.setQueryData(detailKey, cachedDetail)
+    const cancelQueries = vi.spyOn(queryClient, 'cancelQueries')
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+
+    const { result } = renderHook(
+      () => useDeleteOratorianoFormDraft(
+        'oratoriano-id',
+        'form-id',
+        { onDeleted },
+      ),
+      { wrapper },
+    )
+
+    act(() => result.current.mutate({ reason: 'Motivo normalizado.' }))
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(apiMocks.deleteOratorianoFormDraft).toHaveBeenCalledWith(
+      'oratoriano-id',
+      'form-id',
+      { reason: 'Motivo normalizado.' },
+    )
+    expect(queryClient.getQueryData(detailKey)).toBe(cachedDetail)
+    expect(isOratorianoFormDetailDisabled('oratoriano-id', 'form-id'))
+      .toBe(true)
+    expect(cancelQueries).toHaveBeenCalledWith({
+      exact: true,
+      queryKey: detailKey,
+    })
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: oratorianoFormQueryKeys.histories(),
+    })
+    expect(onDeleted).toHaveBeenCalledOnce()
+    expect(invalidateQueries.mock.invocationCallOrder[0])
+      .toBeLessThan(onDeleted.mock.invocationCallOrder[0])
+  })
+
+  it('impede duas submissões enquanto o DELETE está pendente', async () => {
+    let resolveDelete: (() => void) | undefined
+    apiMocks.deleteOratorianoFormDraft.mockImplementationOnce(
+      () => new Promise<void>((resolve) => {
+        resolveDelete = resolve
+      }),
+    )
+    const { wrapper } = createHarness()
+    const { result } = renderHook(
+      () => useDeleteOratorianoFormDraft('oratoriano-id', 'form-id'),
+      { wrapper },
+    )
+
+    act(() => {
+      result.current.mutate({ reason: 'Primeiro motivo.' })
+      result.current.mutate({ reason: 'Segundo motivo.' })
+    })
+
+    await waitFor(() => {
+      expect(apiMocks.deleteOratorianoFormDraft).toHaveBeenCalledOnce()
+    })
+    resolveDelete?.()
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+  })
+
+  it('mantém detalhe e callback intactos quando a exclusão falha', async () => {
+    const detailKey = oratorianoFormQueryKeys.detail(
+      'oratoriano-id',
+      'form-id',
+    )
+    const cachedDetail = { id: 'form-id', status: 'DRAFT' }
+    const onDeleted = vi.fn()
+    apiMocks.deleteOratorianoFormDraft.mockRejectedValueOnce(
+      new Error('falha de rede sintética'),
+    )
+    const { queryClient, wrapper } = createHarness()
+    queryClient.setQueryData(detailKey, cachedDetail)
+
+    const { result } = renderHook(
+      () => useDeleteOratorianoFormDraft(
+        'oratoriano-id',
+        'form-id',
+        { onDeleted },
+      ),
+      { wrapper },
+    )
+
+    act(() => result.current.mutate({ reason: 'Motivo preservado.' }))
+
+    await waitFor(() => expect(result.current.isError).toBe(true))
+    expect(queryClient.getQueryData(detailKey)).toBe(cachedDetail)
+    expect(isOratorianoFormDetailDisabled('oratoriano-id', 'form-id'))
+      .toBe(false)
+    expect(onDeleted).not.toHaveBeenCalled()
   })
 })

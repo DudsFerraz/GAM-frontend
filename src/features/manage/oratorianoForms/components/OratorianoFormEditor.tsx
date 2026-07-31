@@ -1,7 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useBlocker } from '@tanstack/react-router'
 import { Check, Circle, Save } from 'lucide-react'
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   useForm,
   type FieldErrors,
@@ -29,6 +29,7 @@ import { cn } from '@/lib/utils'
 import { fromFormDraftTransport, toFormDraftTransport } from '../formDraftMapper'
 import {
   isConflictError,
+  useDeleteOratorianoFormDraft,
   useReplaceOratorianoFormDraft,
 } from '../hooks/useOratorianoForms'
 import type { ParsedOratorianoFormDetail } from '../parseFormDetail'
@@ -47,6 +48,7 @@ import {
   IdentificationStep,
   ReviewStep,
 } from './OratorianoFormStepFields'
+import { DeleteOratorianoFormDialog } from './DeleteOratorianoFormDialog'
 
 const STEPS = [
   {
@@ -123,6 +125,7 @@ type OratorianoFormEditorProps = {
   detail: ParsedOratorianoFormDetail
   formId: string
   name: string
+  onDeleted?: () => Promise<void>
   oratorianoId: string
 }
 
@@ -130,11 +133,15 @@ export function OratorianoFormEditor({
   detail,
   formId,
   name,
+  onDeleted = async () => {},
   oratorianoId,
 }: OratorianoFormEditorProps) {
   const [activeStep, setActiveStep] = useState(0)
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false)
+  const [isNavigationBypass, setIsNavigationBypass] = useState(false)
   const [saveConfirmed, setSaveConfirmed] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
+  const navigationBypassRef = useRef(false)
   const form = useForm<OratorianoFormValues>({
     defaultValues: fromFormDraftTransport(detail.data),
     resolver: zodResolver(oratorianoFormEditorSchema),
@@ -142,12 +149,31 @@ export function OratorianoFormEditor({
     shouldUnregister: false,
   })
   const mutation = useReplaceOratorianoFormDraft(oratorianoId, formId)
+  const handleDeleteFinished = useCallback(async () => {
+    navigationBypassRef.current = true
+    setIsNavigationBypass(true)
+    setIsDeleteOpen(false)
+
+    try {
+      await onDeleted()
+    } catch (error) {
+      navigationBypassRef.current = false
+      setIsNavigationBypass(false)
+      setIsDeleteOpen(true)
+      throw error
+    }
+  }, [onDeleted])
+  const deleteMutation = useDeleteOratorianoFormDraft(
+    oratorianoId,
+    formId,
+    { onDeleted: handleDeleteFinished },
+  )
   const { errors, isDirty } = form.formState
   const isEditable = detail.status === 'DRAFT'
   const blocker = useBlocker({
-    disabled: !isDirty,
-    enableBeforeUnload: () => isDirty,
-    shouldBlockFn: () => isDirty,
+    disabled: !isDirty || isNavigationBypass,
+    enableBeforeUnload: () => isDirty && !isNavigationBypass,
+    shouldBlockFn: () => isDirty && !isNavigationBypass,
     withResolver: true,
   })
   const errorPaths = useMemo(() => getErrorPaths(errors), [errors])
@@ -158,6 +184,10 @@ export function OratorianoFormEditor({
   useEffect(() => {
     headingRef.current?.focus()
   }, [activeStep])
+
+  useEffect(() => () => {
+    navigationBypassRef.current = false
+  }, [])
 
   const changeStep = (nextStep: number) => {
     setSaveConfirmed(false)
@@ -214,6 +244,21 @@ export function OratorianoFormEditor({
           <Badge className={status.badgeClassName} variant="outline">
             {status.label}
           </Badge>
+          {(isEditable
+            || isDeleteOpen
+            || deleteMutation.isPending
+            || deleteMutation.isError) && (
+            <DeleteOratorianoFormDialog
+              canOpen={isEditable && !mutation.isPending}
+              error={deleteMutation.error}
+              isPending={deleteMutation.isPending}
+              name={name}
+              onDelete={(payload) => deleteMutation.mutate(payload)}
+              onOpenChange={setIsDeleteOpen}
+              onReset={() => deleteMutation.reset()}
+              open={isDeleteOpen}
+            />
+          )}
         </div>
       </header>
 
@@ -355,7 +400,11 @@ export function OratorianoFormEditor({
                   )}
                   <Button
                     className="col-span-2"
-                    disabled={mutation.isPending || !isEditable}
+                    disabled={
+                      mutation.isPending
+                      || deleteMutation.isPending
+                      || !isEditable
+                    }
                     type="submit"
                   >
                     <Save aria-hidden="true" className="h-4 w-4" />

@@ -7,6 +7,7 @@ import type {
   OratorianoFormDetail,
   OratorianoFormHistoryPage,
   OratorianoFormOrigin,
+  OratorianoFormReason,
 } from '../types'
 
 const ORATORIANO_FORM_DETAIL_PATH =
@@ -78,4 +79,14 @@ export async function replaceOratorianoFormDraft(
   )
 
   return data
+}
+
+export async function deleteOratorianoFormDraft(
+  oratorianoId: string,
+  formId: string,
+  payload: OratorianoFormReason,
+): Promise<void> {
+  await api.delete<void>(formDetailPath(oratorianoId, formId), {
+    data: payload,
+  })
 }

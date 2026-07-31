@@ -140,6 +140,33 @@ beforeEach(() => {
 })
 
 describe('OratorianoDetailPage', () => {
+  it('mostra e dispensa o aviso de exclusão do rascunho no perfil', async () => {
+    const user = userEvent.setup()
+    const onNoticeDismiss = vi.fn()
+    render(
+      <QueryClientProvider client={createQueryClient()}>
+        <OratorianoDetailPage
+          initialNotice="oratoriano-form-rascunho-excluido"
+          onNoticeDismiss={onNoticeDismiss}
+          oratorianoId="oratoriano-id"
+        />
+      </QueryClientProvider>,
+    )
+
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'O rascunho foi excluído.',
+    )
+    expect(screen.getByRole('status')).toHaveTextContent(
+      'A ficha adicional não aparece mais no histórico.',
+    )
+
+    await user.click(
+      screen.getByRole('button', { name: 'Dispensar confirmação' }),
+    )
+
+    expect(onNoticeDismiss).toHaveBeenCalledOnce()
+    expect(screen.queryByRole('status')).not.toBeInTheDocument()
+  })
   it('posiciona fichas depois do cadastro e antes da frequência', () => {
     pageMocks.useAccountPermissions.mockReturnValue({
       permissions: ['ORATORIANO_GET', 'ORATORIANO_FORM_GET'],

@@ -7,6 +7,12 @@ export {
   normalizeHumanEquivalentName,
 } from './name'
 export { getOratorianoFullName } from './presentation'
+export {
+  getOratorianoProfileNoticePresentation,
+  ORATORIANO_PROFILE_NOTICE,
+  ORATORIANO_PROFILE_NOTICE_VALUES,
+  type OratorianoProfileNotice,
+} from './profileNotices'
 export { oratorianoQueryKeys } from './queryKeys'
 export {
   registerOratorianoSchema,

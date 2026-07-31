@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, LockKeyhole } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 import {
   EmptyState,
@@ -18,6 +18,7 @@ import {
 } from '@/features/account'
 import {
   getOratorianoFullName,
+  ORATORIANO_PROFILE_NOTICE,
   useOratoriano,
 } from '@/features/manage/oratorianos'
 import { formatDate, formatDateTime } from '@/lib/format'
@@ -65,20 +66,64 @@ export function OratorianoFormPage({
   oratorianoId,
 }: OratorianoFormPageProps) {
   const queryClient = useQueryClient()
+  const navigate = useNavigate()
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
   const canView = permissions.includes('ORATORIANO_FORM_GET')
   const canManage = canView
     && permissions.includes('ORATORIANO_FORM_MANAGE')
   const canViewProfile = permissions.includes('ORATORIANO_GET')
+  const [detailDisabled, setDetailDisabled] = useState(false)
+  const deletionNavigationStarted = useRef(false)
   const detailQuery = useOratorianoFormDetail(
     oratorianoId,
     formId,
     canView,
     openedExplicitly,
+    detailDisabled,
   )
   const profileQuery = useOratoriano(oratorianoId, canViewProfile)
   const [editorWasOpened, setEditorWasOpened] = useState(false)
+
+  const removeDeletedWorkspaceQueries = useCallback(() => {
+    const workspaceKey = `${oratorianoId}:${formId}`
+    const pendingCleanup = pendingDetailCleanup.get(workspaceKey)
+    if (pendingCleanup) {
+      clearTimeout(pendingCleanup)
+      pendingDetailCleanup.delete(workspaceKey)
+    }
+
+    queryClient.removeQueries({
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.detail(oratorianoId, formId),
+    })
+    queryClient.removeQueries({
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.snapshots(oratorianoId, formId),
+    })
+    queryClient.removeQueries({
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.attachments(oratorianoId, formId),
+    })
+  }, [formId, oratorianoId, queryClient])
+
+  const handleDeleted = useCallback(async () => {
+    setDetailDisabled(true)
+    deletionNavigationStarted.current = true
+
+    try {
+      await navigate({
+        params: { oratorianoId },
+        replace: true,
+        search: { notice: ORATORIANO_PROFILE_NOTICE.formDraftDeleted },
+        to: '/manage/oratorios/oratorianos/$oratorianoId',
+      })
+      removeDeletedWorkspaceQueries()
+    } catch (error) {
+      deletionNavigationStarted.current = false
+      throw error
+    }
+  }, [navigate, oratorianoId, removeDeletedWorkspaceQueries])
 
   useEffect(() => {
     if (canManage && detailQuery.data?.status === 'DRAFT') {
@@ -97,6 +142,11 @@ export function OratorianoFormPage({
 
     return () => {
       const timeout = setTimeout(() => {
+        if (deletionNavigationStarted.current) {
+          pendingDetailCleanup.delete(workspaceKey)
+          return
+        }
+
         queryClient.removeQueries({
           exact: true,
           queryKey: oratorianoFormQueryKeys.detail(oratorianoId, formId),
@@ -198,6 +248,7 @@ export function OratorianoFormPage({
           detail={form}
           formId={formId}
           name={profileName}
+          onDeleted={handleDeleted}
           oratorianoId={oratorianoId}
         />
       </div>
