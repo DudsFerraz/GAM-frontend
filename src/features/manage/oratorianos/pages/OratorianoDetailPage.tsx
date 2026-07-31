@@ -109,6 +109,8 @@ export function OratorianoDetailPage({
   )
   const canViewOratorios = permissions.includes('ORATORIO_GET')
   const canViewForms = permissions.includes('ORATORIANO_FORM_GET')
+  const canManageForms = canViewForms
+    && permissions.includes('ORATORIANO_FORM_MANAGE')
   const profileQuery = useOratoriano(oratorianoId, canView)
   const historyQuery = useOratorianoAttendances(
     oratorianoId,
@@ -230,6 +232,7 @@ export function OratorianoDetailPage({
       </Card>
 
       <OratorianoFormsSection
+        canManage={canManageForms}
         canView={canViewForms}
         oratorianoId={oratorianoId}
       />

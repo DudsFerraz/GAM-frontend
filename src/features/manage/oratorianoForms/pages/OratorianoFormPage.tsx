@@ -1,7 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, LockKeyhole } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 import {
   EmptyState,
@@ -38,6 +38,7 @@ import {
 } from '../presentation'
 import { oratorianoFormQueryKeys } from '../queryKeys'
 import type { OratorianoFormDraft } from '../types'
+import { OratorianoFormEditor } from '../components/OratorianoFormEditor'
 
 type OratorianoFormPageProps = {
   formId: string
@@ -67,6 +68,8 @@ export function OratorianoFormPage({
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
   const canView = permissions.includes('ORATORIANO_FORM_GET')
+  const canManage = canView
+    && permissions.includes('ORATORIANO_FORM_MANAGE')
   const canViewProfile = permissions.includes('ORATORIANO_GET')
   const detailQuery = useOratorianoFormDetail(
     oratorianoId,
@@ -75,6 +78,14 @@ export function OratorianoFormPage({
     openedExplicitly,
   )
   const profileQuery = useOratoriano(oratorianoId, canViewProfile)
+  const [editorWasOpened, setEditorWasOpened] = useState(false)
+
+  useEffect(() => {
+    if (canManage && detailQuery.data?.status === 'DRAFT') {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- Preserve the dirty editor when an authoritative conflict response changes status.
+      setEditorWasOpened(true)
+    }
+  }, [canManage, detailQuery.data?.status])
 
   useEffect(() => {
     const workspaceKey = `${oratorianoId}:${formId}`
@@ -178,6 +189,20 @@ export function OratorianoFormPage({
     ? getOratorianoFullName(profileQuery.data)
     : formName
   const status = getOratorianoFormStatusPresentation(form.status)
+
+  if (canManage && (form.status === 'DRAFT' || editorWasOpened)) {
+    return (
+      <div className="space-y-6">
+        {backLink}
+        <OratorianoFormEditor
+          detail={form}
+          formId={formId}
+          name={profileName}
+          oratorianoId={oratorianoId}
+        />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">

@@ -5,18 +5,23 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 import { act, renderHook, waitFor } from '@testing-library/react'
+import { AxiosError } from 'axios'
 import type { PropsWithChildren } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { oratorianoFormQueryKeys } from '../queryKeys'
 import {
+  useCreateOratorianoForm,
   useOratorianoFormDetail,
   useOratorianoFormHistory,
+  useReplaceOratorianoFormDraft,
 } from './useOratorianoForms'
 
 const apiMocks = vi.hoisted(() => ({
+  createOratorianoForm: vi.fn(),
   getOratorianoFormDetail: vi.fn(),
   getOratorianoFormHistory: vi.fn(),
+  replaceOratorianoFormDraft: vi.fn(),
 }))
 
 vi.mock('../api/oratorianoForms', () => apiMocks)
@@ -35,8 +40,10 @@ function createHarness() {
 }
 
 beforeEach(() => {
+  apiMocks.createOratorianoForm.mockReset()
   apiMocks.getOratorianoFormDetail.mockReset()
   apiMocks.getOratorianoFormHistory.mockReset()
+  apiMocks.replaceOratorianoFormDraft.mockReset()
 })
 
 describe('useOratorianoFormHistory', () => {
@@ -214,5 +221,86 @@ describe('useOratorianoFormDetail', () => {
     await waitFor(() => expect(result.current.isError).toBe(true))
     expect(apiMocks.getOratorianoFormDetail).toHaveBeenCalledOnce()
     expect(result.current.data).toBeUndefined()
+  })
+})
+
+describe('mutações do rascunho', () => {
+  it('cria, valida, semeia o detalhe e invalida o histórico', async () => {
+    apiMocks.createOratorianoForm.mockResolvedValueOnce({
+      data: {},
+      id: 'form-id',
+      origin: 'DIRECT_SYSTEM_ENTRY',
+      status: 'DRAFT',
+    })
+    const { queryClient, wrapper } = createHarness()
+    const invalidateQueries = vi.spyOn(queryClient, 'invalidateQueries')
+    const { result } = renderHook(
+      () => useCreateOratorianoForm('oratoriano-id'),
+      { wrapper },
+    )
+
+    act(() => result.current.mutate('DIRECT_SYSTEM_ENTRY'))
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(queryClient.getQueryData(
+      oratorianoFormQueryKeys.detail('oratoriano-id', 'form-id'),
+    )).toMatchObject({ status: 'DRAFT' })
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: oratorianoFormQueryKeys.histories(),
+    })
+  })
+
+  it('substitui o detalhe somente com a resposta autoritativa', async () => {
+    const response = {
+      data: { firstName: 'Marina' },
+      draftRevision: 9,
+      id: 'form-id',
+      status: 'DRAFT',
+    }
+    apiMocks.replaceOratorianoFormDraft.mockResolvedValueOnce(response)
+    const { queryClient, wrapper } = createHarness()
+    const { result } = renderHook(
+      () => useReplaceOratorianoFormDraft('oratoriano-id', 'form-id'),
+      { wrapper },
+    )
+
+    act(() => result.current.mutate({ firstName: 'Marina' }))
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true))
+    expect(queryClient.getQueryData(
+      oratorianoFormQueryKeys.detail('oratoriano-id', 'form-id'),
+    )).toEqual(response)
+  })
+
+  it('refaz a leitura autoritativa após conflito', async () => {
+    const conflict = Object.assign(new AxiosError(), {
+      response: { status: 409 },
+    })
+    apiMocks.getOratorianoFormDetail
+      .mockResolvedValueOnce({ data: {}, id: 'form-id', status: 'DRAFT' })
+      .mockResolvedValueOnce({
+        data: { firstName: 'Atualizado' },
+        id: 'form-id',
+        status: 'DRAFT',
+      })
+    apiMocks.replaceOratorianoFormDraft.mockRejectedValueOnce(conflict)
+    const { wrapper } = createHarness()
+    const { result } = renderHook(() => ({
+      detail: useOratorianoFormDetail(
+        'oratoriano-id', 'form-id', true, true,
+      ),
+      mutation: useReplaceOratorianoFormDraft(
+        'oratoriano-id', 'form-id',
+      ),
+    }), { wrapper })
+    await waitFor(() => expect(result.current.detail.isSuccess).toBe(true))
+
+    act(() => result.current.mutation.mutate({ firstName: 'Local' }))
+
+    await waitFor(() => expect(result.current.mutation.isError).toBe(true))
+    await waitFor(() => {
+      expect(apiMocks.getOratorianoFormDetail).toHaveBeenCalledTimes(2)
+    })
+    expect(result.current.detail.data?.data.firstName).toBe('Atualizado')
   })
 })

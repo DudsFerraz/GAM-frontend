@@ -40,6 +40,14 @@ vi.mock('../hooks/useOratorianoForms', () => ({
   useOratorianoFormDetail: pageMocks.useOratorianoFormDetail,
 }))
 
+vi.mock('../components/OratorianoFormEditor', () => ({
+  OratorianoFormEditor: ({ detail }: { detail: { status?: string } }) => (
+    <div data-testid="oratoriano-form-editor">
+      Editor em cinco etapas · {detail.status}
+    </div>
+  ),
+}))
+
 const refetch = vi.fn()
 
 function formDetail(overrides: Record<string, unknown> = {}) {
@@ -200,6 +208,58 @@ describe('OratorianoFormPage', () => {
       expect(screen.queryByRole('button', { name: action }))
         .not.toBeInTheDocument()
     }
+  })
+
+  it('habilita o editor de DRAFT somente com leitura e gestão combinadas', () => {
+    pageMocks.useAccountPermissions.mockReturnValue({
+      permissions: [
+        'ORATORIANO_FORM_GET',
+        'ORATORIANO_FORM_MANAGE',
+        'ORATORIANO_GET',
+      ],
+    })
+
+    renderPage()
+
+    expect(screen.getByTestId('oratoriano-form-editor')).toBeInTheDocument()
+    expect(screen.queryByText(
+      'Esta ficha está em rascunho e permanece somente para consulta nesta etapa.',
+    )).not.toBeInTheDocument()
+  })
+
+  it('mantém status desconhecido somente leitura mesmo com gestão', () => {
+    pageMocks.useAccountPermissions.mockReturnValue({
+      permissions: ['ORATORIANO_FORM_GET', 'ORATORIANO_FORM_MANAGE'],
+    })
+    setDetailQuery({ data: formDetail({ status: 'FUTURE_STATUS' }) })
+
+    renderPage()
+
+    expect(screen.queryByTestId('oratoriano-form-editor')).not.toBeInTheDocument()
+    expect(screen.getByText('O conteúdo permanece protegido contra alterações.'))
+      .toBeInTheDocument()
+  })
+
+  it('mantém o workspace montado quando uma reconciliação torna a ficha imutável', async () => {
+    pageMocks.useAccountPermissions.mockReturnValue({
+      permissions: ['ORATORIANO_FORM_GET', 'ORATORIANO_FORM_MANAGE'],
+    })
+    const view = renderPage()
+    await waitFor(() => expect(screen.getByTestId('oratoriano-form-editor'))
+      .toHaveTextContent('DRAFT'))
+
+    setDetailQuery({ data: formDetail({ status: 'COMPLETED' }) })
+    view.rerender(
+      <QueryClientProvider client={view.queryClient}>
+        <OratorianoFormPage
+          formId="form-id"
+          oratorianoId="oratoriano-id"
+        />
+      </QueryClientProvider>,
+    )
+
+    expect(screen.getByTestId('oratoriano-form-editor'))
+      .toHaveTextContent('COMPLETED')
   })
 
   it.each([

@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ChevronRight, FileText } from 'lucide-react'
+import { ChevronRight, FilePlus2, FileText } from 'lucide-react'
 import { useState } from 'react'
 
 import {
@@ -10,6 +10,7 @@ import {
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/Badge'
+import { Button } from '@/components/ui/Button'
 import {
   Card,
   CardActionArea,
@@ -18,7 +19,9 @@ import {
 import { formatDate, formatDateTime } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
 import { cn } from '@/lib/utils'
+import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 
+import { CreateOratorianoFormDialog } from './CreateOratorianoFormDialog'
 import { useOratorianoFormHistory } from '../hooks/useOratorianoForms'
 import {
   getOratorianoFormAttachmentLabel,
@@ -28,15 +31,22 @@ import {
 import type { OratorianoFormHistoryItem } from '../types'
 
 type OratorianoFormsSectionProps = {
+  canManage?: boolean
   canView: boolean
   oratorianoId: string
 }
 
 export function OratorianoFormsSection({
+  canManage = false,
   canView,
   oratorianoId,
 }: OratorianoFormsSectionProps) {
   const [page, setPage] = useState(0)
+  const canCreate = canView && canManage
+  const [isCreateOpen, setIsCreateOpen] = useCapabilityBoundState(
+    canCreate,
+    false,
+  )
   const historyQuery = useOratorianoFormHistory(
     oratorianoId,
     page,
@@ -56,7 +66,14 @@ export function OratorianoFormsSection({
 
   return (
     <section aria-labelledby="oratoriano-forms-title" className="space-y-4">
-      <SectionHeading />
+      <SectionHeading
+        action={canCreate ? (
+          <Button onClick={() => setIsCreateOpen(true)} type="button">
+            <FilePlus2 aria-hidden="true" className="h-4 w-4" />
+            Nova ficha
+          </Button>
+        ) : undefined}
+      />
 
       {historyQuery.isLoading && (
         <LoadingState title="Carregando fichas adicionais…" />
@@ -116,22 +133,33 @@ export function OratorianoFormsSection({
           totalPages={historyQuery.data.totalPages ?? 0}
         />
       )}
+
+      {isCreateOpen && (
+        <CreateOratorianoFormDialog
+          onOpenChange={setIsCreateOpen}
+          open={isCreateOpen}
+          oratorianoId={oratorianoId}
+        />
+      )}
     </section>
   )
 }
 
-function SectionHeading() {
+function SectionHeading({ action }: { action?: React.ReactNode }) {
   return (
-    <div>
-      <h2
-        className="font-heading text-xl font-bold"
-        id="oratoriano-forms-title"
-      >
-        Fichas adicionais
-      </h2>
-      <p className="text-sm text-muted-foreground">
-        Histórico de versões cadastradas para este Oratoriano.
-      </p>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+      <div>
+        <h2
+          className="font-heading text-xl font-bold"
+          id="oratoriano-forms-title"
+        >
+          Fichas adicionais
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          Histórico de versões cadastradas para este Oratoriano.
+        </p>
+      </div>
+      {action}
     </div>
   )
 }

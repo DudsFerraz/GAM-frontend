@@ -6,7 +6,9 @@ const NAME_PATTERN = /^\p{L}+(?:[ '-]\p{L}+)*$/u
 const PHONE_PATTERN = /^\+?[\d\s().-]+$/
 const RG_PATTERN = /^[\p{L}\d./-]+$/u
 
-function isValidLocalDate(value: string): boolean {
+const REQUIRED_TEXT = 'Preencha este campo.'
+
+export function isValidLocalDate(value: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
 
   const [year, month, day] = value.split('-').map(Number)
@@ -16,10 +18,9 @@ function isValidLocalDate(value: string): boolean {
     && date.getUTCDate() === day
 }
 
-function isValidCpf(value: string): boolean {
-  if (!/^\d{11}$/.test(value) || /^(\d)\1{10}$/.test(value)) return false
-
-  const digits = value
+export function isValidCpf(value: string): boolean {
+  const digits = value.replace(/\D/g, '')
+  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false
 
   const calculateDigit = (length: number) => {
     const sum = digits
@@ -36,108 +37,381 @@ function isValidCpf(value: string): boolean {
     && calculateDigit(10) === Number(digits[10])
 }
 
-function isValidPhoneNumber(value: string): boolean {
+export function isValidPhoneNumber(value: string): boolean {
   if (!PHONE_PATTERN.test(value)) return false
 
   const digits = value.replace(/\D/g, '')
-  return value.startsWith('+')
-    ? digits.length >= 8 && digits.length <= 15 && digits[0] !== '0'
-    : digits.length === 10 || digits.length === 11
+  if (value.startsWith('+')) {
+    const nationalNumber = digits.slice(2)
+    return digits.startsWith('55')
+      && (nationalNumber.length === 10 || nationalNumber.length === 11)
+  }
+  return digits.length === 10 || digits.length === 11
 }
 
-function optionalText(maxLength: number) {
-  return z.string().trim().min(1).max(maxLength).optional()
+function optionalTransportText(maxLength: number, label: string) {
+  return z.string({ error: `${label} deve ser um texto.` })
+    .trim()
+    .min(1, `${label} não pode ficar em branco.`)
+    .max(maxLength, `${label} deve ter no máximo ${maxLength} caracteres.`)
+    .optional()
 }
 
-const nameSchema = (maxLength: number) => z.string()
+const transportNameSchema = (maxLength: number, label: string) => z.string({
+  error: `${label} deve ser um texto.`,
+})
   .trim()
-  .min(1)
-  .max(maxLength)
-  .refine((value) => NAME_PATTERN.test(value))
+  .min(1, `${label} não pode ficar em branco.`)
+  .max(maxLength, `${label} deve ter no máximo ${maxLength} caracteres.`)
+  .refine(
+    (value) => NAME_PATTERN.test(value),
+    `${label} deve conter somente letras, espaços, apóstrofo ou hífen.`,
+  )
 
-const localDateSchema = z.string().refine(isValidLocalDate)
-const cpfSchema = z.string().refine(isValidCpf)
-const phoneSchema = z.string()
+const transportLocalDateSchema = (label: string) => z.string({
+  error: `${label} deve ser uma data.`,
+}).refine(isValidLocalDate, `${label} deve ser uma data civil válida.`)
+
+const transportCpfSchema = z.string({ error: 'CPF deve ser um texto.' })
+  .regex(/^\d{11}$/, 'CPF deve conter exatamente onze dígitos.')
+  .refine(isValidCpf, 'Informe um CPF válido com onze dígitos.')
+
+const transportPhoneSchema = z.string({ error: 'Telefone deve ser um texto.' })
   .trim()
-  .min(1)
-  .max(32)
-  .refine(isValidPhoneNumber)
+  .min(1, 'Telefone não pode ficar em branco.')
+  .max(32, 'Telefone deve ter no máximo 32 caracteres.')
+  .refine(isValidPhoneNumber, 'Informe um telefone brasileiro válido.')
 
-const addressSchema = z.object({
-  addressLine: optionalText(200),
-  addressNumber: optionalText(32),
-  neighborhood: optionalText(100),
-  cep: z.string().regex(/^\d{5}-?\d{3}$/).optional(),
-  city: optionalText(100),
-}).strict()
+const addressTransportSchema = z.object({
+  addressLine: optionalTransportText(200, 'Logradouro'),
+  addressNumber: optionalTransportText(32, 'Número'),
+  neighborhood: optionalTransportText(100, 'Bairro'),
+  cep: z.string({ error: 'CEP deve ser um texto.' })
+    .regex(/^\d{5}-?\d{3}$/, 'Informe um CEP válido com oito dígitos.')
+    .optional(),
+  city: optionalTransportText(100, 'Cidade'),
+}, { error: 'Endereço deve ser um objeto válido.' }).strict()
 
-const responsibleSchema = z.object({
+const responsibleTransportSchema = z.object({
   relationship: z.enum([
     'SELF',
     'MOTHER',
     'FATHER',
     'RELATIVE',
     'REFERENCE_ADULT',
-  ]).optional(),
-  relationshipComplement: optionalText(120),
-  firstName: nameSchema(32).optional(),
-  surname: nameSchema(64).optional(),
-  cpf: cpfSchema.optional(),
-  phoneNumber: phoneSchema.optional(),
-  email: z.email().max(254).optional(),
-  atLeast18: z.boolean().optional(),
-}).strict()
+  ], { error: 'Relação do responsável não reconhecida.' }).optional(),
+  relationshipComplement: optionalTransportText(120, 'Complemento da relação'),
+  firstName: transportNameSchema(32, 'Nome do responsável').optional(),
+  surname: transportNameSchema(64, 'Sobrenome do responsável').optional(),
+  cpf: transportCpfSchema.optional(),
+  phoneNumber: transportPhoneSchema.optional(),
+  email: z.email('Informe um e-mail válido.')
+    .max(254, 'E-mail deve ter no máximo 254 caracteres.')
+    .optional(),
+  atLeast18: z.boolean({ error: 'A maioridade do responsável deve ser confirmada.' }).optional(),
+}, { error: 'Responsável deve ser um objeto válido.' }).strict()
 
-const parentSchema = z.object({
-  firstName: nameSchema(32).optional(),
-  surname: nameSchema(64).optional(),
-  cpf: cpfSchema.optional(),
-}).strict()
+const parentTransportSchema = z.object({
+  firstName: transportNameSchema(32, 'Nome do familiar').optional(),
+  surname: transportNameSchema(64, 'Sobrenome do familiar').optional(),
+  cpf: transportCpfSchema.optional(),
+}, { error: 'Familiar deve ser um objeto válido.' }).strict()
 
-const healthQuestionSchema = z.object({
-  answer: z.enum(['YES', 'NO', 'NOT_INFORMED']).optional(),
-  explanation: optionalText(2000),
-  importantInstructions: optionalText(2000),
-}).strict()
+const healthQuestionTransportSchema = z.object({
+  answer: z.enum(['YES', 'NO', 'NOT_INFORMED'], {
+    error: 'Resposta de saúde não reconhecida.',
+  }).optional(),
+  explanation: optionalTransportText(2000, 'Explicação de saúde'),
+  importantInstructions: optionalTransportText(2000, 'Orientação importante'),
+}, { error: 'Resposta de saúde deve ser um objeto válido.' }).strict()
 
-const healthSchema = z.object({
-  medicalFollowUp: healthQuestionSchema.optional(),
-  physicalActivityRestriction: healthQuestionSchema.optional(),
-  medicineUse: healthQuestionSchema.optional(),
-  allergies: healthQuestionSchema.optional(),
-  convulsions: healthQuestionSchema.optional(),
-  frequentFainting: healthQuestionSchema.optional(),
-  heartCondition: healthQuestionSchema.optional(),
-  otherHealthCondition: healthQuestionSchema.optional(),
-  otherCare: optionalText(5000),
-}).strict()
+const healthTransportSchema = z.object({
+  medicalFollowUp: healthQuestionTransportSchema.optional(),
+  physicalActivityRestriction: healthQuestionTransportSchema.optional(),
+  medicineUse: healthQuestionTransportSchema.optional(),
+  allergies: healthQuestionTransportSchema.optional(),
+  convulsions: healthQuestionTransportSchema.optional(),
+  frequentFainting: healthQuestionTransportSchema.optional(),
+  heartCondition: healthQuestionTransportSchema.optional(),
+  otherHealthCondition: healthQuestionTransportSchema.optional(),
+  otherCare: optionalTransportText(5000, 'Outros cuidados'),
+}, { error: 'Informações de saúde devem formar um objeto válido.' }).strict()
 
-const declarationsSchema = z.object({
-  signerRelationshipConfirmed: z.boolean().optional(),
-  informationTruthConfirmed: z.boolean().optional(),
-  healthInformationCurrentConfirmed: z.boolean().optional(),
-  informationUseUnderstood: z.boolean().optional(),
-  formReviewed: z.boolean().optional(),
-  imageAndVoiceAuthorizationAccepted: z.boolean().optional(),
-}).strict()
+const declarationsTransportSchema = z.object({
+  signerRelationshipConfirmed: z.boolean({ error: 'A confirmação deve ser verdadeira ou falsa.' }).optional(),
+  informationTruthConfirmed: z.boolean({ error: 'A confirmação deve ser verdadeira ou falsa.' }).optional(),
+  healthInformationCurrentConfirmed: z.boolean({ error: 'A confirmação deve ser verdadeira ou falsa.' }).optional(),
+  informationUseUnderstood: z.boolean({ error: 'A confirmação deve ser verdadeira ou falsa.' }).optional(),
+  formReviewed: z.boolean({ error: 'A confirmação deve ser verdadeira ou falsa.' }).optional(),
+  imageAndVoiceAuthorizationAccepted: z.boolean({ error: 'A autorização deve ser verdadeira ou falsa.' }).optional(),
+}, { error: 'Declarações devem formar um objeto válido.' }).strict()
 
 export const oratorianoFormDraftSchema = z.object({
-  firstName: nameSchema(32).optional(),
-  surname: nameSchema(64).optional(),
-  birthDate: localDateSchema.optional(),
-  cpf: cpfSchema.optional(),
-  rg: z.string().trim().min(1).max(20).regex(RG_PATTERN).optional(),
-  address: addressSchema.optional(),
-  phoneNumber: phoneSchema.optional(),
-  schoolName: optionalText(200),
-  schoolGrade: optionalText(100),
-  responsible: responsibleSchema.optional(),
-  father: parentSchema.optional(),
-  mother: parentSchema.optional(),
-  health: healthSchema.optional(),
-  declarations: declarationsSchema.optional(),
-  signedOn: localDateSchema.optional(),
-}).strict() satisfies z.ZodType<OratorianoFormDraft>
+  firstName: transportNameSchema(32, 'Nome').optional(),
+  surname: transportNameSchema(64, 'Sobrenome').optional(),
+  birthDate: transportLocalDateSchema('Data de nascimento').optional(),
+  cpf: transportCpfSchema.optional(),
+  rg: z.string({ error: 'RG deve ser um texto.' })
+    .trim()
+    .min(1, 'RG não pode ficar em branco.')
+    .max(20, 'RG deve ter no máximo 20 caracteres.')
+    .regex(RG_PATTERN, 'RG contém caracteres não permitidos.')
+    .optional(),
+  address: addressTransportSchema.optional(),
+  phoneNumber: transportPhoneSchema.optional(),
+  schoolName: optionalTransportText(200, 'Escola'),
+  schoolGrade: optionalTransportText(100, 'Ano escolar'),
+  responsible: responsibleTransportSchema.optional(),
+  father: parentTransportSchema.optional(),
+  mother: parentTransportSchema.optional(),
+  health: healthTransportSchema.optional(),
+  declarations: declarationsTransportSchema.optional(),
+  signedOn: transportLocalDateSchema('Data de assinatura').optional(),
+}, { error: 'Os dados da ficha devem formar um objeto válido.' }).strict() satisfies z.ZodType<OratorianoFormDraft>
+
+const optionalEditorText = (
+  maxLength: number,
+  message: string,
+  validator?: (value: string) => boolean,
+) => z.string()
+  .max(maxLength, `Use no máximo ${maxLength} caracteres.`)
+  .refine((value) => !value.trim() || !validator || validator(value.trim()), message)
+
+const editorNameSchema = (maxLength: number) => optionalEditorText(
+  maxLength,
+  'Use somente letras, espaços, apóstrofo ou hífen.',
+  (value) => NAME_PATTERN.test(value),
+)
+const editorDateSchema = optionalEditorText(
+  10,
+  'Informe uma data civil válida.',
+  isValidLocalDate,
+)
+const editorCpfSchema = optionalEditorText(
+  18,
+  'Informe um CPF válido com onze dígitos.',
+  isValidCpf,
+)
+const editorPhoneSchema = optionalEditorText(
+  32,
+  'Informe um telefone brasileiro válido.',
+  isValidPhoneNumber,
+)
+const editorHealthQuestionSchema = z.object({
+  answer: z.enum(['', 'YES', 'NO', 'NOT_INFORMED'], {
+    error: 'Selecione uma resposta válida.',
+  }),
+  explanation: z.string().max(2000, 'Use no máximo 2.000 caracteres.'),
+  importantInstructions: z.string().max(2000, 'Use no máximo 2.000 caracteres.'),
+})
+
+export const oratorianoFormEditorSchema = z.object({
+  firstName: editorNameSchema(32),
+  surname: editorNameSchema(64),
+  birthDate: editorDateSchema,
+  cpf: editorCpfSchema,
+  rg: optionalEditorText(
+    20,
+    'Use somente letras, números, ponto, barra ou hífen.',
+    (value) => RG_PATTERN.test(value),
+  ),
+  phoneNumber: editorPhoneSchema,
+  address: z.object({
+    addressLine: z.string().max(200, 'Use no máximo 200 caracteres.'),
+    addressNumber: z.string().max(32, 'Use no máximo 32 caracteres.'),
+    neighborhood: z.string().max(100, 'Use no máximo 100 caracteres.'),
+    cep: optionalEditorText(
+      9,
+      'Informe um CEP válido com oito dígitos.',
+      (value) => /^\d{5}-?\d{3}$/.test(value),
+    ),
+    city: z.string().max(100, 'Use no máximo 100 caracteres.'),
+  }),
+  schoolName: z.string().max(200, 'Use no máximo 200 caracteres.'),
+  schoolGrade: z.string().max(100, 'Use no máximo 100 caracteres.'),
+  responsible: z.object({
+    relationship: z.enum([
+      '',
+      'SELF',
+      'MOTHER',
+      'FATHER',
+      'RELATIVE',
+      'REFERENCE_ADULT',
+    ], { error: 'Selecione uma relação válida.' }),
+    relationshipComplement: z.string().max(120, 'Use no máximo 120 caracteres.'),
+    firstName: editorNameSchema(32),
+    surname: editorNameSchema(64),
+    cpf: editorCpfSchema,
+    phoneNumber: editorPhoneSchema,
+    email: z.string().max(254, 'Use no máximo 254 caracteres.').refine(
+      (value) => !value.trim() || z.email().safeParse(value.trim()).success,
+      'Informe um e-mail válido.',
+    ),
+    atLeast18: z.enum(['', 'true', 'false'], {
+      error: 'Selecione uma resposta válida.',
+    }),
+  }),
+  father: z.object({
+    firstName: editorNameSchema(32),
+    surname: editorNameSchema(64),
+    cpf: editorCpfSchema,
+  }),
+  mother: z.object({
+    firstName: editorNameSchema(32),
+    surname: editorNameSchema(64),
+    cpf: editorCpfSchema,
+  }),
+  health: z.object({
+    medicalFollowUp: editorHealthQuestionSchema,
+    physicalActivityRestriction: editorHealthQuestionSchema,
+    medicineUse: editorHealthQuestionSchema,
+    allergies: editorHealthQuestionSchema,
+    convulsions: editorHealthQuestionSchema,
+    frequentFainting: editorHealthQuestionSchema,
+    heartCondition: editorHealthQuestionSchema,
+    otherHealthCondition: editorHealthQuestionSchema,
+    otherCare: z.string().max(5000, 'Use no máximo 5.000 caracteres.'),
+  }),
+  declarations: z.object({
+    signerRelationshipConfirmed: z.boolean().optional(),
+    informationTruthConfirmed: z.boolean().optional(),
+    healthInformationCurrentConfirmed: z.boolean().optional(),
+    informationUseUnderstood: z.boolean().optional(),
+    formReviewed: z.boolean().optional(),
+    imageAndVoiceAuthorizationAccepted: z.boolean().optional(),
+  }),
+  signedOn: editorDateSchema,
+})
+
+export const oratorianoFormCompletionSchema = oratorianoFormEditorSchema
+  .superRefine((values, context) => {
+  const relationship = values.responsible.relationship
+  const complementRequired = relationship === 'RELATIVE'
+    || relationship === 'REFERENCE_ADULT'
+  if (complementRequired && !values.responsible.relationshipComplement.trim()) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Explique a relação com a pessoa responsável.',
+      path: ['responsible', 'relationshipComplement'],
+    })
+  }
+  if (!complementRequired && values.responsible.relationshipComplement.trim()) {
+    context.addIssue({
+      code: 'custom',
+      message: 'Este complemento não se aplica à relação selecionada.',
+      path: ['responsible', 'relationshipComplement'],
+    })
+  }
+
+  validateParent(values.father, 'father', context)
+  validateParent(values.mother, 'mother', context)
+
+  const healthQuestionKeys = [
+    'medicalFollowUp',
+    'physicalActivityRestriction',
+    'medicineUse',
+    'allergies',
+    'convulsions',
+    'frequentFainting',
+    'heartCondition',
+    'otherHealthCondition',
+  ] as const
+  for (const key of healthQuestionKeys) {
+    const question = values.health[key]
+    if (question.answer === 'YES' && !question.explanation.trim()) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Explique a resposta afirmativa.',
+        path: ['health', key, 'explanation'],
+      })
+    }
+    if (question.answer !== 'YES' && question.explanation.trim()) {
+      context.addIssue({
+        code: 'custom',
+        message: 'A explicação só deve ser preenchida para uma resposta afirmativa.',
+        path: ['health', key, 'explanation'],
+      })
+    }
+    if (key === 'medicineUse'
+      && question.answer !== 'YES'
+      && question.importantInstructions.trim()) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Informe orientações somente quando houver uso de medicamento.',
+        path: ['health', key, 'importantInstructions'],
+      })
+    }
+  }
+
+  if (values.birthDate && values.signedOn) {
+    const age = getAgeOnDate(values.birthDate, values.signedOn)
+    if (age !== undefined && age < 18) {
+      if (!values.schoolName.trim()) {
+        context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: ['schoolName'] })
+      }
+      if (!values.schoolGrade.trim()) {
+        context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: ['schoolGrade'] })
+      }
+      if (relationship === 'SELF') {
+        context.addIssue({
+          code: 'custom',
+          message: 'Para menor de idade, selecione uma pessoa responsável adulta.',
+          path: ['responsible', 'relationship'],
+        })
+      }
+      if (relationship && values.responsible.atLeast18 !== 'true') {
+        context.addIssue({
+          code: 'custom',
+          message: 'Confirme que a pessoa responsável tem 18 anos ou mais.',
+          path: ['responsible', 'atLeast18'],
+        })
+      }
+    }
+    if (age !== undefined
+      && age >= 18
+      && relationship === 'SELF'
+      && !values.phoneNumber.trim()) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Informe o telefone do próprio Oratoriano.',
+        path: ['phoneNumber'],
+      })
+    }
+  }
+})
+
+function validateParent(
+  parent: { cpf: string; firstName: string; surname: string },
+  key: 'father' | 'mother',
+  context: z.RefinementCtx,
+) {
+  const hasValue = Object.values(parent).some((value) => value.trim())
+  if (!hasValue) return
+
+  if (!parent.firstName.trim()) {
+    context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: [key, 'firstName'] })
+  }
+  if (!parent.surname.trim()) {
+    context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: [key, 'surname'] })
+  }
+  if (!parent.cpf.trim()) {
+    context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: [key, 'cpf'] })
+  }
+}
+
+function getAgeOnDate(birthDate: string, signedOn: string): number | undefined {
+  if (!isValidLocalDate(birthDate) || !isValidLocalDate(signedOn)) return undefined
+  const [birthYear, birthMonth, birthDay] = birthDate.split('-').map(Number)
+  const [signedYear, signedMonth, signedDay] = signedOn.split('-').map(Number)
+  let age = signedYear - birthYear
+  if (signedMonth < birthMonth
+    || (signedMonth === birthMonth && signedDay < birthDay)) {
+    age -= 1
+  }
+  return age
+}
+
+export type OratorianoFormValues = z.input<typeof oratorianoFormEditorSchema>
 
 export type ParsedOratorianoFormDraft = z.output<
   typeof oratorianoFormDraftSchema

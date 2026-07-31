@@ -1,16 +1,53 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
+  createOratorianoForm,
   getOratorianoFormDetail,
   getOratorianoFormHistory,
+  replaceOratorianoFormDraft,
 } from './oratorianoForms'
 
-const apiMocks = vi.hoisted(() => ({ get: vi.fn() }))
+const apiMocks = vi.hoisted(() => ({
+  get: vi.fn(),
+  post: vi.fn(),
+  put: vi.fn(),
+}))
 
 vi.mock('@/lib/http', () => ({ api: apiMocks }))
 
 beforeEach(() => {
   apiMocks.get.mockReset()
+  apiMocks.post.mockReset()
+  apiMocks.put.mockReset()
+})
+
+describe('API de criação do rascunho', () => {
+  it.each([
+    'PAPER_TRANSCRIPTION',
+    'DIRECT_SYSTEM_ENTRY',
+  ] as const)('usa POST, path e origem obrigatória para %s', async (origin) => {
+    const response = { data: {}, id: 'form-id', origin, status: 'DRAFT' }
+    apiMocks.post.mockResolvedValueOnce({ data: response })
+
+    const result = await createOratorianoForm('oratoriano/id', origin)
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano%2Fid/forms',
+      { origin },
+    )
+    expect(result).toBe(response)
+  })
+
+  it('rejeita origem ausente antes de chamar a rede', async () => {
+    const promise = Reflect.apply(
+      createOratorianoForm,
+      undefined,
+      ['oratoriano-id', undefined],
+    )
+
+    await expect(promise).rejects.toThrow('Invalid Oratoriano form origin')
+    expect(apiMocks.post).not.toHaveBeenCalled()
+  })
 })
 
 describe('API do histórico de fichas adicionais', () => {
@@ -80,5 +117,46 @@ describe('API do detalhe de ficha adicional', () => {
 
     await expect(getOratorianoFormDetail('oratoriano-id', 'form-id'))
       .rejects.toBe(error)
+  })
+})
+
+describe('API de substituição integral do rascunho', () => {
+  it('usa PUT com o body completo e retorna a resposta autoritativa', async () => {
+    const draft = {
+      firstName: 'Marina',
+      health: { allergies: { answer: 'NO' as const } },
+      surname: 'Alves',
+    }
+    const response = {
+      data: draft,
+      draftRevision: 8,
+      id: 'form-id',
+      status: 'DRAFT',
+    }
+    apiMocks.put.mockResolvedValueOnce({ data: response })
+
+    const result = await replaceOratorianoFormDraft(
+      'oratoriano/id',
+      'form id',
+      draft,
+    )
+
+    expect(apiMocks.put).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano%2Fid/forms/form%20id',
+      draft,
+    )
+    expect(result).toBe(response)
+    expect(apiMocks).not.toHaveProperty('patch')
+  })
+
+  it('preserva erro sem expor ou converter o payload', async () => {
+    const error = new Error('diagnóstico privado')
+    apiMocks.put.mockRejectedValueOnce(error)
+
+    await expect(replaceOratorianoFormDraft(
+      'oratoriano-id',
+      'form-id',
+      {},
+    )).rejects.toBe(error)
   })
 })

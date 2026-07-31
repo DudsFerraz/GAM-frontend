@@ -36,6 +36,7 @@ vi.mock('@/features/manage/events', () => ({
 
 vi.mock('@/features/manage/oratorianoForms', () => ({
   OratorianoFormsSection: (props: {
+    canManage: boolean
     canView: boolean
     oratorianoId: string
   }) => {
@@ -157,6 +158,7 @@ describe('OratorianoDetailPage', () => {
     expect(forms.compareDocumentPosition(frequency))
       .toBe(Node.DOCUMENT_POSITION_FOLLOWING)
     expect(pageMocks.formsSection).toHaveBeenCalledWith({
+      canManage: false,
       canView: true,
       oratorianoId: 'oratoriano-id',
     })

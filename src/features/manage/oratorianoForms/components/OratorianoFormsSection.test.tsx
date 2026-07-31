@@ -63,6 +63,29 @@ beforeEach(() => {
 })
 
 describe('OratorianoFormsSection', () => {
+  it('exibe Nova ficha somente com leitura e gestão combinadas', () => {
+    setHistoryQuery({ data: { items: [] } })
+
+    const { rerender } = render(
+      <OratorianoFormsSection
+        canManage
+        canView
+        oratorianoId="oratoriano-id"
+      />,
+    )
+    expect(screen.getByRole('button', { name: 'Nova ficha' }))
+      .toBeInTheDocument()
+
+    rerender(
+      <OratorianoFormsSection
+        canManage
+        canView={false}
+        oratorianoId="oratoriano-id"
+      />,
+    )
+    expect(screen.queryByRole('button', { name: 'Nova ficha' }))
+      .not.toBeInTheDocument()
+  })
   it('mostra o carregamento local da seção', () => {
     setHistoryQuery({ isLoading: true })
 
