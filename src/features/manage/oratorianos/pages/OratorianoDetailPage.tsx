@@ -35,6 +35,7 @@ import {
   useAccountPermissions,
 } from '@/features/account'
 import { getEventStatusLabel } from '@/features/manage/events'
+import { OratorianoFormsSection } from '@/features/manage/oratorianoForms'
 import { formatDate } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
@@ -107,6 +108,7 @@ export function OratorianoDetailPage({
     false,
   )
   const canViewOratorios = permissions.includes('ORATORIO_GET')
+  const canViewForms = permissions.includes('ORATORIANO_FORM_GET')
   const profileQuery = useOratoriano(oratorianoId, canView)
   const historyQuery = useOratorianoAttendances(
     oratorianoId,
@@ -226,6 +228,11 @@ export function OratorianoDetailPage({
           </dl>
         </CardContent>
       </Card>
+
+      <OratorianoFormsSection
+        canView={canViewForms}
+        oratorianoId={oratorianoId}
+      />
 
       <section aria-labelledby="frequency-title" className="space-y-4">
         <div>

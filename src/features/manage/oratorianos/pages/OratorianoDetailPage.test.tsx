@@ -9,6 +9,7 @@ import { OratorianoDetailPage } from './OratorianoDetailPage'
 
 const pageMocks = vi.hoisted(() => ({
   deleteDialog: vi.fn(),
+  formsSection: vi.fn(),
   navigate: vi.fn(),
   useAccountInfo: vi.fn(),
   useAccountPermissions: vi.fn(),
@@ -31,6 +32,20 @@ vi.mock('@/features/account', () => ({
 
 vi.mock('@/features/manage/events', () => ({
   getEventStatusLabel: vi.fn(() => 'Concluído'),
+}))
+
+vi.mock('@/features/manage/oratorianoForms', () => ({
+  OratorianoFormsSection: (props: {
+    canView: boolean
+    oratorianoId: string
+  }) => {
+    pageMocks.formsSection(props)
+    return (
+      <section data-testid="oratoriano-forms-section">
+        <h2>Fichas adicionais</h2>
+      </section>
+    )
+  },
 }))
 
 vi.mock('../hooks/useOratorianos', () => ({
@@ -80,6 +95,7 @@ function renderPage(queryClient = createQueryClient()) {
 
 beforeEach(() => {
   pageMocks.deleteDialog.mockReset()
+  pageMocks.formsSection.mockReset()
   pageMocks.navigate.mockReset()
   pageMocks.navigate.mockResolvedValue(undefined)
   pageMocks.useAccountInfo.mockReset()
@@ -123,6 +139,29 @@ beforeEach(() => {
 })
 
 describe('OratorianoDetailPage', () => {
+  it('posiciona fichas depois do cadastro e antes da frequência', () => {
+    pageMocks.useAccountPermissions.mockReturnValue({
+      permissions: ['ORATORIANO_GET', 'ORATORIANO_FORM_GET'],
+    })
+
+    renderPage()
+
+    const registration = screen.getByText('Dados cadastrais')
+    const forms = screen.getByRole('heading', { name: 'Fichas adicionais' })
+    const frequency = screen.getByRole('heading', {
+      name: 'Resumo de frequência',
+    })
+
+    expect(registration.compareDocumentPosition(forms))
+      .toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(forms.compareDocumentPosition(frequency))
+      .toBe(Node.DOCUMENT_POSITION_FOLLOWING)
+    expect(pageMocks.formsSection).toHaveBeenCalledWith({
+      canView: true,
+      oratorianoId: 'oratoriano-id',
+    })
+  })
+
   it('não oferece exclusão sem a permissão de gestão', () => {
     renderPage()
 
