@@ -15,4 +15,10 @@ export const oratorianoFormQueryKeys = {
     oratorianoId,
     { page, size },
   ] as const,
+  detail: (oratorianoId: string, formId: string) => [
+    ...oratorianoFormQueryKeys.all,
+    'detail',
+    oratorianoId,
+    formId,
+  ] as const,
 }

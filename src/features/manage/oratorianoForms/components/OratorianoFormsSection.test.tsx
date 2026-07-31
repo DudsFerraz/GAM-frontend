@@ -11,6 +11,26 @@ const hookMocks = vi.hoisted(() => ({
 
 vi.mock('../hooks/useOratorianoForms', () => hookMocks)
 
+vi.mock('@tanstack/react-router', () => ({
+  Link: ({
+    'aria-label': ariaLabel,
+    params,
+    to,
+  }: {
+    'aria-label'?: string
+    params: { formId: string; oratorianoId: string }
+    to: string
+  }) => (
+    <a
+      aria-label={ariaLabel}
+      data-form-id={params.formId}
+      data-oratoriano-id={params.oratorianoId}
+      data-to={to}
+      href="/ficha-sintetica"
+    />
+  ),
+}))
+
 const refetch = vi.fn()
 
 function setHistoryQuery(overrides: Record<string, unknown> = {}) {
@@ -133,7 +153,9 @@ describe('OratorianoFormsSection', () => {
     expect(document.body).not.toHaveTextContent('019fb82d')
     expect(screen.queryByRole('button', { name: 'Nova ficha' }))
       .not.toBeInTheDocument()
-    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(screen.getByRole('link', {
+      name: 'Abrir ficha adicional, versão 2',
+    })).toBeInTheDocument()
   })
 
   it('mantém paginação própria e bloqueia os controles na atualização', async () => {
@@ -190,7 +212,8 @@ describe('OratorianoFormsSection', () => {
     expect(screen.getByRole('button', { name: 'Próxima' })).toBeDisabled()
   })
 
-  it('não dispara nenhuma leitura de detalhe ao interagir com o histórico', () => {
+  it('oferece navegação explícita sem disparar leitura de detalhe', async () => {
+    const user = userEvent.setup()
     setHistoryQuery({
       data: {
         items: [{
@@ -207,9 +230,45 @@ describe('OratorianoFormsSection', () => {
     })
 
     renderSection()
-    fireEvent.click(screen.getByRole('heading', { name: 'Versão 3' }))
+    const link = screen.getByRole('link', {
+      name: 'Abrir ficha adicional, versão 3',
+    })
+    expect(link).toHaveAttribute(
+      'data-to',
+      '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId',
+    )
+    expect(link).toHaveAttribute('data-form-id', 'form-id')
+    expect(link).toHaveAttribute(
+      'data-oratoriano-id',
+      '019fb82d-1111-7111-8111-111111111111',
+    )
+
+    await user.tab()
+    expect(link).toHaveFocus()
+    fireEvent.click(link)
 
     expect(hookMocks.useOratorianoFormHistory).toHaveBeenCalledTimes(1)
-    expect(screen.queryByText('Abrir ficha')).not.toBeInTheDocument()
+    expect(screen.getByText('Abrir ficha')).toBeInTheDocument()
+  })
+
+  it('não oferece abertura quando o identificador da ficha está ausente', () => {
+    setHistoryQuery({
+      data: {
+        items: [{
+          createdAt: '2026-07-29T21:42:00Z',
+          origin: 'DIRECT_SYSTEM_ENTRY',
+          status: 'DRAFT',
+          version: 3,
+        }],
+        page: 0,
+        totalElements: 1,
+        totalPages: 1,
+      },
+    })
+
+    renderSection()
+
+    expect(screen.queryByRole('link')).not.toBeInTheDocument()
+    expect(document.body).not.toHaveTextContent('undefined')
   })
 })

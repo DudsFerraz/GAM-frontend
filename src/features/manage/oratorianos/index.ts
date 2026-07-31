@@ -1,5 +1,6 @@
 export { ManageOratorianosPage } from './pages/ManageOratorianosPage'
 export { OratorianoDetailPage } from './pages/OratorianoDetailPage'
+export { useOratoriano } from './hooks/useOratorianos'
 export {
   areHumanEquivalentNames,
   canonicalizeNameSeparators,

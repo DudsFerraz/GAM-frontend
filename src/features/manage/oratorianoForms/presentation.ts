@@ -59,6 +59,20 @@ const FORM_ORIGIN_LABELS = {
   DIRECT_SYSTEM_ENTRY: 'Preenchimento no sistema',
 } as const satisfies Record<OratorianoFormOrigin, string>
 
+const RESPONSIBLE_RELATIONSHIP_LABELS = {
+  SELF: 'Próprio Oratoriano',
+  MOTHER: 'Mãe',
+  FATHER: 'Pai',
+  RELATIVE: 'Outro familiar',
+  REFERENCE_ADULT: 'Adulto de referência',
+} as const
+
+const HEALTH_ANSWER_LABELS = {
+  YES: 'Sim',
+  NO: 'Não',
+  NOT_INFORMED: 'Não informado',
+} as const
+
 export function getOratorianoFormStatusPresentation(
   status?: string | null,
 ): FormStatusPresentation {
@@ -104,4 +118,28 @@ export function getOratorianoFormAttachmentLabel(
   return pageCount === 1
     ? 'Anexo com 1 página'
     : `Anexo com ${pageCount} páginas`
+}
+
+export function getResponsibleRelationshipLabel(
+  relationship?: string | null,
+): string {
+  return resolvePresentationLabel(
+    RESPONSIBLE_RELATIONSHIP_LABELS,
+    relationship,
+    'Relação não identificada',
+  )
+}
+
+export function getHealthAnswerLabel(answer?: string | null): string {
+  return resolvePresentationLabel(
+    HEALTH_ANSWER_LABELS,
+    answer,
+    'Resposta não identificada',
+  )
+}
+
+export function getConfirmationLabel(value?: boolean | null): string {
+  if (value === true) return 'Confirmado'
+  if (value === false) return 'Não confirmado'
+  return 'Não informado'
 }

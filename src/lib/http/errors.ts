@@ -100,3 +100,6 @@ export const getErrorMessage = (
 
 export const isForbiddenError = (error: unknown): boolean =>
   error instanceof AxiosError && error.response?.status === 403
+
+export const isNotFoundError = (error: unknown): boolean =>
+  error instanceof AxiosError && error.response?.status === 404

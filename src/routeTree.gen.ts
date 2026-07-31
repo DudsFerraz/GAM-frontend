@@ -30,6 +30,7 @@ import { Route as AuthenticatedManageMembersMemberIdRouteImport } from './routes
 import { Route as AuthenticatedManageEventsEventIdRouteImport } from './routes/_authenticated/manage/events_.$eventId'
 import { Route as AuthenticatedManageOratoriosOratorianosOratorianoIdRouteImport } from './routes/_authenticated/manage/oratorios.oratorianos_.$oratorianoId'
 import { Route as AuthenticatedManageOratoriosOratorioIdAttendanceRouteImport } from './routes/_authenticated/manage/oratorios.$oratorioId_.attendance'
+import { Route as AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRouteImport } from './routes/_authenticated/manage/oratorios.oratorianos_.$oratorianoId_.fichas.$formId'
 
 const ManageRoute = ManageRouteImport.update({
   id: '/manage',
@@ -148,6 +149,14 @@ const AuthenticatedManageOratoriosOratorioIdAttendanceRoute =
     path: '/$oratorioId/attendance',
     getParentRoute: () => AuthenticatedManageOratoriosRoute,
   } as any)
+const AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute =
+  AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRouteImport.update(
+    {
+      id: '/oratorianos_/$oratorianoId_/fichas/$formId',
+      path: '/oratorianos/$oratorianoId/fichas/$formId',
+      getParentRoute: () => AuthenticatedManageOratoriosRoute,
+    } as any,
+  )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -170,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/manage/oratorios/': typeof AuthenticatedManageOratoriosIndexRoute
   '/manage/oratorios/$oratorioId/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
   '/manage/oratorios/oratorianos/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
+  '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -191,6 +201,7 @@ export interface FileRoutesByTo {
   '/manage/oratorios': typeof AuthenticatedManageOratoriosIndexRoute
   '/manage/oratorios/$oratorioId/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
   '/manage/oratorios/oratorianos/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
+  '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -215,6 +226,7 @@ export interface FileRoutesById {
   '/_authenticated/manage/oratorios/': typeof AuthenticatedManageOratoriosIndexRoute
   '/_authenticated/manage/oratorios/$oratorioId_/attendance': typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
   '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
+  '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId_/fichas/$formId': typeof AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -239,6 +251,7 @@ export interface FileRouteTypes {
     | '/manage/oratorios/'
     | '/manage/oratorios/$oratorioId/attendance'
     | '/manage/oratorios/oratorianos/$oratorianoId'
+    | '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -260,6 +273,7 @@ export interface FileRouteTypes {
     | '/manage/oratorios'
     | '/manage/oratorios/$oratorioId/attendance'
     | '/manage/oratorios/oratorianos/$oratorianoId'
+    | '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId'
   id:
     | '__root__'
     | '/'
@@ -283,6 +297,7 @@ export interface FileRouteTypes {
     | '/_authenticated/manage/oratorios/'
     | '/_authenticated/manage/oratorios/$oratorioId_/attendance'
     | '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId'
+    | '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId_/fichas/$formId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -441,6 +456,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedManageOratoriosOratorioIdAttendanceRouteImport
       parentRoute: typeof AuthenticatedManageOratoriosRoute
     }
+    '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId_/fichas/$formId': {
+      id: '/_authenticated/manage/oratorios/oratorianos_/$oratorianoId_/fichas/$formId'
+      path: '/oratorianos/$oratorianoId/fichas/$formId'
+      fullPath: '/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId'
+      preLoaderRoute: typeof AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRouteImport
+      parentRoute: typeof AuthenticatedManageOratoriosRoute
+    }
   }
 }
 
@@ -465,6 +487,7 @@ interface AuthenticatedManageOratoriosRouteChildren {
   AuthenticatedManageOratoriosIndexRoute: typeof AuthenticatedManageOratoriosIndexRoute
   AuthenticatedManageOratoriosOratorioIdAttendanceRoute: typeof AuthenticatedManageOratoriosOratorioIdAttendanceRoute
   AuthenticatedManageOratoriosOratorianosOratorianoIdRoute: typeof AuthenticatedManageOratoriosOratorianosOratorianoIdRoute
+  AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute: typeof AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute
 }
 
 const AuthenticatedManageOratoriosRouteChildren: AuthenticatedManageOratoriosRouteChildren =
@@ -479,6 +502,8 @@ const AuthenticatedManageOratoriosRouteChildren: AuthenticatedManageOratoriosRou
       AuthenticatedManageOratoriosOratorioIdAttendanceRoute,
     AuthenticatedManageOratoriosOratorianosOratorianoIdRoute:
       AuthenticatedManageOratoriosOratorianosOratorianoIdRoute,
+    AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute:
+      AuthenticatedManageOratoriosOratorianosOratorianoIdFichasFormIdRoute,
   }
 
 const AuthenticatedManageOratoriosRouteWithChildren =

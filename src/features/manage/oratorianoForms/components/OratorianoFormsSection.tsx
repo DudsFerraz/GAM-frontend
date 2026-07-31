@@ -1,4 +1,5 @@
-import { FileText } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { ChevronRight, FileText } from 'lucide-react'
 import { useState } from 'react'
 
 import {
@@ -9,7 +10,11 @@ import {
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
 import { Badge } from '@/components/ui/Badge'
-import { Card, CardContent } from '@/components/ui/Card'
+import {
+  Card,
+  CardActionArea,
+  CardContent,
+} from '@/components/ui/Card'
 import { formatDate, formatDateTime } from '@/lib/format'
 import { isForbiddenError } from '@/lib/http'
 import { cn } from '@/lib/utils'
@@ -94,6 +99,7 @@ export function OratorianoFormsSection({
                 isLast={index === items.length - 1}
                 item={item}
                 key={item.id ?? `${item.version ?? 'sem-versao'}-${index}`}
+                oratorianoId={oratorianoId}
               />
             ))}
           </ol>
@@ -133,11 +139,14 @@ function SectionHeading() {
 function HistoryItem({
   isLast,
   item,
+  oratorianoId,
 }: {
   isLast: boolean
   item: OratorianoFormHistoryItem
+  oratorianoId: string
 }) {
   const status = getOratorianoFormStatusPresentation(item.status)
+  const canOpen = typeof item.id === 'string' && item.id.trim().length > 0
 
   return (
     <li className="grid grid-cols-[1rem_minmax(0,1fr)] gap-3">
@@ -150,8 +159,22 @@ function HistoryItem({
         />
         {!isLast && <span className="w-px flex-1 bg-border" />}
       </div>
-      <Card className={cn('mb-3 gap-0 py-4', status.cardClassName)}>
-        <CardContent>
+      <Card
+        className={cn('mb-3 gap-0 py-4', status.cardClassName)}
+        interactive={canOpen}
+      >
+        {canOpen && item.id && (
+          <CardActionArea asChild>
+            <Link
+              aria-label={typeof item.version === 'number'
+                ? `Abrir ficha adicional, versão ${item.version}`
+                : 'Abrir ficha adicional'}
+              params={{ formId: item.id, oratorianoId }}
+              to="/manage/oratorios/oratorianos/$oratorianoId/fichas/$formId"
+            />
+          </CardActionArea>
+        )}
+        <CardContent className="pointer-events-none relative z-[1]">
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-2">
               <FileText
@@ -182,6 +205,12 @@ function HistoryItem({
               item.attachmentPageCount,
             )}
           </p>
+          {canOpen && (
+            <p className="mt-3 flex items-center justify-end gap-1 text-sm font-medium text-primary">
+              Abrir ficha
+              <ChevronRight aria-hidden="true" className="h-4 w-4" />
+            </p>
+          )}
         </CardContent>
       </Card>
     </li>
