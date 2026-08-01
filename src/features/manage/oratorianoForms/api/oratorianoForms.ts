@@ -1,4 +1,4 @@
-import { api } from '@/lib/http'
+import { api, normalizeHttpError } from '@/lib/http'
 
 import type { paths } from '@/api/generated/gam-api'
 
@@ -8,12 +8,17 @@ import type {
   OratorianoFormHistoryPage,
   OratorianoFormOrigin,
   OratorianoFormReason,
+  OratorianoFormPrintSnapshot,
 } from '../types'
 
 const ORATORIANO_FORM_DETAIL_PATH =
   '/oratorianos/{oratorianoId}/forms/{formId}' satisfies keyof paths
 const ORATORIANO_FORMS_PATH =
   '/oratorianos/{oratorianoId}/forms' satisfies keyof paths
+const ORATORIANO_FORM_PRINT_SNAPSHOTS_PATH =
+  '/oratorianos/{oratorianoId}/forms/{formId}/print-snapshots' satisfies keyof paths
+const ORATORIANO_FORM_PDF_PATH =
+  '/oratorianos/{oratorianoId}/forms/{formId}/print-snapshots/{printSnapshotId}/pdf' satisfies keyof paths
 
 function formCollectionPath(oratorianoId: string) {
   return ORATORIANO_FORMS_PATH.replace(
@@ -26,6 +31,23 @@ function formDetailPath(oratorianoId: string, formId: string) {
   return ORATORIANO_FORM_DETAIL_PATH
     .replace('{oratorianoId}', encodeURIComponent(oratorianoId))
     .replace('{formId}', encodeURIComponent(formId))
+}
+
+function formPrintSnapshotsPath(oratorianoId: string, formId: string) {
+  return ORATORIANO_FORM_PRINT_SNAPSHOTS_PATH
+    .replace('{oratorianoId}', encodeURIComponent(oratorianoId))
+    .replace('{formId}', encodeURIComponent(formId))
+}
+
+function formPdfPath(
+  oratorianoId: string,
+  formId: string,
+  printSnapshotId: string,
+) {
+  return ORATORIANO_FORM_PDF_PATH
+    .replace('{oratorianoId}', encodeURIComponent(oratorianoId))
+    .replace('{formId}', encodeURIComponent(formId))
+    .replace('{printSnapshotId}', encodeURIComponent(printSnapshotId))
 }
 
 export async function getOratorianoFormHistory(
@@ -89,4 +111,32 @@ export async function deleteOratorianoFormDraft(
   await api.delete<void>(formDetailPath(oratorianoId, formId), {
     data: payload,
   })
+}
+
+export async function createOratorianoFormPrintSnapshot(
+  oratorianoId: string,
+  formId: string,
+): Promise<OratorianoFormPrintSnapshot> {
+  const { data } = await api.post<OratorianoFormPrintSnapshot>(
+    formPrintSnapshotsPath(oratorianoId, formId),
+  )
+
+  return data
+}
+
+export async function downloadOratorianoFormPdf(
+  oratorianoId: string,
+  formId: string,
+  printSnapshotId: string,
+): Promise<Blob> {
+  try {
+    const { data } = await api.get<Blob>(
+      formPdfPath(oratorianoId, formId, printSnapshotId),
+      { responseType: 'blob' },
+    )
+
+    return data
+  } catch (error) {
+    throw await normalizeHttpError(error)
+  }
 }

@@ -1,5 +1,4 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useBlocker } from '@tanstack/react-router'
 import { Check, Circle, Save } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
@@ -9,16 +8,6 @@ import {
 } from 'react-hook-form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/AlertDialog'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
@@ -49,6 +38,7 @@ import {
   ReviewStep,
 } from './OratorianoFormStepFields'
 import { DeleteOratorianoFormDialog } from './DeleteOratorianoFormDialog'
+import { FormPrintSection } from './FormPrintSection'
 
 const STEPS = [
   {
@@ -122,26 +112,30 @@ const STEPS = [
 const ALL_FIELD_PATHS = STEPS.flatMap((step) => step.fields)
 
 type OratorianoFormEditorProps = {
+  canGeneratePdf?: boolean
   detail: ParsedOratorianoFormDetail
   formId: string
   name: string
   onDeleted?: () => Promise<void>
+  onDirtyChange?: (isDirty: boolean) => void
+  onExitBypassChange?: (bypass: boolean) => void
   oratorianoId: string
 }
 
 export function OratorianoFormEditor({
+  canGeneratePdf = false,
   detail,
   formId,
   name,
   onDeleted = async () => {},
+  onDirtyChange,
+  onExitBypassChange,
   oratorianoId,
 }: OratorianoFormEditorProps) {
   const [activeStep, setActiveStep] = useState(0)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
-  const [isNavigationBypass, setIsNavigationBypass] = useState(false)
   const [saveConfirmed, setSaveConfirmed] = useState(false)
   const headingRef = useRef<HTMLHeadingElement>(null)
-  const navigationBypassRef = useRef(false)
   const form = useForm<OratorianoFormValues>({
     defaultValues: fromFormDraftTransport(detail.data),
     resolver: zodResolver(oratorianoFormEditorSchema),
@@ -150,19 +144,17 @@ export function OratorianoFormEditor({
   })
   const mutation = useReplaceOratorianoFormDraft(oratorianoId, formId)
   const handleDeleteFinished = useCallback(async () => {
-    navigationBypassRef.current = true
-    setIsNavigationBypass(true)
+    onExitBypassChange?.(true)
     setIsDeleteOpen(false)
 
     try {
       await onDeleted()
     } catch (error) {
-      navigationBypassRef.current = false
-      setIsNavigationBypass(false)
+      onExitBypassChange?.(false)
       setIsDeleteOpen(true)
       throw error
     }
-  }, [onDeleted])
+  }, [onDeleted, onExitBypassChange])
   const deleteMutation = useDeleteOratorianoFormDraft(
     oratorianoId,
     formId,
@@ -170,12 +162,6 @@ export function OratorianoFormEditor({
   )
   const { errors, isDirty } = form.formState
   const isEditable = detail.status === 'DRAFT'
-  const blocker = useBlocker({
-    disabled: !isDirty || isNavigationBypass,
-    enableBeforeUnload: () => isDirty && !isNavigationBypass,
-    shouldBlockFn: () => isDirty && !isNavigationBypass,
-    withResolver: true,
-  })
   const errorPaths = useMemo(() => getErrorPaths(errors), [errors])
   const status = getOratorianoFormStatusPresentation(detail.status)
   const displayedRevision = mutation.data?.draftRevision
@@ -185,9 +171,9 @@ export function OratorianoFormEditor({
     headingRef.current?.focus()
   }, [activeStep])
 
-  useEffect(() => () => {
-    navigationBypassRef.current = false
-  }, [])
+  useEffect(() => {
+    onDirtyChange?.(isDirty)
+  }, [isDirty, onDirtyChange])
 
   const changeStep = (nextStep: number) => {
     setSaveConfirmed(false)
@@ -360,6 +346,21 @@ export function OratorianoFormEditor({
                 {activeStep === 4 && <ReviewStep values={form.getValues()} />}
               </fieldset>
 
+              {activeStep === 4 && (
+                <div className="mt-6 border-t pt-6">
+                  <FormPrintSection
+                    canGenerate={canGeneratePdf && isEditable}
+                    currentRevision={mutation.data?.draftRevision
+                      ?? detail.draftRevision}
+                    formId={formId}
+                    isDirty={isDirty}
+                    name={name}
+                    oratorianoId={oratorianoId}
+                    origin={detail.origin}
+                  />
+                </div>
+              )}
+
               {mutation.isError && (
                 <Alert className="mt-5" variant="destructive">
                   <AlertTitle>Não foi possível salvar o rascunho.</AlertTitle>
@@ -421,34 +422,6 @@ export function OratorianoFormEditor({
         </form>
       </Form>
 
-      <AlertDialog
-        onOpenChange={(open) => {
-          if (!open && blocker.status === 'blocked') blocker.reset()
-        }}
-        open={blocker.status === 'blocked'}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Existem alterações não salvas.</AlertDialogTitle>
-            <AlertDialogDescription>
-              Se sair agora, as mudanças feitas desde o último salvamento serão descartadas.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>
-              Permanecer e revisar
-            </AlertDialogCancel>
-            <AlertDialogAction
-              onClick={(event) => {
-                event.preventDefault()
-                if (blocker.status === 'blocked') blocker.proceed()
-              }}
-            >
-              Descartar e sair
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   )
 }

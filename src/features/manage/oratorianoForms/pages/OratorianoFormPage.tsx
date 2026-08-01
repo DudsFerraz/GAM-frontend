@@ -1,5 +1,5 @@
 import { useQueryClient } from '@tanstack/react-query'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link, useBlocker, useNavigate } from '@tanstack/react-router'
 import { ArrowLeft, LockKeyhole } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 
@@ -13,6 +13,16 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/AlertDialog'
+import {
   useAccountInfo,
   useAccountPermissions,
 } from '@/features/account'
@@ -25,7 +35,10 @@ import { formatDate, formatDateTime } from '@/lib/format'
 import { isForbiddenError, isNotFoundError } from '@/lib/http'
 import { cn } from '@/lib/utils'
 
-import { useOratorianoFormDetail } from '../hooks/useOratorianoForms'
+import {
+  useOratorianoFormDetail,
+  useOratorianoFormSnapshots,
+} from '../hooks/useOratorianoForms'
 import {
   InvalidOratorianoFormDataError,
   type ParsedOratorianoFormDetail,
@@ -40,6 +53,7 @@ import {
 import { oratorianoFormQueryKeys } from '../queryKeys'
 import type { OratorianoFormDraft } from '../types'
 import { OratorianoFormEditor } from '../components/OratorianoFormEditor'
+import { FormPrintSection } from '../components/FormPrintSection'
 
 type OratorianoFormPageProps = {
   formId: string
@@ -72,8 +86,12 @@ export function OratorianoFormPage({
   const canView = permissions.includes('ORATORIANO_FORM_GET')
   const canManage = canView
     && permissions.includes('ORATORIANO_FORM_MANAGE')
+  const canGeneratePdf = canView
+    && permissions.includes('ORATORIANO_FORM_PDF_GENERATE')
   const canViewProfile = permissions.includes('ORATORIANO_GET')
   const [detailDisabled, setDetailDisabled] = useState(false)
+  const [isDirty, setIsDirty] = useState(false)
+  const [isExitBypass, setIsExitBypass] = useState(false)
   const deletionNavigationStarted = useRef(false)
   const detailQuery = useOratorianoFormDetail(
     oratorianoId,
@@ -83,7 +101,17 @@ export function OratorianoFormPage({
     detailDisabled,
   )
   const profileQuery = useOratoriano(oratorianoId, canViewProfile)
+  const snapshots = useOratorianoFormSnapshots(oratorianoId, formId)
   const [editorWasOpened, setEditorWasOpened] = useState(false)
+  const hasEphemeralWorkspace = canView
+    && openedExplicitly
+    && (isDirty || snapshots.length > 0)
+  const blocker = useBlocker({
+    disabled: !hasEphemeralWorkspace || isExitBypass,
+    enableBeforeUnload: () => hasEphemeralWorkspace && !isExitBypass,
+    shouldBlockFn: () => hasEphemeralWorkspace && !isExitBypass,
+    withResolver: true,
+  })
 
   const removeDeletedWorkspaceQueries = useCallback(() => {
     const workspaceKey = `${oratorianoId}:${formId}`
@@ -109,6 +137,8 @@ export function OratorianoFormPage({
 
   const handleDeleted = useCallback(async () => {
     setDetailDisabled(true)
+    setIsDirty(false)
+    setIsExitBypass(true)
     deletionNavigationStarted.current = true
 
     try {
@@ -124,6 +154,17 @@ export function OratorianoFormPage({
       throw error
     }
   }, [navigate, oratorianoId, removeDeletedWorkspaceQueries])
+
+  const confirmExit = useCallback(() => {
+    setIsExitBypass(true)
+    queryClient.removeQueries({
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.snapshots(oratorianoId, formId),
+    })
+    if (blocker.status === 'blocked') {
+      blocker.proceed()
+    }
+  }, [blocker, formId, oratorianoId, queryClient])
 
   useEffect(() => {
     if (canManage && detailQuery.data?.status === 'DRAFT') {
@@ -151,6 +192,10 @@ export function OratorianoFormPage({
           exact: true,
           queryKey: oratorianoFormQueryKeys.detail(oratorianoId, formId),
         })
+        queryClient.removeQueries({
+          exact: true,
+          queryKey: oratorianoFormQueryKeys.snapshots(oratorianoId, formId),
+        })
         pendingDetailCleanup.delete(workspaceKey)
       }, 0)
       pendingDetailCleanup.set(workspaceKey, timeout)
@@ -168,68 +213,94 @@ export function OratorianoFormPage({
       </Link>
     </Button>
   )
+  const exitGuard = (
+    <OratorianoFormExitDialog
+      blocker={blocker}
+      hasDirtyChanges={isDirty}
+      hasSnapshots={snapshots.length > 0}
+      onConfirmExit={confirmExit}
+    />
+  )
 
   if (!canView || !openedExplicitly) {
     return (
-      <PageState backLink={backLink}>
-        <ForbiddenState description="Sua conta não pode consultar esta ficha adicional." />
-      </PageState>
+      <>
+        {exitGuard}
+        <PageState backLink={backLink}>
+          <ForbiddenState description="Sua conta não pode consultar esta ficha adicional." />
+        </PageState>
+      </>
     )
   }
 
   if (detailQuery.isLoading) {
     return (
-      <PageState backLink={backLink}>
-        <LoadingState
-          description="O conteúdo protegido será exibido somente nesta página."
-          title="Carregando ficha adicional…"
-        />
-      </PageState>
+      <>
+        {exitGuard}
+        <PageState backLink={backLink}>
+          <LoadingState
+            description="O conteúdo protegido será exibido somente nesta página."
+            title="Carregando ficha adicional…"
+          />
+        </PageState>
+      </>
     )
   }
 
   if (detailQuery.isError) {
     if (isForbiddenError(detailQuery.error)) {
       return (
-        <PageState backLink={backLink}>
-          <ForbiddenState description="Sua conta não pode consultar esta ficha adicional." />
-        </PageState>
+        <>
+          {exitGuard}
+          <PageState backLink={backLink}>
+            <ForbiddenState description="Sua conta não pode consultar esta ficha adicional." />
+          </PageState>
+        </>
       )
     }
 
     if (isNotFoundError(detailQuery.error)) {
       return (
-        <PageState backLink={backLink}>
-          <EmptyState
-            description="Volte ao perfil para consultar as fichas disponíveis."
-            title="Ficha adicional não encontrada."
-          />
-        </PageState>
+        <>
+          {exitGuard}
+          <PageState backLink={backLink}>
+            <EmptyState
+              description="Volte ao perfil para consultar as fichas disponíveis."
+              title="Ficha adicional não encontrada."
+            />
+          </PageState>
+        </>
       )
     }
 
     const invalidData = detailQuery.error
       instanceof InvalidOratorianoFormDataError
     return (
-      <PageState backLink={backLink}>
-        <ErrorState
-          description={invalidData
-            ? 'O conteúdo recebido não pôde ser apresentado com segurança. Tente novamente.'
-            : 'Não foi possível carregar esta ficha adicional. Tente novamente.'}
-          onRetry={() => void detailQuery.refetch()}
-          title={invalidData
-            ? 'Não foi possível validar o conteúdo da ficha.'
-            : 'Não foi possível consultar a ficha.'}
-        />
-      </PageState>
+      <>
+        {exitGuard}
+        <PageState backLink={backLink}>
+          <ErrorState
+            description={invalidData
+              ? 'O conteúdo recebido não pôde ser apresentado com segurança. Tente novamente.'
+              : 'Não foi possível carregar esta ficha adicional. Tente novamente.'}
+            onRetry={() => void detailQuery.refetch()}
+            title={invalidData
+              ? 'Não foi possível validar o conteúdo da ficha.'
+              : 'Não foi possível consultar a ficha.'}
+          />
+        </PageState>
+      </>
     )
   }
 
   if (!detailQuery.data) {
     return (
-      <PageState backLink={backLink}>
-        <EmptyState title="Ficha adicional não encontrada." />
-      </PageState>
+      <>
+        {exitGuard}
+        <PageState backLink={backLink}>
+          <EmptyState title="Ficha adicional não encontrada." />
+        </PageState>
+      </>
     )
   }
 
@@ -243,12 +314,16 @@ export function OratorianoFormPage({
   if (canManage && (form.status === 'DRAFT' || editorWasOpened)) {
     return (
       <div className="space-y-6">
+        {exitGuard}
         {backLink}
         <OratorianoFormEditor
+          canGeneratePdf={canGeneratePdf}
           detail={form}
           formId={formId}
           name={profileName}
           onDeleted={handleDeleted}
+          onDirtyChange={setIsDirty}
+          onExitBypassChange={setIsExitBypass}
           oratorianoId={oratorianoId}
         />
       </div>
@@ -257,6 +332,7 @@ export function OratorianoFormPage({
 
   return (
     <div className="space-y-6">
+      {exitGuard}
       {backLink}
 
       <header className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -281,6 +357,16 @@ export function OratorianoFormPage({
           {status.label}
         </Badge>
       </header>
+
+      <FormPrintSection
+        canGenerate={canGeneratePdf}
+        currentRevision={form.draftRevision}
+        formId={formId}
+        isDirty={false}
+        name={profileName}
+        oratorianoId={oratorianoId}
+        origin={form.origin}
+      />
 
       <div className="grid items-start gap-4 lg:grid-cols-[17rem_minmax(0,1fr)]">
         <aside className="space-y-3 lg:sticky lg:top-6">
@@ -339,6 +425,63 @@ function PageState({
   children: React.ReactNode
 }) {
   return <div className="space-y-6">{backLink}{children}</div>
+}
+
+type OratorianoFormExitBlocker = {
+  proceed?: () => void
+  reset?: () => void
+  status: string
+}
+
+function OratorianoFormExitDialog({
+  blocker,
+  hasDirtyChanges,
+  hasSnapshots,
+  onConfirmExit,
+}: {
+  blocker: OratorianoFormExitBlocker
+  hasDirtyChanges: boolean
+  hasSnapshots: boolean
+  onConfirmExit: () => void
+}) {
+  const hasBoth = hasDirtyChanges && hasSnapshots
+  const title = hasBoth
+    ? 'Há alterações e documentos temporários nesta ficha.'
+    : hasDirtyChanges
+      ? 'Existem alterações não salvas.'
+      : 'Há um documento temporário nesta ficha.'
+  const description = hasBoth
+    ? 'Se sair agora, as mudanças não salvas serão descartadas e esta página não poderá reencontrar o documento gerado.'
+    : hasDirtyChanges
+      ? 'Se sair agora, as mudanças feitas desde o último salvamento serão descartadas.'
+      : 'Se sair agora, esta página não poderá reencontrar o documento gerado. Será necessário gerar outro PDF.'
+
+  return (
+    <AlertDialog
+      onOpenChange={(open) => {
+        if (!open && blocker.status === 'blocked') blocker.reset?.()
+      }}
+      open={blocker.status === 'blocked'}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>{description}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Permanecer e revisar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={(event) => {
+              event.preventDefault()
+              onConfirmExit()
+            }}
+          >
+            Descartar e sair
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
 }
 
 function SummaryItem({ label, value }: { label: string; value: string }) {

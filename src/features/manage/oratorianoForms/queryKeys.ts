@@ -28,8 +28,10 @@ export const oratorianoFormQueryKeys = {
     formId,
   ] as const,
   snapshots: (oratorianoId: string, formId: string) => [
-    ...oratorianoFormQueryKeys.workspace(oratorianoId, formId),
+    ...oratorianoFormQueryKeys.all,
     'snapshots',
+    oratorianoId,
+    formId,
   ] as const,
   attachments: (oratorianoId: string, formId: string) => [
     ...oratorianoFormQueryKeys.workspace(oratorianoId, formId),

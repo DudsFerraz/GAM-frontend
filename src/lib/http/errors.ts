@@ -26,6 +26,9 @@ const ERROR_CODE_MESSAGES: Readonly<Record<string, string>> = {
   ORATORIANO_DELETED: 'Este cadastro foi excluído e não pode receber uma nova presença. Atualize a busca antes de continuar.',
   ORATORIANO_HAS_IMMUTABLE_FORMS: 'Este cadastro possui uma ficha concluída, substituída ou revogada e não pode ser excluído.',
   ORATORIANO_NAME_RESERVED: 'Já existe um cadastro ativo ou excluído com esse nome. Localize a pessoa correta antes de continuar.',
+  ORATORIANO_FORM_IMMUTABLE: 'A situação atual da ficha não permite gerar este PDF.',
+  ORATORIANO_FORM_NOT_CURRENT: 'Salve a revisão atual antes de gerar um novo PDF.',
+  ORATORIANO_FORM_PDF_GENERATION_FAILED: 'Não foi possível gerar o PDF. Tente novamente.',
   ORATORIO_DATE_ALREADY_EXISTS: 'Já existe um Oratório cadastrado nesta data.',
   ORATORIO_HAS_ACTIVE_ATTENDANCE: 'Remova as presenças ativas antes de excluir este Oratório.',
   ORATORIO_LIFECYCLE_CONFLICT: 'A situação atual do Oratório não permite esta ação.',
@@ -38,7 +41,26 @@ const ERROR_CODE_MESSAGES: Readonly<Record<string, string>> = {
   PRESENCE_REMOVAL_NOT_ALLOWED: 'A situação atual do evento não permite remover esta presença.',
   RESOURCE_CONFLICT: 'Não foi possível concluir porque já existe um cadastro conflitante.',
   RESOURCE_NOT_FOUND: 'O conteúdo solicitado não foi encontrado.',
+  PRINT_SNAPSHOT_NOT_FOUND: 'O documento solicitado não foi encontrado. Gere um novo PDF.',
   VALIDATION_ERROR: 'Revise os campos informados e tente novamente.',
+}
+
+export class SafeHttpError extends Error {
+  readonly status?: number
+  readonly code?: string
+  readonly transportCode?: string
+
+  constructor(
+    status?: number,
+    code?: string,
+    transportCode?: string,
+  ) {
+    super('A solicitação não pôde ser concluída.')
+    this.name = 'SafeHttpError'
+    this.status = status
+    this.code = code
+    this.transportCode = transportCode
+  }
 }
 
 function getResponseErrorCode(data: unknown): string | undefined {
@@ -49,10 +71,69 @@ function getResponseErrorCode(data: unknown): string | undefined {
   return typeof data.code === 'string' ? data.code : undefined
 }
 
+export async function normalizeHttpError(error: unknown): Promise<unknown> {
+  if (!(error instanceof AxiosError)) {
+    return error
+  }
+
+  const responseData = error.response?.data
+  let errorCode = getResponseErrorCode(responseData)
+
+  if (!errorCode && typeof Blob !== 'undefined' && responseData instanceof Blob) {
+    try {
+      const parsedData: unknown = JSON.parse(await responseData.text())
+      errorCode = getResponseErrorCode(parsedData)
+    } catch {
+      // A PDF error response can be a non-JSON blob. Keep only status metadata.
+    }
+  }
+
+  return new SafeHttpError(error.response?.status, errorCode, error.code)
+}
+
 export const getErrorMessage = (
   error: unknown,
   context: ErrorMessageContext = 'default',
 ): string => {
+  if (error instanceof SafeHttpError) {
+    if (context === 'authentication' && error.status === 401) {
+      return 'E-mail ou senha inválidos. Confira os dados e tente novamente.'
+    }
+
+    if (error.code && ERROR_CODE_MESSAGES[error.code]) {
+      return ERROR_CODE_MESSAGES[error.code]
+    }
+
+    switch (error.status) {
+      case 400:
+      case 422:
+        return 'Revise os dados informados e tente novamente.'
+      case 401:
+        return 'Sua sessão expirou. Entre novamente para continuar.'
+      case 403:
+        return 'Você não tem acesso para realizar esta ação.'
+      case 404:
+        return 'O conteúdo solicitado não foi encontrado.'
+      case 409:
+        return 'Não foi possível concluir porque os dados estão em conflito.'
+      case 429:
+        return 'Muitas tentativas foram realizadas. Aguarde um momento e tente novamente.'
+      case 500:
+      case 502:
+      case 503:
+      case 504:
+        return 'O serviço está indisponível no momento. Tente novamente mais tarde.'
+    }
+
+    if (error.transportCode === 'ECONNABORTED') {
+      return 'A solicitação demorou mais que o esperado. Tente novamente.'
+    }
+
+    if (error.transportCode === 'ERR_NETWORK' || error.status === undefined) {
+      return 'Não foi possível se conectar ao serviço. Verifique sua conexão e tente novamente.'
+    }
+  }
+
   if (error instanceof AxiosError) {
     const status = error.response?.status
 

@@ -1,7 +1,9 @@
 import { resolvePresentationLabel } from '@/lib/presentation'
+import { formatDateTime } from '@/lib/format'
 
 import type {
   OratorianoFormOrigin,
+  OratorianoFormPrintSnapshotMode,
   OratorianoFormStatus,
 } from './types'
 
@@ -59,6 +61,11 @@ const FORM_ORIGIN_LABELS = {
   DIRECT_SYSTEM_ENTRY: 'Preenchimento no sistema',
 } as const satisfies Record<OratorianoFormOrigin, string>
 
+const FORM_PRINT_MODE_LABELS = {
+  IDENTIFIED_BLANK: 'Modelo em branco identificado',
+  PREFILLED: 'Modelo pré-preenchido',
+} as const satisfies Record<OratorianoFormPrintSnapshotMode, string>
+
 const RESPONSIBLE_RELATIONSHIP_LABELS = {
   SELF: 'Próprio Oratoriano',
   MOTHER: 'Mãe',
@@ -97,6 +104,45 @@ export function getOratorianoFormOriginLabel(
     origin,
     'Origem não identificada',
   )
+}
+
+export function getOratorianoFormPrintModeLabel(
+  mode?: string | null,
+): string {
+  return resolvePresentationLabel(
+    FORM_PRINT_MODE_LABELS,
+    mode,
+    'Modelo não identificado',
+  )
+}
+
+export function getOratorianoFormPrintGeneratedAtLabel(
+  generatedAt?: string | null,
+): string {
+  return formatDateTime(generatedAt)
+}
+
+export function getOratorianoFormPrintRevisionLabel(
+  draftRevision?: number | null,
+): string {
+  return Number.isInteger(draftRevision) && (draftRevision ?? 0) >= 0
+    ? `Revisão ${draftRevision}`
+    : 'Revisão não informada'
+}
+
+export function isOratorianoFormPrintSnapshotCurrent(input: {
+  origin?: string | null
+  snapshotRevision?: number | null
+  currentRevision?: number | null
+}): boolean {
+  if (input.origin === 'PAPER_TRANSCRIPTION') {
+    return true
+  }
+
+  return input.origin === 'DIRECT_SYSTEM_ENTRY'
+    && Number.isInteger(input.snapshotRevision)
+    && Number.isInteger(input.currentRevision)
+    && input.snapshotRevision === input.currentRevision
 }
 
 export function getOratorianoFormAttachmentLabel(

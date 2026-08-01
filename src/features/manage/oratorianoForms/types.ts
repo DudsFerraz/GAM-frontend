@@ -15,3 +15,8 @@ export type OratorianoFormStatus = NonNullable<
 export type OratorianoFormOrigin = NonNullable<
   OratorianoFormHistoryItem['origin']
 >
+export type OratorianoFormPrintSnapshot =
+  components['schemas']['PrintSnapshotRDTO']
+export type OratorianoFormPrintSnapshotMode = NonNullable<
+  OratorianoFormPrintSnapshot['mode']
+>

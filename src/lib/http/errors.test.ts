@@ -6,7 +6,12 @@ import {
 } from 'axios'
 import { describe, expect, it } from 'vitest'
 
-import { getErrorMessage, isForbiddenError } from './errors'
+import {
+  getErrorMessage,
+  isForbiddenError,
+  normalizeHttpError,
+  SafeHttpError,
+} from './errors'
 
 function createAxiosError(
   status?: number,
@@ -185,5 +190,34 @@ describe('isForbiddenError', () => {
     expect(isForbiddenError(createAxiosError(403))).toBe(true)
     expect(isForbiddenError(createAxiosError(401))).toBe(false)
     expect(isForbiddenError(new Error('403'))).toBe(false)
+  })
+})
+
+describe('normalizeHttpError', () => {
+  it('lê somente o código seguro quando o erro chega como blob JSON', async () => {
+    const error = createAxiosError(422, new Blob([
+      JSON.stringify({
+        code: 'ORATORIANO_FORM_PDF_GENERATION_FAILED',
+        message: 'stack trace privado',
+      }),
+    ], { type: 'application/json' }))
+
+    const normalized = await normalizeHttpError(error)
+
+    expect(normalized).toBeInstanceOf(SafeHttpError)
+    expect(getErrorMessage(normalized)).toBe(
+      'Não foi possível gerar o PDF. Tente novamente.',
+    )
+    expect(getErrorMessage(normalized)).not.toContain('stack trace')
+  })
+
+  it('mantém somente o status quando a resposta não é JSON', async () => {
+    const normalized = await normalizeHttpError(
+      createAxiosError(503, new Blob(['falha técnica'], { type: 'application/pdf' })),
+    )
+
+    expect(getErrorMessage(normalized)).toBe(
+      'O serviço está indisponível no momento. Tente novamente mais tarde.',
+    )
   })
 })

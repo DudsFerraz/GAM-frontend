@@ -2,7 +2,9 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 import {
   createOratorianoForm,
+  createOratorianoFormPrintSnapshot,
   deleteOratorianoFormDraft,
+  downloadOratorianoFormPdf,
   getOratorianoFormDetail,
   getOratorianoFormHistory,
   replaceOratorianoFormDraft,
@@ -15,7 +17,10 @@ const apiMocks = vi.hoisted(() => ({
   put: vi.fn(),
 }))
 
-vi.mock('@/lib/http', () => ({ api: apiMocks }))
+vi.mock('@/lib/http', () => ({
+  api: apiMocks,
+  normalizeHttpError: async (error: unknown) => error,
+}))
 
 beforeEach(() => {
   apiMocks.delete.mockReset()
@@ -197,5 +202,44 @@ describe('API de exclusão do rascunho', () => {
       'form-id',
       { reason: 'Motivo válido.' },
     )).rejects.toBe(error)
+  })
+})
+
+describe('API de impressão da ficha adicional', () => {
+  it('cria o snapshot sem enviar body', async () => {
+    const response = {
+      draftRevision: 7,
+      id: 'snapshot-id',
+      mode: 'PREFILLED',
+    }
+    apiMocks.post.mockResolvedValueOnce({ data: response })
+
+    const result = await createOratorianoFormPrintSnapshot(
+      'oratoriano/id',
+      'form id',
+    )
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano%2Fid/forms/form%20id/print-snapshots',
+    )
+    expect(apiMocks.post.mock.calls[0]).toHaveLength(1)
+    expect(result).toBe(response)
+  })
+
+  it('baixa o PDF como blob pelo snapshot informado', async () => {
+    const response = new Blob(['pdf'])
+    apiMocks.get.mockResolvedValueOnce({ data: response })
+
+    const result = await downloadOratorianoFormPdf(
+      'oratoriano/id',
+      'form id',
+      'snapshot/id',
+    )
+
+    expect(apiMocks.get).toHaveBeenCalledWith(
+      '/oratorianos/oratoriano%2Fid/forms/form%20id/print-snapshots/snapshot%2Fid/pdf',
+      { responseType: 'blob' },
+    )
+    expect(result).toBe(response)
   })
 })

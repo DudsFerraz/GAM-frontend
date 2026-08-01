@@ -11,16 +11,21 @@ import { OratorianoFormPage } from './OratorianoFormPage'
 
 const pageMocks = vi.hoisted(() => ({
   navigate: vi.fn(),
+  reset: vi.fn(),
+  proceed: vi.fn(),
   useAccountInfo: vi.fn(),
   useAccountPermissions: vi.fn(),
   useOratoriano: vi.fn(),
   useOratorianoFormDetail: vi.fn(),
+  useOratorianoFormSnapshots: vi.fn(),
+  useBlocker: vi.fn(),
 }))
 
 vi.mock('@tanstack/react-router', () => ({
   Link: ({ children }: PropsWithChildren) => (
     <a href="/perfil-sintetico">{children}</a>
   ),
+  useBlocker: pageMocks.useBlocker,
   useNavigate: () => pageMocks.navigate,
 }))
 
@@ -43,6 +48,11 @@ vi.mock('@/features/manage/oratorianos', () => ({
 
 vi.mock('../hooks/useOratorianoForms', () => ({
   useOratorianoFormDetail: pageMocks.useOratorianoFormDetail,
+  useOratorianoFormSnapshots: pageMocks.useOratorianoFormSnapshots,
+}))
+
+vi.mock('../components/FormPrintSection', () => ({
+  FormPrintSection: () => <div data-testid="form-print-section" />,
 }))
 
 vi.mock('../components/OratorianoFormEditor', () => ({
@@ -150,6 +160,14 @@ function renderPage({
 beforeEach(() => {
   pageMocks.navigate.mockReset()
   pageMocks.navigate.mockResolvedValue(undefined)
+  pageMocks.proceed.mockReset()
+  pageMocks.reset.mockReset()
+  pageMocks.useBlocker.mockReset()
+  pageMocks.useBlocker.mockReturnValue({
+    proceed: pageMocks.proceed,
+    reset: pageMocks.reset,
+    status: 'idle',
+  })
   refetch.mockReset()
   pageMocks.useAccountInfo.mockReset()
   pageMocks.useAccountInfo.mockReturnValue({ account: { id: 'account-id' } })
@@ -164,6 +182,8 @@ beforeEach(() => {
     isLoading: false,
   })
   pageMocks.useOratorianoFormDetail.mockReset()
+  pageMocks.useOratorianoFormSnapshots.mockReset()
+  pageMocks.useOratorianoFormSnapshots.mockReturnValue([])
   setDetailQuery()
 })
 
@@ -202,6 +222,7 @@ describe('OratorianoFormPage', () => {
       .toBeInTheDocument()
     expect(screen.getByText('Uso acompanhado pela família.'))
       .toBeInTheDocument()
+    expect(screen.getByTestId('form-print-section')).toBeInTheDocument()
   })
 
   it('mantém DRAFT somente leitura e não antecipa controles futuros', () => {
@@ -328,6 +349,33 @@ describe('OratorianoFormPage', () => {
       ),
     })
     view.unmount()
+  })
+
+  it('bloqueia a saída quando há documento temporário e limpa somente a chave exata', async () => {
+    const user = userEvent.setup()
+    const queryClient = createQueryClient()
+    const removeQueries = vi.spyOn(queryClient, 'removeQueries')
+    pageMocks.useOratorianoFormSnapshots.mockReturnValue([{ id: 'snapshot-id' }])
+    pageMocks.useBlocker.mockReturnValue({
+      proceed: pageMocks.proceed,
+      reset: pageMocks.reset,
+      status: 'blocked',
+    })
+
+    renderPage({ queryClient })
+
+    expect(screen.getByText('Há um documento temporário nesta ficha.'))
+      .toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Descartar e sair' }))
+
+    expect(removeQueries).toHaveBeenCalledWith({
+      exact: true,
+      queryKey: oratorianoFormQueryKeys.snapshots(
+        'oratoriano-id',
+        'form-id',
+      ),
+    })
+    expect(pageMocks.proceed).toHaveBeenCalledOnce()
   })
 
   it.each([

@@ -9,7 +9,9 @@ import { useCallback, useRef, useSyncExternalStore } from 'react'
 
 import {
   createOratorianoForm,
+  createOratorianoFormPrintSnapshot,
   deleteOratorianoFormDraft,
+  downloadOratorianoFormPdf,
   getOratorianoFormDetail,
   getOratorianoFormHistory,
   replaceOratorianoFormDraft,
@@ -20,6 +22,7 @@ import {
   subscribeToOratorianoFormDetailState,
 } from '../detailState'
 import { parseOratorianoFormDetail } from '../parseFormDetail'
+import { downloadBlob } from '../download'
 import {
   ORATORIANO_FORM_HISTORY_PAGE_SIZE,
   oratorianoFormQueryKeys,
@@ -27,8 +30,11 @@ import {
 import type {
   OratorianoFormDraft,
   OratorianoFormOrigin,
+  OratorianoFormPrintSnapshot,
   OratorianoFormReason,
 } from '../types'
+
+const EMPTY_PRINT_SNAPSHOTS: readonly OratorianoFormPrintSnapshot[] = []
 
 export function useOratorianoFormHistory(
   oratorianoId: string,
@@ -78,6 +84,76 @@ export function useOratorianoFormDetail(
     retry: false,
     select: parseOratorianoFormDetail,
     staleTime: Number.POSITIVE_INFINITY,
+  })
+}
+
+export function useOratorianoFormSnapshots(
+  oratorianoId: string,
+  formId: string,
+): readonly OratorianoFormPrintSnapshot[] {
+  const queryClient = useQueryClient()
+  const snapshotKey = oratorianoFormQueryKeys.snapshots(oratorianoId, formId)
+
+  const subscribe = useCallback(
+    (listener: () => void) => queryClient.getQueryCache().subscribe(() => listener()),
+    [queryClient],
+  )
+  const getSnapshot = useCallback(
+    () => queryClient.getQueryData<OratorianoFormPrintSnapshot[]>(snapshotKey)
+      ?? EMPTY_PRINT_SNAPSHOTS,
+    [queryClient, snapshotKey],
+  )
+
+  return useSyncExternalStore(subscribe, getSnapshot, getSnapshot)
+}
+
+export function useCreateOratorianoFormPrintSnapshot(
+  oratorianoId: string,
+  formId: string,
+) {
+  const queryClient = useQueryClient()
+  const snapshotKey = oratorianoFormQueryKeys.snapshots(oratorianoId, formId)
+
+  return useMutation({
+    mutationFn: () => createOratorianoFormPrintSnapshot(oratorianoId, formId),
+    onSuccess: (snapshot) => {
+      const currentSnapshots = queryClient.getQueryData<OratorianoFormPrintSnapshot[]>(
+        snapshotKey,
+      ) ?? []
+      const existingIndex = snapshot.id
+        ? currentSnapshots.findIndex((item) => item.id === snapshot.id)
+        : -1
+
+      if (existingIndex >= 0) {
+        const nextSnapshots = [...currentSnapshots]
+        nextSnapshots[existingIndex] = snapshot
+        queryClient.setQueryData(snapshotKey, nextSnapshots)
+        return
+      }
+
+      queryClient.setQueryData(snapshotKey, [...currentSnapshots, snapshot])
+    },
+  })
+}
+
+type DownloadOratorianoFormPdfVariables = {
+  filename: string
+  printSnapshotId: string
+}
+
+export function useDownloadOratorianoFormPdf(
+  oratorianoId: string,
+  formId: string,
+) {
+  return useMutation({
+    mutationFn: async ({ filename, printSnapshotId }: DownloadOratorianoFormPdfVariables) => {
+      const blob = await downloadOratorianoFormPdf(
+        oratorianoId,
+        formId,
+        printSnapshotId,
+      )
+      downloadBlob(blob, filename)
+    },
   })
 }
 

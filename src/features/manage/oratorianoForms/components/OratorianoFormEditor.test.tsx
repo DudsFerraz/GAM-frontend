@@ -1,4 +1,4 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -6,19 +6,14 @@ import { OratorianoFormEditor } from './OratorianoFormEditor'
 import type { ParsedOratorianoFormDetail } from '../parseFormDetail'
 
 const mocks = vi.hoisted(() => ({
+  dirtyChange: vi.fn(),
   mutate: vi.fn(),
-  proceed: vi.fn(),
-  reset: vi.fn(),
+  exitBypassChange: vi.fn(),
   deleteOptions: {
     value: undefined as { onDeleted?: () => Promise<void> } | undefined,
   },
-  useBlocker: vi.fn(),
   useDeleteOratorianoFormDraft: vi.fn(),
   useReplaceOratorianoFormDraft: vi.fn(),
-}))
-
-vi.mock('@tanstack/react-router', () => ({
-  useBlocker: mocks.useBlocker,
 }))
 
 vi.mock('../hooks/useOratorianoForms', async (importOriginal) => {
@@ -65,11 +60,9 @@ function renderEditor(detailValue = detail) {
 }
 
 beforeEach(() => {
+  mocks.dirtyChange.mockReset()
   mocks.mutate.mockReset()
-  mocks.proceed.mockReset()
-  mocks.reset.mockReset()
-  mocks.useBlocker.mockReset()
-  mocks.useBlocker.mockReturnValue({ status: 'idle' })
+  mocks.exitBypassChange.mockReset()
   mocks.useDeleteOratorianoFormDraft.mockReset()
   mocks.deleteOptions.value = undefined
   mocks.useDeleteOratorianoFormDraft.mockImplementation((
@@ -99,22 +92,25 @@ describe('OratorianoFormEditor', () => {
       .not.toBeInTheDocument()
   })
 
-  it('remove a proteção de saída antes da navegação pós-exclusão', async () => {
+  it('comunica alterações e libera a saída antes da navegação pós-exclusão', async () => {
     const user = userEvent.setup()
-    renderEditor()
+    render(
+      <OratorianoFormEditor
+        detail={detail}
+        formId="form-id"
+        name="Marina Alves"
+        onDirtyChange={mocks.dirtyChange}
+        onExitBypassChange={mocks.exitBypassChange}
+        oratorianoId="oratoriano-id"
+      />,
+    )
     await user.type(screen.getByRole('textbox', { name: 'RG' }), '123')
 
-    const dirtyBlockerOptions = mocks.useBlocker.mock.calls.at(-1)?.[0]
-    expect(dirtyBlockerOptions.shouldBlockFn()).toBe(true)
+    expect(mocks.dirtyChange).toHaveBeenLastCalledWith(true)
 
-    await act(async () => {
-      await mocks.deleteOptions.value?.onDeleted?.()
-    })
+    await mocks.deleteOptions.value?.onDeleted?.()
 
-    const navigationBlockerOptions = mocks.useBlocker.mock.calls.at(-1)?.[0]
-    expect(navigationBlockerOptions.disabled).toBe(true)
-    expect(navigationBlockerOptions.enableBeforeUnload()).toBe(false)
-    expect(navigationBlockerOptions.shouldBlockFn()).toBe(false)
+    expect(mocks.exitBypassChange).toHaveBeenLastCalledWith(true)
   })
 
   it('renderiza as cinco etapas no stepper horizontal aprovado', () => {
@@ -247,39 +243,22 @@ describe('OratorianoFormEditor', () => {
     expect(screen.getByText(/revisão 8/)).toBeInTheDocument()
   })
 
-  it('ativa uma única proteção de saída somente quando há alterações', async () => {
+  it('comunica o estado dirty somente depois de uma alteração', async () => {
     const user = userEvent.setup()
-    renderEditor()
-    expect(mocks.useBlocker).toHaveBeenLastCalledWith(expect.objectContaining({
-      disabled: true,
-    }))
+    render(
+      <OratorianoFormEditor
+        detail={detail}
+        formId="form-id"
+        name="Marina Alves"
+        onDirtyChange={mocks.dirtyChange}
+        oratorianoId="oratoriano-id"
+      />,
+    )
+    expect(mocks.dirtyChange).toHaveBeenLastCalledWith(false)
 
     await user.type(screen.getByRole('textbox', { name: 'RG' }), '123')
 
-    const blockerOptions = mocks.useBlocker.mock.calls.at(-1)?.[0]
-    expect(blockerOptions.disabled).toBe(false)
-    expect(blockerOptions.enableBeforeUnload()).toBe(true)
-    expect(blockerOptions.shouldBlockFn()).toBe(true)
-  })
-
-  it('explica a saída e permite permanecer ou descartar', async () => {
-    const user = userEvent.setup()
-    mocks.useBlocker.mockReturnValue({
-      proceed: mocks.proceed,
-      reset: mocks.reset,
-      status: 'blocked',
-    })
-    const view = renderEditor()
-
-    expect(screen.getByText('Existem alterações não salvas.'))
-      .toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Permanecer e revisar' }))
-    expect(mocks.reset).toHaveBeenCalledOnce()
-
-    view.unmount()
-    renderEditor()
-    await user.click(screen.getByRole('button', { name: 'Descartar e sair' }))
-    expect(mocks.proceed).toHaveBeenCalledOnce()
+    expect(mocks.dirtyChange).toHaveBeenLastCalledWith(true)
   })
 
   it('não antecipa controles das próximas fatias', () => {
