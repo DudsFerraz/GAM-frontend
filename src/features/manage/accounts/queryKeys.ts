@@ -1,9 +1,11 @@
+import type { AccountSearch } from './api/accounts'
+
 // Query keys for account administration
 // These keys are used to identify and manage queries related to account administration in the application. 
 // They help in caching, invalidating, and refetching data efficiently.
 export const accountAdminQueryKeys = {
   all: ['account-administration'] as const,
-  search: (term: string, field: string, page: number) => [...accountAdminQueryKeys.all, 'search', term, field, page] as const,
+  search: (search: AccountSearch, page: number) => [...accountAdminQueryKeys.all, 'search', search, page] as const,
   roles: (accountId: string) => [...accountAdminQueryKeys.all, accountId, 'roles'] as const,
   roleSearch: (name: string) => [...accountAdminQueryKeys.all, 'role-search', name] as const,
   assignment: (accountId: string, assignmentId: string) => [...accountAdminQueryKeys.all, accountId, 'assignments', assignmentId] as const,

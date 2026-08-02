@@ -10,11 +10,12 @@ import {
   getRolePermissions,
   searchAccounts,
   searchRoles,
+  type AccountSearch,
 } from '../api/accounts'
 import { accountAdminQueryKeys } from '../queryKeys'
 
-export function useSearchAccounts(term: string, field: 'displayName' | 'email', page: number, enabled = true) {
-  return useQuery({ queryKey: accountAdminQueryKeys.search(term, field, page), queryFn: () => searchAccounts(term, field, page), placeholderData: keepPreviousData, enabled })
+export function useSearchAccounts(search: AccountSearch, page: number, enabled = true) {
+  return useQuery({ queryKey: accountAdminQueryKeys.search(search, page), queryFn: () => searchAccounts(search, page), placeholderData: keepPreviousData, enabled })
 }
 
 export function useAccountRoles(accountId: string | null) {

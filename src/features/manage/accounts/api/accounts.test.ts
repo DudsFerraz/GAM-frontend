@@ -22,6 +22,34 @@ beforeEach(() => {
 })
 
 describe('searchAccounts', () => {
+  it('serializa filtro de e-mail e ordenações aceitas', async () => {
+    apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await searchAccounts({
+      filters: [{
+        field: 'email',
+        value: '  @example.test  ',
+        comparisonMethod: 'LIKE',
+      }],
+      sorts: ['createdAt,desc', 'id,asc'],
+    }, 2)
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/accounts/search',
+      {
+        filters: [{
+          field: 'email',
+          value: '@example.test',
+          comparisonMethod: 'LIKE',
+        }],
+      },
+      {
+        params: { page: 2, size: 10, sort: ['createdAt,desc'] },
+        paramsSerializer: { indexes: null },
+      },
+    )
+  })
+
   it('normaliza tanto papéis planos quanto embrulhados na fronteira', async () => {
     apiMocks.post.mockResolvedValueOnce({
       data: {
@@ -32,7 +60,14 @@ describe('searchAccounts', () => {
       },
     })
 
-    const result = await searchAccounts('  Conta  ', 'displayName', 1)
+    const result = await searchAccounts({
+      filters: [{
+        field: 'displayName',
+        value: '  Conta  ',
+        comparisonMethod: 'LIKE',
+      }],
+      sorts: [],
+    }, 1)
 
     expect(apiMocks.post).toHaveBeenCalledWith(
       '/accounts/search',
@@ -54,7 +89,7 @@ describe('searchAccounts', () => {
   it('não envia filtro vazio', async () => {
     apiMocks.post.mockResolvedValueOnce({ data: {} })
 
-    await searchAccounts('   ', 'email', 0)
+    await searchAccounts({ filters: [], sorts: [] }, 0)
 
     expect(apiMocks.post.mock.calls[0]?.[1]).toEqual({ filters: [] })
   })

@@ -1,5 +1,5 @@
-import { ChevronRight, Mail, Search, UserRound } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { ChevronRight, Mail, UserRound } from "lucide-react";
+import { useState } from "react";
 
 import {
   EmptyState,
@@ -8,8 +8,12 @@ import {
   LoadingState,
 } from "@/components/AsyncState";
 import { Pagination } from "@/components/Pagination";
+import {
+  SearchAndFilter,
+  type SearchFilter,
+  type SortCriteria,
+} from "@/components/SearchAndFilter";
 import { Badge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
 import {
   Card,
   CardActionArea,
@@ -17,9 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Select } from "@/components/ui/Select";
 import {
   getRoleLabel,
   useAccountInfo,
@@ -28,28 +29,26 @@ import {
 import { isForbiddenError } from "@/lib/http";
 
 import type { Account } from "../api/accounts";
+import { ACCOUNT_SEARCH_CONFIG, toAccountSearch } from "../accountSearchConfig";
 import { AccountDetailsDialog } from "../components/AccountDetailsDialog";
 import { useSearchAccounts } from "../hooks/useAccountAdministration";
 
 export function ManageAccountsPage() {
-  const [searchInput, setSearchInput] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
-  const [field, setField] = useState<"displayName" | "email">("displayName");
+  const [search, setSearch] = useState(() => toAccountSearch([], []));
   const [page, setPage] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
   const { account } = useAccountInfo();
   const { permissions } = useAccountPermissions(account);
-  const query = useSearchAccounts(searchTerm, field, page);
+  const query = useSearchAccounts(search, page);
   const items = query.data?.items ?? [];
   const canManageMemberTransitions = permissions.includes("MEMBER_ACTIVATION");
   const canManageOratorioCoordinators = permissions.includes(
     "ORATORIO_COORD_MANAGE",
   );
 
-  const handleSearch = (event: FormEvent) => {
-    event.preventDefault();
+  const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     setPage(0);
-    setSearchTerm(searchInput);
+    setSearch(toAccountSearch(filters, sorts));
   };
 
   return (
@@ -65,37 +64,13 @@ export function ManageAccountsPage() {
         </p>
       </div>
 
-      <form
-        className="grid gap-3 rounded-xl border bg-card p-4 sm:grid-cols-[180px_1fr_auto] sm:items-end"
-        onSubmit={handleSearch}
-      >
-        <div>
-          <Label htmlFor="account-search-field">Buscar por</Label>
-          <Select
-            id="account-search-field"
-            value={field}
-            onChange={(event) =>
-              setField(event.target.value as "displayName" | "email")
-            }
-          >
-            <option value="displayName">Nome de exibição</option>
-            <option value="email">E-mail</option>
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="account-search">Termo</Label>
-          <Input
-            id="account-search"
-            onChange={(event) => setSearchInput(event.target.value)}
-            placeholder="Deixe vazio para listar todas"
-            value={searchInput}
-          />
-        </div>
-        <Button type="submit">
-          <Search aria-hidden="true" className="h-4 w-4" />
-          Buscar
-        </Button>
-      </form>
+      <div className="rounded-xl border bg-card p-4">
+        <SearchAndFilter
+          config={ACCOUNT_SEARCH_CONFIG}
+          mainFilterField="displayName"
+          onSearch={handleSearch}
+        />
+      </div>
 
       <section className="space-y-4" aria-label="Resultados de contas">
         {query.isLoading && <LoadingState title="Carregando contas..." />}

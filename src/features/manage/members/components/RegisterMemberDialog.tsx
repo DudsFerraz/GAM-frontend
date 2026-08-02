@@ -23,7 +23,11 @@ import {
 } from '@/components/ui/Form'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
-import { useSearchAccounts, type Account } from '@/features/manage/accounts'
+import {
+  useSearchAccounts,
+  type Account,
+  type AccountSearch,
+} from '@/features/manage/accounts'
 import { getErrorMessage } from '@/lib/http'
 
 import { useCreateMember } from '../hooks/useCreateMember'
@@ -47,7 +51,17 @@ export function RegisterMemberDialog({
   const accountLabelId = useId()
   const [accountSearch, setAccountSearch] = useState('')
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
-  const accountsQuery = useSearchAccounts(accountSearch, 'displayName', 0, open)
+  const accountSearchCriteria: AccountSearch = {
+    filters: accountSearch.trim()
+      ? [{
+          field: 'displayName',
+          value: accountSearch,
+          comparisonMethod: 'LIKE',
+        }]
+      : [],
+    sorts: [],
+  }
+  const accountsQuery = useSearchAccounts(accountSearchCriteria, 0, open)
   const form = useForm<RegisterMemberFormValues>({
     resolver: zodResolver(registerMemberSchema),
     defaultValues: {
