@@ -285,6 +285,63 @@ export const oratorianoFormEditorSchema = z.object({
 
 export const oratorianoFormCompletionSchema = oratorianoFormEditorSchema
   .superRefine((values, context) => {
+  const requiredTextFields = [
+    ['firstName', values.firstName],
+    ['surname', values.surname],
+    ['birthDate', values.birthDate],
+    ['cpf', values.cpf],
+    ['address.addressLine', values.address.addressLine],
+    ['address.addressNumber', values.address.addressNumber],
+    ['address.neighborhood', values.address.neighborhood],
+    ['address.cep', values.address.cep],
+    ['address.city', values.address.city],
+    ['phoneNumber', values.phoneNumber],
+    ['signedOn', values.signedOn],
+  ] as const
+  for (const [path, value] of requiredTextFields) {
+    if (!value.trim()) {
+      context.addIssue({ code: 'custom', message: REQUIRED_TEXT, path: path.split('.') })
+    }
+  }
+
+  const healthQuestionKeys = [
+    'medicalFollowUp',
+    'physicalActivityRestriction',
+    'medicineUse',
+    'allergies',
+    'convulsions',
+    'frequentFainting',
+    'heartCondition',
+    'otherHealthCondition',
+  ] as const
+  for (const key of healthQuestionKeys) {
+    if (!values.health[key].answer) {
+      context.addIssue({
+        code: 'custom',
+        message: REQUIRED_TEXT,
+        path: ['health', key, 'answer'],
+      })
+    }
+  }
+
+  const declarationKeys = [
+    'signerRelationshipConfirmed',
+    'informationTruthConfirmed',
+    'healthInformationCurrentConfirmed',
+    'informationUseUnderstood',
+    'formReviewed',
+    'imageAndVoiceAuthorizationAccepted',
+  ] as const
+  for (const key of declarationKeys) {
+    if (values.declarations[key] !== true) {
+      context.addIssue({
+        code: 'custom',
+        message: 'Confirme este campo para concluir a ficha.',
+        path: ['declarations', key],
+      })
+    }
+  }
+
   const relationship = values.responsible.relationship
   const complementRequired = relationship === 'RELATIVE'
     || relationship === 'REFERENCE_ADULT'
@@ -306,16 +363,6 @@ export const oratorianoFormCompletionSchema = oratorianoFormEditorSchema
   validateParent(values.father, 'father', context)
   validateParent(values.mother, 'mother', context)
 
-  const healthQuestionKeys = [
-    'medicalFollowUp',
-    'physicalActivityRestriction',
-    'medicineUse',
-    'allergies',
-    'convulsions',
-    'frequentFainting',
-    'heartCondition',
-    'otherHealthCondition',
-  ] as const
   for (const key of healthQuestionKeys) {
     const question = values.health[key]
     if (question.answer === 'YES' && !question.explanation.trim()) {
@@ -409,6 +456,14 @@ function getAgeOnDate(birthDate: string, signedOn: string): number | undefined {
     age -= 1
   }
   return age
+}
+
+export function isMinorAtSignedDate(
+  birthDate: string,
+  signedOn: string,
+): boolean {
+  const age = getAgeOnDate(birthDate, signedOn)
+  return age !== undefined && age < 18
 }
 
 export type OratorianoFormValues = z.input<typeof oratorianoFormEditorSchema>

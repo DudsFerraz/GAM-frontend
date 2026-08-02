@@ -9,6 +9,8 @@ import { AxiosError } from 'axios'
 import type { PropsWithChildren } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { SafeHttpError } from '@/lib/http'
+
 import { oratorianoFormQueryKeys } from '../queryKeys'
 import {
   clearDisabledOratorianoFormDetail,
@@ -21,6 +23,7 @@ import {
   useOratorianoFormDetail,
   useOratorianoFormHistory,
   useReplaceOratorianoFormDraft,
+  isConflictError,
 } from './useOratorianoForms'
 
 const apiMocks = vi.hoisted(() => ({
@@ -251,6 +254,10 @@ describe('useOratorianoFormDetail', () => {
 })
 
 describe('mutações do rascunho', () => {
+  it('reconhece conflito depois da normalização segura do HTTP', () => {
+    expect(isConflictError(new SafeHttpError(409, 'CONFLICT'))).toBe(true)
+  })
+
   it('refaz a leitura autoritativa após conflito ao excluir', async () => {
     const conflict = Object.assign(new AxiosError(), {
       response: { status: 409 },

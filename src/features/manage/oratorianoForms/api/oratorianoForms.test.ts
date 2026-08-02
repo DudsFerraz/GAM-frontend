@@ -13,18 +13,21 @@ import {
 const apiMocks = vi.hoisted(() => ({
   delete: vi.fn(),
   get: vi.fn(),
+  normalizeHttpError: vi.fn(),
   post: vi.fn(),
   put: vi.fn(),
 }))
 
 vi.mock('@/lib/http', () => ({
   api: apiMocks,
-  normalizeHttpError: async (error: unknown) => error,
+  normalizeHttpError: apiMocks.normalizeHttpError,
 }))
 
 beforeEach(() => {
   apiMocks.delete.mockReset()
   apiMocks.get.mockReset()
+  apiMocks.normalizeHttpError.mockReset()
+  apiMocks.normalizeHttpError.mockImplementation(async (error: unknown) => error)
   apiMocks.post.mockReset()
   apiMocks.put.mockReset()
 })
@@ -159,13 +162,16 @@ describe('API de substituição integral do rascunho', () => {
 
   it('preserva erro sem expor ou converter o payload', async () => {
     const error = new Error('diagnóstico privado')
+    const normalizedError = new Error('erro seguro')
+    apiMocks.normalizeHttpError.mockResolvedValueOnce(normalizedError)
     apiMocks.put.mockRejectedValueOnce(error)
 
     await expect(replaceOratorianoFormDraft(
       'oratoriano-id',
       'form-id',
       {},
-    )).rejects.toBe(error)
+    )).rejects.toBe(normalizedError)
+    expect(apiMocks.normalizeHttpError).toHaveBeenCalledWith(error)
   })
 })
 

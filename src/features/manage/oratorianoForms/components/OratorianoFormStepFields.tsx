@@ -18,7 +18,10 @@ import { Input } from '@/components/ui/Input'
 import { Select } from '@/components/ui/Select'
 import { Textarea } from '@/components/ui/Textarea'
 
-import type { OratorianoFormValues } from '../schemas/formDraftSchema'
+import {
+  isMinorAtSignedDate,
+  type OratorianoFormValues,
+} from '../schemas/formDraftSchema'
 import {
   getHealthAnswerLabel,
   getResponsibleRelationshipLabel,
@@ -33,17 +36,17 @@ type BooleanPath = FieldPathByValue<
 export function IdentificationStep() {
   return (
     <div className="grid gap-5 sm:grid-cols-2">
-      <TextField autoComplete="given-name" label="Nome" maxLength={32} name="firstName" />
-      <TextField autoComplete="family-name" label="Sobrenome completo" maxLength={64} name="surname" />
-      <TextField label="Data de nascimento" name="birthDate" type="date" />
-      <TextField inputMode="numeric" label="CPF" maxLength={18} name="cpf" />
+      <TextField autoComplete="given-name" label="Nome" maxLength={32} name="firstName" required />
+      <TextField autoComplete="family-name" label="Sobrenome completo" maxLength={64} name="surname" required />
+      <TextField label="Data de nascimento" name="birthDate" required type="date" />
+      <TextField inputMode="numeric" label="CPF" maxLength={18} name="cpf" required />
       <TextField label="RG" maxLength={20} name="rg" />
-      <TextField autoComplete="tel" label="Telefone" maxLength={32} name="phoneNumber" />
-      <TextField className="sm:col-span-2" label="Logradouro" maxLength={200} name="address.addressLine" />
-      <TextField label="Número" maxLength={32} name="address.addressNumber" />
-      <TextField label="Bairro" maxLength={100} name="address.neighborhood" />
-      <TextField inputMode="numeric" label="CEP" maxLength={9} name="address.cep" />
-      <TextField label="Cidade" maxLength={100} name="address.city" />
+      <TextField autoComplete="tel" label="Telefone" maxLength={32} name="phoneNumber" required />
+      <TextField className="sm:col-span-2" label="Logradouro" maxLength={200} name="address.addressLine" required />
+      <TextField label="Número" maxLength={32} name="address.addressNumber" required />
+      <TextField label="Bairro" maxLength={100} name="address.neighborhood" required />
+      <TextField inputMode="numeric" label="CEP" maxLength={9} name="address.cep" required />
+      <TextField label="Cidade" maxLength={100} name="address.city" required />
     </div>
   )
 }
@@ -51,17 +54,20 @@ export function IdentificationStep() {
 export function FamilyStep() {
   const { control } = useFormContext<OratorianoFormValues>()
   const relationship = useWatch({ control, name: 'responsible.relationship' })
+  const birthDate = useWatch({ control, name: 'birthDate' })
+  const signedOn = useWatch({ control, name: 'signedOn' })
   const isSelf = relationship === 'SELF'
   const isMother = relationship === 'MOTHER'
   const isFather = relationship === 'FATHER'
+  const isMinor = isMinorAtSignedDate(birthDate, signedOn)
   const needsComplement = relationship === 'RELATIVE'
     || relationship === 'REFERENCE_ADULT'
 
   return (
     <div className="space-y-7">
       <div className="grid gap-5 sm:grid-cols-2">
-        <TextField label="Escola" maxLength={200} name="schoolName" />
-        <TextField label="Ano escolar" maxLength={100} name="schoolGrade" />
+        <TextField label="Escola" maxLength={200} name="schoolName" required={isMinor} />
+        <TextField label="Ano escolar" maxLength={100} name="schoolGrade" required={isMinor} />
       </div>
 
       <section aria-labelledby="responsible-heading" className="space-y-5">
@@ -74,7 +80,7 @@ export function FamilyStep() {
           </p>
         </div>
         <div className="grid gap-5 sm:grid-cols-2">
-          <SelectField label="Relação com o Oratoriano" name="responsible.relationship">
+          <SelectField label="Relação com o Oratoriano" name="responsible.relationship" required={isMinor}>
             <option value="">Selecione</option>
             {(['SELF', 'MOTHER', 'FATHER', 'RELATIVE', 'REFERENCE_ADULT'] as const)
               .map((value) => (
@@ -83,7 +89,7 @@ export function FamilyStep() {
                 </option>
               ))}
           </SelectField>
-          <SelectField label="Tem 18 anos ou mais?" name="responsible.atLeast18">
+          <SelectField label="Tem 18 anos ou mais?" name="responsible.atLeast18" required={isMinor}>
             <option value="">Selecione</option>
             <option value="true">Sim</option>
             <option value="false">Não</option>
@@ -95,6 +101,7 @@ export function FamilyStep() {
               label="Qual é a relação?"
               maxLength={120}
               name="responsible.relationshipComplement"
+              required
             />
           )}
         </div>
@@ -139,12 +146,16 @@ export function FamilyStep() {
 }
 
 function ParentFields({ kind, label }: { kind: 'father' | 'mother'; label: string }) {
+  const { control } = useFormContext<OratorianoFormValues>()
+  const parent = useWatch({ control, name: kind })
+  const hasValue = Object.values(parent).some((value) => value.trim())
+
   return (
     <fieldset className="grid gap-5 rounded-xl border p-4 sm:grid-cols-3">
       <legend className="px-2 text-sm font-semibold">{label}</legend>
-      <TextField label="Nome" maxLength={32} name={`${kind}.firstName`} />
-      <TextField label="Sobrenome" maxLength={64} name={`${kind}.surname`} />
-      <TextField inputMode="numeric" label="CPF" maxLength={18} name={`${kind}.cpf`} />
+      <TextField label="Nome" maxLength={32} name={`${kind}.firstName`} required={hasValue} />
+      <TextField label="Sobrenome" maxLength={64} name={`${kind}.surname`} required={hasValue} />
+      <TextField inputMode="numeric" label="CPF" maxLength={18} name={`${kind}.cpf`} required={hasValue} />
     </fieldset>
   )
 }
@@ -198,7 +209,7 @@ function HealthQuestionField({
   return (
     <fieldset className="grid gap-4 rounded-xl border bg-muted/15 p-4 sm:grid-cols-2">
       <legend className="px-2 font-medium">{label}</legend>
-      <SelectField label="Resposta" name={`health.${name}.answer`}>
+      <SelectField label="Resposta" name={`health.${name}.answer`} required>
         <option value="">Selecione</option>
         {(['YES', 'NO', 'NOT_INFORMED'] as const).map((value) => (
           <option key={value} value={value}>{getHealthAnswerLabel(value)}</option>
@@ -211,6 +222,7 @@ function HealthQuestionField({
         label="Explicação"
         maxLength={2000}
         name={`health.${name}.explanation`}
+        required={answer === 'YES'}
       />
       {isMedicine && (
         <TextAreaField
@@ -239,13 +251,14 @@ export function DeclarationsStep() {
     <div className="space-y-6">
       <div className="space-y-3">
         {DECLARATIONS.map(([name, label]) => (
-          <CheckboxField key={name} label={label} name={`declarations.${name}`} />
+          <CheckboxField key={name} label={label} name={`declarations.${name}`} required />
         ))}
       </div>
       <TextField
         description="Use a data registrada na ficha ou na assinatura realizada no sistema."
         label="Data de assinatura"
         name="signedOn"
+        required
         type="date"
       />
     </div>
@@ -305,11 +318,13 @@ function TextField({
   description,
   label,
   name,
+  required = false,
   ...inputProps
 }: Omit<React.ComponentProps<typeof Input>, 'name'> & {
   description?: string
   label: string
   name: TextPath
+  required?: boolean
 }) {
   const { control } = useFormContext<OratorianoFormValues>()
   return (
@@ -317,9 +332,9 @@ function TextField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className} required={required}>
           <FormLabel>{label}</FormLabel>
-          <FormControl><Input {...inputProps} {...field} /></FormControl>
+          <FormControl nativeRequired={false}><Input {...inputProps} {...field} /></FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
@@ -334,12 +349,14 @@ function TextAreaField({
   label,
   maxLength,
   name,
+  required = false,
 }: {
   className?: string
   description?: string
   label: string
   maxLength: number
   name: TextPath
+  required?: boolean
 }) {
   const { control } = useFormContext<OratorianoFormValues>()
   return (
@@ -347,9 +364,9 @@ function TextAreaField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className={className}>
+        <FormItem className={className} required={required}>
           <FormLabel>{label}</FormLabel>
-          <FormControl><Textarea maxLength={maxLength} rows={3} {...field} /></FormControl>
+          <FormControl nativeRequired={false}><Textarea maxLength={maxLength} rows={3} {...field} /></FormControl>
           {description && <FormDescription>{description}</FormDescription>}
           <FormMessage />
         </FormItem>
@@ -362,10 +379,12 @@ function SelectField({
   children,
   label,
   name,
+  required = false,
 }: {
   children: React.ReactNode
   label: string
   name: TextPath
+  required?: boolean
 }) {
   const { control } = useFormContext<OratorianoFormValues>()
   return (
@@ -373,9 +392,9 @@ function SelectField({
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem>
+        <FormItem required={required}>
           <FormLabel>{label}</FormLabel>
-          <FormControl><Select {...field}>{children}</Select></FormControl>
+          <FormControl nativeRequired={false}><Select {...field}>{children}</Select></FormControl>
           <FormMessage />
         </FormItem>
       )}
@@ -383,15 +402,23 @@ function SelectField({
   )
 }
 
-function CheckboxField({ label, name }: { label: string; name: BooleanPath }) {
+function CheckboxField({
+  label,
+  name,
+  required = false,
+}: {
+  label: string
+  name: BooleanPath
+  required?: boolean
+}) {
   const { control } = useFormContext<OratorianoFormValues>()
   return (
     <FormField
       control={control}
       name={name}
       render={({ field }) => (
-        <FormItem className="flex items-start gap-3 rounded-xl border p-4">
-          <FormControl>
+        <FormItem className="flex items-start gap-3 rounded-xl border p-4" required={required}>
+          <FormControl nativeRequired={false}>
             <Checkbox
               checked={field.value ?? false}
               onBlur={field.onBlur}

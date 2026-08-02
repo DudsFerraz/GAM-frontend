@@ -7,6 +7,8 @@ import {
 import { AxiosError } from 'axios'
 import { useCallback, useRef, useSyncExternalStore } from 'react'
 
+import { SafeHttpError } from '@/lib/http'
+
 import {
   createOratorianoForm,
   createOratorianoFormPrintSnapshot,
@@ -278,5 +280,6 @@ export function useDeleteOratorianoFormDraft(
 }
 
 export function isConflictError(error: unknown): boolean {
-  return error instanceof AxiosError && error.response?.status === 409
+  return (error instanceof AxiosError && error.response?.status === 409)
+    || (error instanceof SafeHttpError && error.status === 409)
 }

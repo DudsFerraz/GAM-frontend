@@ -1,8 +1,9 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Check, Circle, Save } from 'lucide-react'
+import { AlertTriangle, Check, Save, X } from 'lucide-react'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   useForm,
+  useWatch,
   type FieldErrors,
   type FieldPath,
 } from 'react-hook-form'
@@ -12,7 +13,6 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader } from '@/components/ui/Card'
 import { Form } from '@/components/ui/Form'
-import { getErrorMessage } from '@/lib/http'
 import { cn } from '@/lib/utils'
 
 import { fromFormDraftTransport, toFormDraftTransport } from '../formDraftMapper'
@@ -22,10 +22,16 @@ import {
   useReplaceOratorianoFormDraft,
 } from '../hooks/useOratorianoForms'
 import type { ParsedOratorianoFormDetail } from '../parseFormDetail'
+import { getOratorianoFormDraftSaveErrorMessage } from '../saveError'
 import {
   getOratorianoFormOriginLabel,
   getOratorianoFormStatusPresentation,
 } from '../presentation'
+import {
+  getOratorianoFormStepMissingFields,
+  getOratorianoFormStepStatuses,
+  type OratorianoFormStepStatus,
+} from '../stepStatus'
 import {
   oratorianoFormEditorSchema,
   type OratorianoFormValues,
@@ -135,10 +141,15 @@ export function OratorianoFormEditor({
   const [activeStep, setActiveStep] = useState(0)
   const [isDeleteOpen, setIsDeleteOpen] = useState(false)
   const [saveConfirmed, setSaveConfirmed] = useState(false)
+  const [visitedSteps, setVisitedSteps] = useState<ReadonlySet<number>>(
+    () => new Set([0]),
+  )
   const headingRef = useRef<HTMLHeadingElement>(null)
   const form = useForm<OratorianoFormValues>({
     defaultValues: fromFormDraftTransport(detail.data),
+    mode: 'onChange',
     resolver: zodResolver(oratorianoFormEditorSchema),
+    reValidateMode: 'onChange',
     shouldFocusError: false,
     shouldUnregister: false,
   })
@@ -163,6 +174,8 @@ export function OratorianoFormEditor({
   const { errors, isDirty } = form.formState
   const isEditable = detail.status === 'DRAFT'
   const errorPaths = useMemo(() => getErrorPaths(errors), [errors])
+  const watchedValues = useWatch({ control: form.control })
+  const stepStatuses = getOratorianoFormStepStatuses(watchedValues, STEPS)
   const status = getOratorianoFormStatusPresentation(detail.status)
   const displayedRevision = mutation.data?.draftRevision
     ?? detail.draftRevision
@@ -175,14 +188,38 @@ export function OratorianoFormEditor({
     onDirtyChange?.(isDirty)
   }, [isDirty, onDirtyChange])
 
-  const changeStep = (nextStep: number) => {
+  const changeStep = async (nextStep: number) => {
     setSaveConfirmed(false)
+    if (nextStep > activeStep) {
+      const currentStep = STEPS[activeStep]
+      await form.trigger([...currentStep.fields])
+      const missingFields = getOratorianoFormStepMissingFields(
+        form.getValues(),
+        currentStep,
+      )
+      if (missingFields.length > 0) {
+        for (const missingField of missingFields) {
+          form.setError(missingField.field, {
+            message: missingField.message,
+            type: 'required',
+          })
+        }
+        window.setTimeout(() => form.setFocus(missingFields[0].field), 0)
+        return
+      }
+    }
+
+    setVisitedSteps((current) => {
+      if (current.has(nextStep)) return current
+      const next = new Set(current)
+      next.add(nextStep)
+      return next
+    })
     setActiveStep(nextStep)
   }
 
   const advance = () => {
-    void form.trigger([...STEPS[activeStep].fields])
-    changeStep(Math.min(activeStep + 1, STEPS.length - 1))
+    void changeStep(Math.min(activeStep + 1, STEPS.length - 1))
   }
 
   const submit = form.handleSubmit(
@@ -249,44 +286,39 @@ export function OratorianoFormEditor({
       </header>
 
       <Form {...form}>
-        <form className="space-y-4" onSubmit={submit}>
+        <form className="space-y-4" noValidate onSubmit={submit}>
           <nav aria-label="Etapas da ficha" className="overflow-hidden rounded-xl border bg-card p-3 sm:p-4">
             <ol className="grid grid-cols-5 gap-1">
               {STEPS.map((step, index) => {
                 const isActive = index === activeStep
-                const hasError = errorPaths.some((path) => getStepForField(path) === index)
-                const isPast = index < activeStep
+                const isVisited = visitedSteps.has(index)
+                const stepStatus = stepStatuses[index]
                 return (
                   <li className="relative min-w-0" key={step.title}>
                     {index > 0 && (
                       <span
                         aria-hidden="true"
-                        className={cn(
-                          'absolute right-1/2 top-3.5 h-px w-full bg-border',
-                          isPast && 'bg-primary/40',
-                        )}
+                        className="absolute right-1/2 top-3.5 h-px w-full bg-border"
                       />
                     )}
                     <button
                       aria-current={isActive ? 'step' : undefined}
-                      aria-label={`Etapa ${index + 1}: ${step.title}${hasError ? ', contém erros' : ''}`}
+                      aria-label={`Etapa ${index + 1}: ${step.title}, ${isVisited ? getStepStatusLabel(stepStatus) : 'ainda não iniciada'}`}
                       className="relative z-[1] flex w-full flex-col items-center gap-1 rounded-lg p-1 text-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      onClick={() => changeStep(index)}
+                      onClick={() => void changeStep(index)}
                       type="button"
                     >
                       <span
                         className={cn(
                           'grid h-7 w-7 place-items-center rounded-full border bg-background text-xs font-bold text-muted-foreground',
-                          isActive && 'border-primary bg-primary text-primary-foreground',
-                          isPast && !hasError && 'border-green-600 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-200',
-                          hasError && 'border-red-600 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200',
+                          isVisited && getStepStatusClassName(stepStatus),
+                          !isVisited && 'opacity-60',
+                          isActive && 'ring-2 ring-primary ring-offset-2 ring-offset-card',
                         )}
                       >
-                        {isPast && !hasError
-                          ? <Check aria-hidden="true" className="h-4 w-4" />
-                          : hasError
-                            ? <Circle aria-hidden="true" className="h-3 w-3 fill-current" />
-                            : index + 1}
+                        {isVisited
+                          ? <StepStatusIcon status={stepStatus} />
+                          : index + 1}
                       </span>
                       <span className="hidden max-w-32 text-xs font-medium sm:block">
                         {step.title}
@@ -299,6 +331,17 @@ export function OratorianoFormEditor({
             <p className="mt-2 text-center text-xs font-medium text-muted-foreground sm:hidden">
               Etapa {activeStep + 1} de {STEPS.length} · {STEPS[activeStep].title}
             </p>
+            <div
+              aria-label="Legenda dos status das etapas"
+              className="mt-3 flex flex-wrap justify-center gap-x-4 gap-y-1 text-xs text-muted-foreground"
+            >
+              <StepStatusLegendIcon label="Concluída" status="complete" />
+              <StepStatusLegendIcon label="Com campos inválidos" status="invalid" />
+              <StepStatusLegendIcon
+                label="Campos obrigatórios pendentes"
+                status="incomplete"
+              />
+            </div>
           </nav>
 
           <Card>
@@ -367,7 +410,7 @@ export function OratorianoFormEditor({
                   <AlertDescription>
                     {isConflictError(mutation.error)
                       ? 'A ficha foi alterada em outro lugar. Atualizamos a situação disponível; confira os dados locais antes de tentar novamente.'
-                      : `${getErrorMessage(mutation.error)} Seus dados continuam nesta página para uma nova tentativa.`}
+                      : `${getOratorianoFormDraftSaveErrorMessage(mutation.error)} Seus dados continuam nesta página para uma nova tentativa.`}
                   </AlertDescription>
                 </Alert>
               )}
@@ -388,7 +431,7 @@ export function OratorianoFormEditor({
                 <div className="grid grid-cols-2 gap-2 sm:flex">
                   <Button
                     disabled={activeStep === 0}
-                    onClick={() => changeStep(activeStep - 1)}
+                    onClick={() => void changeStep(activeStep - 1)}
                     type="button"
                     variant="outline"
                   >
@@ -457,4 +500,43 @@ function getStepForField(path: FieldPath<OratorianoFormValues>): number {
     || path.startsWith('father.')
     || path.startsWith('mother.')) return 1
   return 0
+}
+
+function getStepStatusLabel(status: OratorianoFormStepStatus): string {
+  if (status === 'complete') return 'concluída'
+  if (status === 'invalid') return 'com campos inválidos'
+  return 'com campos obrigatórios pendentes'
+}
+
+function getStepStatusClassName(status: OratorianoFormStepStatus): string {
+  if (status === 'complete') {
+    return 'border-green-600 bg-green-50 text-green-700 dark:bg-green-950 dark:text-green-200'
+  }
+  if (status === 'invalid') {
+    return 'border-red-600 bg-red-50 text-red-700 dark:bg-red-950 dark:text-red-200'
+  }
+  return 'border-amber-500 bg-amber-50 text-amber-800 dark:bg-amber-950 dark:text-amber-200'
+}
+
+function StepStatusIcon({ status }: { status: OratorianoFormStepStatus }) {
+  if (status === 'complete') return <Check aria-hidden="true" className="h-4 w-4" />
+  if (status === 'invalid') return <X aria-hidden="true" className="h-4 w-4" />
+  return <AlertTriangle aria-hidden="true" className="h-4 w-4" />
+}
+
+function StepStatusLegendIcon({
+  label,
+  status,
+}: {
+  label: string
+  status: OratorianoFormStepStatus
+}) {
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className={cn('grid h-4 w-4 place-items-center rounded-full', getStepStatusClassName(status))}>
+        <StepStatusIcon status={status} />
+      </span>
+      {label}
+    </span>
+  )
 }

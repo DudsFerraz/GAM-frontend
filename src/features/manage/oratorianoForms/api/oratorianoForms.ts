@@ -95,12 +95,16 @@ export async function replaceOratorianoFormDraft(
   formId: string,
   draft: OratorianoFormDraft,
 ): Promise<OratorianoFormDetail> {
-  const { data } = await api.put<OratorianoFormDetail>(
-    formDetailPath(oratorianoId, formId),
-    draft,
-  )
+  try {
+    const { data } = await api.put<OratorianoFormDetail>(
+      formDetailPath(oratorianoId, formId),
+      draft,
+    )
 
-  return data
+    return data
+  } catch (error) {
+    throw await normalizeHttpError(error)
+  }
 }
 
 export async function deleteOratorianoFormDraft(
