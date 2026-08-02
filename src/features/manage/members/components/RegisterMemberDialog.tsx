@@ -3,6 +3,7 @@ import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
+import { SearchClearButton } from '@/components/SearchClearButton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import {
@@ -23,6 +24,7 @@ import {
 } from '@/components/ui/Form'
 import { Input } from '@/components/ui/Input'
 import { Textarea } from '@/components/ui/Textarea'
+import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import {
   useSearchAccounts,
   type Account,
@@ -51,11 +53,12 @@ export function RegisterMemberDialog({
   const accountLabelId = useId()
   const [accountSearch, setAccountSearch] = useState('')
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
+  const debouncedAccountSearch = useDebouncedValue(accountSearch.trim())
   const accountSearchCriteria: AccountSearch = {
-    filters: accountSearch.trim()
+    filters: debouncedAccountSearch
       ? [{
           field: 'displayName',
-          value: accountSearch,
+          value: debouncedAccountSearch,
           comparisonMethod: 'LIKE',
         }]
       : [],
@@ -121,12 +124,20 @@ export function RegisterMemberDialog({
                         className="space-y-3 rounded-lg border p-3"
                         role="group"
                       >
-                        <Input
-                          onChange={(event) => setAccountSearch(event.target.value)}
-                          placeholder="Busque a conta pelo nome"
-                          type="search"
-                          value={accountSearch}
-                        />
+                        <div className="relative">
+                          <Input
+                            className="pr-10"
+                            onChange={(event) => setAccountSearch(event.target.value)}
+                            placeholder="Busque a conta pelo nome"
+                            type="search"
+                            value={accountSearch}
+                          />
+                          {accountSearch && (
+                            <SearchClearButton
+                              onClear={() => setAccountSearch('')}
+                            />
+                          )}
+                        </div>
                         {selectedAccount && (
                           <div className="rounded-md border border-primary/40 bg-primary/5 p-3 text-sm">
                             <p className="font-medium">{selectedAccount.displayName ?? 'Conta sem nome'}</p>

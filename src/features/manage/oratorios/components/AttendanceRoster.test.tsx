@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ComponentProps } from 'react'
 import { describe, expect, it, vi } from 'vitest'
@@ -57,7 +57,6 @@ function renderRoster(overrides: Partial<
     onNameInputChange: vi.fn(),
     onPageChange: vi.fn(),
     onRetry: vi.fn(),
-    onSearch: vi.fn(),
     onToggle: vi.fn(),
     page: 0,
     pendingKeys: new Set(),
@@ -70,6 +69,28 @@ function renderRoster(overrides: Partial<
 }
 
 describe('AttendanceRoster', () => {
+  it('mantém somente a busca automática, sem botão de submissão', async () => {
+    const props = renderRoster()
+
+    const input = screen.getByRole('searchbox', {
+      name: 'Buscar Oratorianos pelo nome',
+    })
+    fireEvent.change(input, { target: { value: 'Ana' } })
+
+    expect(props.onNameInputChange).toHaveBeenLastCalledWith('Ana')
+    expect(screen.queryByRole('button', { name: 'Buscar' })).not.toBeInTheDocument()
+  })
+
+  it('limpa o termo sem submeter um formulário', async () => {
+    const props = renderRoster({ nameInput: 'Ana' })
+
+    await userEvent.setup().click(
+      screen.getByRole('button', { name: 'Limpar busca' }),
+    )
+
+    expect(props.onNameInputChange).toHaveBeenCalledWith('')
+  })
+
   it('persiste a intenção de cada checkbox individualmente', async () => {
     const user = userEvent.setup()
     const props = renderRoster()

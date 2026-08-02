@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/Button";
+import { SearchClearButton } from "@/components/SearchClearButton";
 import { Input } from "@/components/ui/Input";
 import { Select } from "@/components/ui/Select";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { cn } from "@/lib/utils";
 
 import type {
@@ -84,6 +86,12 @@ export function SearchAndFilter({
   const filterPanelId = useId();
   const sortPanelId = useId();
   const onSearchRef = useRef(onSearch);
+  const searchState = useMemo(
+    () => ({ activeFilters, activeSorts, mainSearchValue }),
+    [activeFilters, activeSorts, mainSearchValue],
+  );
+  const debouncedSearchState = useDebouncedValue(searchState);
+  const hasMountedSearchState = useRef(false);
 
   useEffect(() => {
     onSearchRef.current = onSearch;
@@ -95,8 +103,13 @@ export function SearchAndFilter({
   );
 
   useEffect(() => {
-    const filters = [...activeFilters];
-    const normalizedMainSearch = mainSearchValue.trim();
+    if (!hasMountedSearchState.current) {
+      hasMountedSearchState.current = true;
+      return;
+    }
+
+    const filters = [...debouncedSearchState.activeFilters];
+    const normalizedMainSearch = debouncedSearchState.mainSearchValue.trim();
 
     if (normalizedMainSearch) {
       filters.push({
@@ -106,12 +119,8 @@ export function SearchAndFilter({
       });
     }
 
-    const timer = setTimeout(() => {
-      onSearchRef.current(filters, activeSorts);
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [activeFilters, activeSorts, mainFilterField, mainSearchValue]);
+    onSearchRef.current(filters, debouncedSearchState.activeSorts);
+  }, [debouncedSearchState, mainFilterField]);
 
   const availableOperators = useMemo(() => {
     if (!currentFieldConfig) {
@@ -295,11 +304,18 @@ export function SearchAndFilter({
           />
           <Input
             aria-label={`Pesquisa rápida por ${mainFilterLabel}`}
-            className="w-full pl-9"
+            className={cn(
+              "w-full pl-9",
+              mainSearchValue && "pr-10",
+            )}
             onChange={(event) => setMainSearchValue(event.target.value)}
             placeholder={`Pesquisa rápida por ${mainFilterLabel}...`}
+            type="search"
             value={mainSearchValue}
           />
+          {mainSearchValue && (
+            <SearchClearButton onClear={() => setMainSearchValue("")} />
+          )}
         </div>
 
         {(filterableFields.length > 0 || sortableFields.length > 0) && (

@@ -1,9 +1,10 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { UserPlus } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
+import { SearchClearButton } from '@/components/SearchClearButton'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/Form'
@@ -11,6 +12,7 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { Textarea } from '@/components/ui/Textarea'
 import { getRolePresentation } from '@/features/account'
+import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 import { getErrorMessage } from '@/lib/http'
 
 import type { Role } from '../api/accounts'
@@ -28,16 +30,16 @@ export function UnusedAccountRoleAssignmentSection({
   roles,
 }: UnusedAccountRoleAssignmentSectionProps) {
   const [roleSearchInput, setRoleSearchInput] = useState('')
-  const [roleSearchTerm, setRoleSearchTerm] = useState('')
   const [roleToAssign, setRoleToAssign] = useState<Role | null>(null)
   const assignMutation = useAssignAccountRole(accountId)
   const assignForm = useForm<AssignRoleValues>({
     resolver: zodResolver(assignRoleSchema),
     defaultValues: { roleId: '', reason: '' },
   })
+  const normalizedRoleSearchInput = roleSearchInput.trim()
+  const roleSearchTerm = useDebouncedValue(normalizedRoleSearchInput)
   const roleSearchQuery = useSearchRoles(roleSearchTerm, Boolean(accountId))
   const roleSearchResults = roleSearchQuery.data ?? []
-  const normalizedRoleSearchInput = roleSearchInput.trim()
   const isRoleSearchPending = normalizedRoleSearchInput !== roleSearchTerm
   const isRoleSearchLoading =
     Boolean(normalizedRoleSearchInput) &&
@@ -47,14 +49,6 @@ export function UnusedAccountRoleAssignmentSection({
     !isRoleSearchPending &&
     !roleSearchQuery.isLoading &&
     !roleSearchQuery.isError
-
-  useEffect(() => {
-    const timeoutId = window.setTimeout(() => {
-      setRoleSearchTerm(normalizedRoleSearchInput)
-    }, 300)
-
-    return () => window.clearTimeout(timeoutId)
-  }, [normalizedRoleSearchInput])
 
   return (
     <section className="space-y-3" aria-labelledby="account-add-role-title">
@@ -66,9 +60,10 @@ export function UnusedAccountRoleAssignmentSection({
         Adicionar tipo de acesso
       </h3>
 
-      <div>
+      <div className="relative">
         <Label htmlFor="account-role-search">Nome do tipo de acesso</Label>
         <Input
+          className="pr-10"
           id="account-role-search"
           onChange={(event) => {
             setRoleSearchInput(event.target.value)
@@ -77,8 +72,19 @@ export function UnusedAccountRoleAssignmentSection({
             assignMutation.reset()
           }}
           placeholder="Digite parte do nome"
+          type="search"
           value={roleSearchInput}
         />
+        {roleSearchInput && (
+          <SearchClearButton
+            onClear={() => {
+              setRoleSearchInput('')
+              setRoleToAssign(null)
+              assignForm.reset()
+              assignMutation.reset()
+            }}
+          />
+        )}
       </div>
 
       {!normalizedRoleSearchInput && (

@@ -19,6 +19,7 @@ import { getEventStatusLabel } from '@/features/manage/events'
 import { getErrorMessage, isForbiddenError } from '@/lib/http'
 import { cn } from '@/lib/utils'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
+import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 
 import type {
   AttendanceKind,
@@ -59,10 +60,8 @@ export function OratorioAttendancePage({
   const [activeTab, setActiveTab] =
     useState<AttendanceKind>('members')
   const [memberNameInput, setMemberNameInput] = useState('')
-  const [memberName, setMemberName] = useState('')
   const [memberPage, setMemberPage] = useState(0)
   const [oratorianoNameInput, setOratorianoNameInput] = useState('')
-  const [oratorianoName, setOratorianoName] = useState('')
   const [oratorianoPage, setOratorianoPage] = useState(0)
   const [pendingKeys, setPendingKeys] =
     useState<ReadonlySet<string>>(new Set())
@@ -75,6 +74,19 @@ export function OratorioAttendancePage({
   const canManage = permissions.includes('ORATORIO_ATTENDANCE_MANAGE')
   const canViewOratorio = permissions.includes('ORATORIO_GET')
   const canRegisterOratoriano = permissions.includes('ORATORIANO_REGISTER')
+  const normalizedMemberNameInput = memberNameInput.trim()
+  const memberName = useDebouncedValue(normalizedMemberNameInput)
+  const normalizedOratorianoNameInput = oratorianoNameInput.trim()
+  const oratorianoName = useDebouncedValue(normalizedOratorianoNameInput)
+  const isMemberSearchSettled = normalizedMemberNameInput === memberName
+  const isOratorianoSearchSettled =
+    normalizedOratorianoNameInput === oratorianoName
+  const memberQueryPage = isMemberSearchSettled
+    ? memberPage
+    : 0
+  const oratorianoQueryPage = isOratorianoSearchSettled
+    ? oratorianoPage
+    : 0
 
   const oratorioQuery = useOratorio(
     oratorioId,
@@ -83,16 +95,16 @@ export function OratorioAttendancePage({
   const membersQuery = useAttendanceRoster(
     oratorioId,
     'members',
-    memberPage,
+    memberQueryPage,
     memberName,
-    canRead,
+    canRead && isMemberSearchSettled,
   )
   const oratorianosQuery = useAttendanceRoster(
     oratorioId,
     'oratorianos',
-    oratorianoPage,
+    oratorianoQueryPage,
     oratorianoName,
-    canRead,
+    canRead && isOratorianoSearchSettled,
   )
   const summaryQuery = usePresentSummary(oratorioId, canRead)
   const markMutation = useMarkAttendance()
@@ -348,15 +360,14 @@ export function OratorioAttendancePage({
               isLoading={membersQuery.isLoading}
               kind="members"
               nameInput={memberNameInput}
-              onNameInputChange={setMemberNameInput}
+              onNameInputChange={(name) => {
+                setMemberNameInput(name)
+                setMemberPage(0)
+              }}
               onPageChange={setMemberPage}
               onRetry={() => void membersQuery.refetch()}
-              onSearch={() => {
-                setMemberPage(0)
-                setMemberName(memberNameInput)
-              }}
               onToggle={toggleEntry}
-              page={memberPage}
+              page={memberQueryPage}
               pendingKeys={pendingKeys}
               roster={membersQuery.data}
             />
@@ -387,15 +398,14 @@ export function OratorioAttendancePage({
                 isLoading={oratorianosQuery.isLoading}
                 kind="oratorianos"
                 nameInput={oratorianoNameInput}
-                onNameInputChange={setOratorianoNameInput}
+                onNameInputChange={(name) => {
+                  setOratorianoNameInput(name)
+                  setOratorianoPage(0)
+                }}
                 onPageChange={setOratorianoPage}
                 onRetry={() => void oratorianosQuery.refetch()}
-                onSearch={() => {
-                  setOratorianoPage(0)
-                  setOratorianoName(oratorianoNameInput)
-                }}
                 onToggle={toggleEntry}
-                page={oratorianoPage}
+                page={oratorianoQueryPage}
                 pendingKeys={pendingKeys}
                 roster={oratorianosQuery.data}
               />

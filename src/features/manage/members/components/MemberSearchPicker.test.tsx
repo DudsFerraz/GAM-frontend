@@ -1,6 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react'
+import { act, fireEvent, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { MemberSearchPicker } from './MemberSearchPicker'
 
@@ -31,6 +31,10 @@ beforeEach(() => {
     isPlaceholderData: false,
     refetch: vi.fn(),
   })
+})
+
+afterEach(() => {
+  vi.useRealTimers()
 })
 
 describe('MemberSearchPicker', () => {
@@ -141,6 +145,7 @@ describe('MemberSearchPicker', () => {
   })
 
   it('anuncia a atualização da consulta atual sem ocultar resultados coerentes', async () => {
+    vi.useFakeTimers()
     hookMocks.useSearchMembers.mockReturnValue({
       data: { items: [member] },
       isError: false,
@@ -160,7 +165,11 @@ describe('MemberSearchPicker', () => {
       target: { value: 'Ana' },
     })
 
-    expect(await screen.findByRole('status')).toHaveTextContent(
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(screen.getByRole('status')).toHaveTextContent(
       'Atualizando resultados…',
     )
     expect(screen.getByText('Ana Silva')).toBeInTheDocument()

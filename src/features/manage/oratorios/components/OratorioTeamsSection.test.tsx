@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { OratorioTeamsSection } from './OratorioTeamsSection'
 
@@ -38,6 +38,10 @@ beforeEach(() => {
   })
 })
 
+afterEach(() => {
+  vi.useRealTimers()
+})
+
 describe('OratorioTeamsSection', () => {
   it('fecha o seletor e interrompe a consulta quando a capacidade muda', async () => {
     const user = userEvent.setup()
@@ -64,6 +68,7 @@ describe('OratorioTeamsSection', () => {
       '',
       true,
     )
+    expect(screen.queryByRole('button', { name: 'Buscar' })).not.toBeInTheDocument()
     const rosterCallCount =
       hookMocks.useAttendanceRoster.mock.calls.length
 
@@ -81,6 +86,45 @@ describe('OratorioTeamsSection', () => {
     })
     expect(hookMocks.useAttendanceRoster).toHaveBeenCalledTimes(
       rosterCallCount,
+    )
+  })
+
+  it('aguarda o debounce antes de consultar um novo termo', () => {
+    vi.useFakeTimers()
+    render(
+      <OratorioTeamsSection
+        canManage
+        canReadRoster
+        oratorioId="oratorio-id"
+        teams={[]}
+      />,
+    )
+
+    fireEvent.click(screen.getByRole('button', {
+      name: 'Adicionar membro à Equipe do Lanche',
+    }))
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Nome do membro' }), {
+      target: { value: 'Ana' },
+    })
+
+    expect(hookMocks.useAttendanceRoster).toHaveBeenLastCalledWith(
+      'oratorio-id',
+      'members',
+      0,
+      '',
+      false,
+    )
+
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(hookMocks.useAttendanceRoster).toHaveBeenLastCalledWith(
+      'oratorio-id',
+      'members',
+      0,
+      'Ana',
+      true,
     )
   })
 })

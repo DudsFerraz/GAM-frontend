@@ -1,17 +1,13 @@
-import {
-  useDeferredValue,
-  useId,
-  useMemo,
-  useState,
-  type ChangeEvent,
-} from "react";
+import { useId, useMemo, useState, type ChangeEvent } from "react";
 import { Check, Search, UserRound } from "lucide-react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/Alert";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { SearchClearButton } from "@/components/SearchClearButton";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/Label";
+import { useDebouncedValue } from "@/hooks/useDebouncedValue";
 import { getErrorMessage } from "@/lib/http";
 
 import { useSearchMembers } from "../hooks/useSearchMembers";
@@ -42,21 +38,21 @@ export function MemberSearchPicker({
   const searchInputId = useId();
   const searchLabelId = `${searchInputId}-label`;
   const normalizedSearch = search.trim();
-  const deferredSearch = useDeferredValue(search.trim());
-  const isSearchDeferred = normalizedSearch !== deferredSearch;
+  const debouncedSearch = useDebouncedValue(normalizedSearch);
+  const isSearchDebounced = normalizedSearch !== debouncedSearch;
   const filters = useMemo<SpecificationFilter[]>(() => {
-    if (deferredSearch.length < 2) {
+    if (debouncedSearch.length < 2) {
       return [];
     }
 
     return [
       {
-        field: deferredSearch.includes("@") ? "email" : "name",
-        value: deferredSearch,
+        field: debouncedSearch.includes("@") ? "email" : "name",
+        value: debouncedSearch,
         comparisonMethod: "LIKE",
       },
     ];
-  }, [deferredSearch]);
+  }, [debouncedSearch]);
   const query = useSearchMembers({
     enabled: !disabled && filters.length > 0,
     filters,
@@ -68,16 +64,16 @@ export function MemberSearchPicker({
   });
   const isLoadingCurrentSearch =
     normalizedSearch.length >= 2 &&
-    (isSearchDeferred || query.isLoading || query.isPlaceholderData);
+    (isSearchDebounced || query.isLoading || query.isPlaceholderData);
   const isRefreshingCurrentSearch =
     normalizedSearch.length >= 2 &&
-    !isSearchDeferred &&
+    !isSearchDebounced &&
     !query.isLoading &&
     !query.isPlaceholderData &&
     query.isFetching;
   const canShowCurrentResults =
     normalizedSearch.length >= 2 &&
-    !isSearchDeferred &&
+    !isSearchDebounced &&
     !query.isLoading &&
     !query.isPlaceholderData &&
     !query.isError;
@@ -91,6 +87,14 @@ export function MemberSearchPicker({
     }
 
     setSearch(nextSearch);
+  };
+
+  const clearSearch = () => {
+    if (selectedMemberId) {
+      onSelectionClear();
+    }
+
+    setSearch("");
   };
 
   return (
@@ -119,8 +123,14 @@ export function MemberSearchPicker({
             spellCheck={false}
             type="search"
             value={search}
-            className="pl-9"
+            className="pl-9 pr-10"
           />
+          {search && (
+            <SearchClearButton
+              disabled={disabled}
+              onClear={clearSearch}
+            />
+          )}
         </div>
         <p className="text-sm text-muted-foreground">
           Digite ao menos dois caracteres e selecione a pessoa correta.
@@ -145,7 +155,7 @@ export function MemberSearchPicker({
           Atualizando resultados…
         </p>
       )}
-      {!isSearchDeferred && query.isError && filters.length > 0 && (
+      {!isSearchDebounced && query.isError && filters.length > 0 && (
         <Alert variant="destructive">
           <AlertTitle>Não foi possível buscar membros.</AlertTitle>
           <AlertDescription className="space-y-3">

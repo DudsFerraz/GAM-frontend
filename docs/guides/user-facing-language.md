@@ -6,6 +6,31 @@ The application interface is written for Brazilian Portuguese (`pt-BR`). Backend
 
 This is a frontend presentation rule. The backend remains authoritative for API values, authorization, and domain contracts, and the frontend must continue sending the original contract value in requests. System roles and permissions follow the backend-owned [RBAC catalog](https://github.com/DudsFerraz/GAM-Bakckend-API/blob/main/docs/requirements/rbac/rbac-catalog.md); this repository owns only their Portuguese interface presentation.
 
+## Princípios de clareza e consistência
+
+### Dizer o máximo falando o mínimo
+
+Cada elemento da interface precisa cumprir uma função real para quem usa o
+sistema: orientar uma decisão, esclarecer um estado ou viabilizar uma ação.
+Textos, controles e adornos que não acrescentam valor devem ser removidos.
+Uma boa interface comunica o necessário com precisão e economia, sem pedir
+atenção para o que não ajuda o usuário.
+
+### Estabelecer padrões sempre que possível
+
+Intenções equivalentes devem ter interações equivalentes. Buscas, filtros,
+ordenação, mensagens, estados de carregamento e ações recorrentes precisam
+seguir o mesmo vocabulário e comportamento em diferentes seções e módulos.
+Isso reduz a curva de aprendizado e torna o sistema previsível. Uma exceção
+só deve existir quando uma regra de negócio exigir uma confirmação ou um fluxo
+deliberado diferente; nesse caso, a diferença deve ser clara para o usuário.
+
+Como aplicação prática, buscas assíncronas por texto usam o debounce padrão de
+500 ms, não exibem um botão adicional de `Buscar` e oferecem `Limpar busca`
+quando há um termo preenchido. Ações como `Conferir nome` permanecem
+explícitas quando representam uma verificação necessária antes de criar,
+enviar ou alterar dados.
+
 ## Current implementation
 
 - [`src/lib/presentation.ts`](../../src/lib/presentation.ts) provides the shared safe-label resolver. An unmapped value returns an explicit Portuguese fallback and never the raw value.

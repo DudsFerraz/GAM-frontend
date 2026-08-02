@@ -1,5 +1,5 @@
-import { Search, UserPlus, UserRound, UserX, X } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { UserPlus, UserRound, UserX, X } from 'lucide-react'
+import { useState } from 'react'
 
 import {
   EmptyState,
@@ -12,6 +12,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { SearchClearButton } from '@/components/SearchClearButton'
 import {
   Dialog,
   DialogContent,
@@ -23,6 +24,7 @@ import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
 import { getErrorMessage, isForbiddenError } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
+import { useDebouncedValue } from '@/hooks/useDebouncedValue'
 
 import type {
   OratorioTeam,
@@ -229,15 +231,19 @@ function OratorioMemberPicker({
   teamType: OratorioTeamType
 }) {
   const [nameInput, setNameInput] = useState('')
-  const [name, setName] = useState('')
   const [page, setPage] = useState(0)
   const canOperate = open && canManage && canReadRoster
+  const normalizedNameInput = nameInput.trim()
+  const name = useDebouncedValue(normalizedNameInput)
+  const isSearchSettled = normalizedNameInput === name
+  const queryPage = isSearchSettled ? page : 0
+
   const query = useAttendanceRoster(
     oratorioId,
     'members',
-    page,
+    queryPage,
     name,
-    canOperate,
+    canOperate && isSearchSettled,
   )
   const assignMutation = useAssignOratorioTeamMember()
   const availableItems = (query.data?.items ?? []).filter((entry) => {
@@ -246,14 +252,6 @@ function OratorioMemberPicker({
       && entry.person?.status === 'ACTIVE'
       && !assignedMemberIds.includes(personId)
   })
-
-  const submitSearch = (event: FormEvent) => {
-    event.preventDefault()
-    if (!canOperate) return
-
-    setPage(0)
-    setName(nameInput)
-  }
 
   return (
     <Dialog onOpenChange={onOpenChange} open={canOperate}>
@@ -268,26 +266,34 @@ function OratorioMemberPicker({
           </DialogDescription>
         </DialogHeader>
 
-        <form
+        <div
           className="flex flex-col gap-2 sm:flex-row"
-          onSubmit={submitSearch}
         >
-          <div className="flex-1">
+          <div className="relative flex-1">
             <Label className="sr-only" htmlFor={`member-search-${teamType}`}>
               Nome do membro
             </Label>
             <Input
+              className="pr-10"
               id={`member-search-${teamType}`}
-              onChange={(event) => setNameInput(event.target.value)}
+              onChange={(event) => {
+                setNameInput(event.target.value)
+                setPage(0)
+              }}
               placeholder="Buscar membro pelo nome"
+              type="search"
               value={nameInput}
             />
+            {nameInput && (
+              <SearchClearButton
+                onClear={() => {
+                  setNameInput('')
+                  setPage(0)
+                }}
+              />
+            )}
           </div>
-          <Button disabled={!canOperate} type="submit">
-            <Search aria-hidden="true" className="h-4 w-4" />
-            Buscar
-          </Button>
-        </form>
+        </div>
 
         {query.isLoading && (
           <LoadingState title="Carregando membros..." />
@@ -367,7 +373,7 @@ function OratorioMemberPicker({
             disabled={query.isFetching}
             itemLabel="membros"
             onPageChange={setPage}
-            page={query.data.page ?? page}
+            page={query.data.page ?? queryPage}
             totalElements={query.data.totalElements ?? availableItems.length}
             totalPages={query.data.totalPages ?? 0}
           />

@@ -46,7 +46,7 @@ describe('SearchAndFilter', () => {
     )
 
     fireEvent.change(
-      screen.getByRole('textbox', { name: 'Pesquisa rápida por Nome' }),
+      screen.getByRole('searchbox', { name: 'Pesquisa rápida por Nome' }),
       { target: { value: 'Maria' } },
     )
     act(() => {
@@ -90,6 +90,22 @@ describe('SearchAndFilter', () => {
         { field: 'status', value: ['ACTIVE', 'INACTIVE'], comparisonMethod: 'IN' },
         { field: 'name', value: 'Maria', comparisonMethod: 'LIKE' },
       ],
+      [{ field: 'status', direction: 'ASC' }],
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: 'Limpar busca' }))
+    act(() => {
+      vi.advanceTimersByTime(500)
+    })
+
+    expect(screen.getByRole('searchbox', { name: 'Pesquisa rápida por Nome' }))
+      .toHaveValue('')
+    expect(onSearch).toHaveBeenLastCalledWith(
+      [{
+        field: 'status',
+        value: ['ACTIVE', 'INACTIVE'],
+        comparisonMethod: 'IN',
+      }],
       [{ field: 'status', direction: 'ASC' }],
     )
   })

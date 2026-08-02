@@ -1,5 +1,4 @@
-import { Search, UserRound } from 'lucide-react'
-import { type FormEvent } from 'react'
+import { UserRound } from 'lucide-react'
 
 import {
   EmptyState,
@@ -8,8 +7,8 @@ import {
   LoadingState,
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
+import { SearchClearButton } from '@/components/SearchClearButton'
 import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { Checkbox } from '@/components/ui/Checkbox'
 import { Input } from '@/components/ui/Input'
 import { Label } from '@/components/ui/Label'
@@ -35,7 +34,6 @@ type AttendanceRosterProps = {
   onNameInputChange: (name: string) => void
   onPageChange: (page: number) => void
   onRetry: () => void
-  onSearch: () => void
   onToggle: (
     kind: AttendanceKind,
     entry: AttendanceRosterEntry,
@@ -58,7 +56,6 @@ export function AttendanceRoster({
   onNameInputChange,
   onPageChange,
   onRetry,
-  onSearch,
   onToggle,
   page,
   pendingKeys,
@@ -69,33 +66,28 @@ export function AttendanceRoster({
     ? 'membros'
     : 'Oratorianos'
 
-  const submitSearch = (event: FormEvent) => {
-    event.preventDefault()
-    onSearch()
-  }
-
   return (
     <div className="space-y-4">
-      <form
+      <div
         className="flex flex-col gap-2 sm:flex-row"
-        onSubmit={submitSearch}
       >
-        <div className="flex-1">
+        <div className="relative flex-1">
           <Label className="sr-only" htmlFor={`attendance-search-${kind}`}>
             Buscar {participantLabel} pelo nome
           </Label>
           <Input
+            className="pr-10"
             id={`attendance-search-${kind}`}
             onChange={(event) => onNameInputChange(event.target.value)}
             placeholder={`Buscar ${participantLabel} pelo nome`}
+            type="search"
             value={nameInput}
           />
+          {nameInput && (
+            <SearchClearButton onClear={() => onNameInputChange('')} />
+          )}
         </div>
-        <Button type="submit" variant="outline">
-          <Search aria-hidden="true" className="h-4 w-4" />
-          Buscar
-        </Button>
-      </form>
+      </div>
 
       {isLoading && (
         <LoadingState title={`Carregando ${participantLabel}...`} />
