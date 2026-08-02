@@ -22,7 +22,7 @@ The Oratório adapter creates and reads specialized occurrences, replaces the fo
 
 | Frontend operation | Contract behavior |
 | --- | --- |
-| `POST /events/search` | Supplies the fixed `ORATORIO` type filter for discovery because no specialized occurrence-search route exists. |
+| `POST /events/search` | Supplies the fixed `ORATORIO` type filter for discovery because no specialized occurrence-search route exists. Complete Oratório dates use the contract's inclusive `beginDate` range filters; partial date terms load compatible pages for frontend matching and are never sent as `LIKE`. |
 | `POST /oratorios` | Sends only the local occurrence date and consumes the complete specialized detail. |
 | `PUT /oratorios/{id}/planning` | Replaces all four optional planning texts in one request. |
 | `PUT`/`DELETE /oratorios/{id}/teams/{teamType}/members/{memberId}` | Maintains one of the four fixed teams idempotently after a business-facing Member search. |

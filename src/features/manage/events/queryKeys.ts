@@ -4,6 +4,8 @@ export const eventQueryKeys = {
   all: ["events"] as const,
   search: (search: EventSearch, page: number) =>
     [...eventQueryKeys.all, "search", search, page] as const,
+  oratorioDateSearch: (search: EventSearch, term: string) =>
+    [...eventQueryKeys.all, "oratorio-date-search", search, term] as const,
   detail: (eventId: string) =>
     [...eventQueryKeys.all, "detail", eventId] as const,
   presenceLists: (eventId: string) =>

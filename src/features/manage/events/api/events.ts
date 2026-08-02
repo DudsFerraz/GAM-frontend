@@ -24,6 +24,8 @@ export type EventFilters = {
   title: string;
   status: EventStatus | "ALL";
   type: EventType | "ALL";
+  beginDateFrom?: string;
+  beginDateTo?: string;
 };
 
 export type EventSearch = {
@@ -51,6 +53,8 @@ function isSupportedEventSort(value: string): boolean {
 export async function searchEvents(
   search: EventSearch,
   page: number,
+  pageSize = 12,
+  signal?: AbortSignal,
 ): Promise<EventPage> {
   const apiFilters: components["schemas"]["SpecificationFilterDTO"][] = [];
   if (search.filters.title.trim())
@@ -71,6 +75,18 @@ export async function searchEvents(
       value: search.filters.type,
       comparisonMethod: "EQUALS",
     });
+  if (search.filters.beginDateFrom)
+    apiFilters.push({
+      field: "beginDate",
+      value: search.filters.beginDateFrom,
+      comparisonMethod: "GREATER_THAN_OR_EQUAL",
+    });
+  if (search.filters.beginDateTo)
+    apiFilters.push({
+      field: "beginDate",
+      value: search.filters.beginDateTo,
+      comparisonMethod: "LESS_THAN_OR_EQUAL",
+    });
   const requestedSorts = search.sorts.filter(isSupportedEventSort);
   const { data } = await api.post<EventPage>(
     "/events/search",
@@ -78,10 +94,11 @@ export async function searchEvents(
     {
       params: {
         page,
-        size: 12,
+        size: pageSize,
         sort: requestedSorts.length > 0 ? requestedSorts : ["beginDate,desc"],
       },
       paramsSerializer: { indexes: null },
+      ...(signal ? { signal } : {}),
     },
   );
   return data;

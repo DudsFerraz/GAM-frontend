@@ -74,6 +74,8 @@ export const EVENT_SEARCH_CONFIG: FieldConfig[] = [
 
 export const ORATORIO_SEARCH_CONFIG = EVENT_SEARCH_CONFIG.filter(
   (field) => field.key !== 'type',
+).map((field) =>
+  field.key === 'beginDate' ? { ...field, label: 'Data' } : field,
 )
 
 function getEventStatus(value: string): EventStatus | 'ALL' {

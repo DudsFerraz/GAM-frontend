@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { toEventSearch } from './eventSearchConfig'
+import {
+  ORATORIO_SEARCH_CONFIG,
+  toEventSearch,
+} from './eventSearchConfig'
 
 describe('configuração da busca de eventos', () => {
   it('mantém o tipo fixo de Ocorrências e converte filtros da interface', () => {
@@ -30,5 +33,10 @@ describe('configuração da busca de eventos', () => {
       },
       sorts: [],
     })
+  })
+
+  it('apresenta a data como pesquisa principal de Ocorrências', () => {
+    expect(ORATORIO_SEARCH_CONFIG.find((field) => field.key === 'beginDate'))
+      .toMatchObject({ label: 'Data' })
   })
 })

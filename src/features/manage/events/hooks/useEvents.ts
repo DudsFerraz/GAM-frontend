@@ -38,7 +38,7 @@ export type EventLifecycleCommand =
 export function useEvents(search: EventSearch, page: number, enabled = true) {
   return useQuery({
     queryKey: eventQueryKeys.search(search, page),
-    queryFn: () => searchEvents(search, page),
+    queryFn: ({ signal }) => searchEvents(search, page, 12, signal),
     enabled,
     placeholderData: keepPreviousData,
   });

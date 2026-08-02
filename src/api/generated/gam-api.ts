@@ -58,7 +58,7 @@ export interface paths {
         get?: never;
         /**
          * Idempotently mark an Oratoriano present
-         * @description Idempotently marks the Oratoriano present. Repeating an existing check returns the existing attendance without creating a duplicate.
+         * @description Idempotently marks the Oratoriano present. Repeating an existing check returns the existing attendance without creating a duplicate. SCHEDULED and COMPLETED occurrences accept confirmed attendance without a clock-based time boundary.
          */
         put: operations["markOratorianoPresent"];
         post?: never;
@@ -82,7 +82,7 @@ export interface paths {
         get?: never;
         /**
          * Idempotently mark a Member present
-         * @description Idempotently marks the Member present. Repeating an existing check returns the existing attendance without creating a duplicate.
+         * @description Idempotently marks the Member present. Repeating an existing check returns the existing attendance without creating a duplicate. SCHEDULED and COMPLETED occurrences accept confirmed attendance without a clock-based time boundary.
          */
         put: operations["markOratorioMemberPresent"];
         post?: never;
@@ -259,7 +259,7 @@ export interface paths {
         put?: never;
         /**
          * Atomically register and mark present
-         * @description Performs the documented GAM operation: Atomically register and mark present.
+         * @description Atomically registers an Oratoriano and records confirmed attendance. SCHEDULED and COMPLETED occurrences accept confirmed attendance without a clock-based time boundary.
          */
         post: operations["registerAndMarkOratorianoPresent"];
         delete?: never;
@@ -491,7 +491,7 @@ export interface paths {
         put?: never;
         /**
          * register Event Presence
-         * @description Performs the documented GAM operation: register Event Presence.
+         * @description Registers confirmed attendance for a Member. SCHEDULED and COMPLETED Events accept confirmed attendance without a clock-based time boundary.
          */
         post: operations["registerEventPresence"];
         delete?: never;
@@ -1396,7 +1396,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/accounts/{id}": {
+    "/accounts/{accountId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -1486,6 +1486,10 @@ export interface components {
         GamLocationRDTO: {
             /** Format: uuid */
             id: string;
+            /** @description Immutable application-owned code for a system GamLocation. */
+            code: string | null;
+            /** @description Whether the GamLocation belongs to the system catalog. */
+            systemManaged: boolean;
             name: string;
             street: string | null;
             city: string;
@@ -1551,6 +1555,7 @@ export interface components {
             /** Format: date */
             birthDate?: string;
             phoneNumber?: string;
+            /** @description Required when the Oratoriano name changes. When supplied, leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason?: string;
         };
         OratorianoRDTO: {
@@ -1687,6 +1692,7 @@ export interface components {
             beginDate: string;
             /** Format: date-time */
             endDate: string;
+            /** @description When supplied, leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason?: string;
         };
         CreateOratorioDTO: {
@@ -1754,7 +1760,6 @@ export interface components {
             birthDate: string;
             phoneNumber: string;
             justification: string;
-            accountId?: components["schemas"]["JsonNode"];
         };
         AccountSummaryRDTO: {
             /** Format: uuid */
@@ -1804,7 +1809,8 @@ export interface components {
             /** Format: date */
             birthDate: string;
             phoneNumber: string;
-            reason?: string;
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
+            reason: string;
         };
         MemberRDTO: {
             /** Format: uuid */
@@ -1911,6 +1917,7 @@ export interface components {
         AddAccountRoleDTO: {
             /** Format: uuid */
             roleId: string;
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         AccountRDTO: {
@@ -1952,10 +1959,12 @@ export interface components {
         ReopenDTO: {
             /** @enum {string} */
             targetStatus: "SCHEDULED" | "COMPLETED" | "LOCKED" | "FINALIZED" | "CANCELLED";
-            reason?: string;
+            /** @description Required for reopening. Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
+            reason: string;
         };
         ReasonDTO: {
-            reason?: string;
+            /** @description Required for cancellation, deletion, restoration, and revocation operations. Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
+            reason: string;
         };
         CompleteFormDTO: {
             /**
@@ -1967,21 +1976,25 @@ export interface components {
             overwriteNewerProfileValues?: boolean;
         };
         ReviewMembershipSolicitationDTO: {
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         CoordinatorTransitionDTO: {
-            /** @description Trimmed before validation; the normalized reason must contain at most 2,000 Unicode code points. */
+            /** @description Trimmed by removing only leading and trailing Unicode White_Space code points before validation; the normalized reason must not be blank and must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         DeactivateMemberDTO: {
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         ReopenEventDTO: {
             /** @enum {string} */
             targetStatus: "SCHEDULED" | "COMPLETED" | "LOCKED" | "FINALIZED" | "CANCELLED";
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         EventReasonDTO: {
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         UpdatePresenceObservationsDTO: {
@@ -1998,6 +2011,7 @@ export interface components {
             registeredAt: string;
         };
         DropAccountRoleDTO: {
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         RolesRDTO: {
@@ -2153,20 +2167,62 @@ export interface components {
             permissions: string[];
         };
         RemoveGamLocationDTO: {
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
         RemovePresenceDTO: {
-            /** @description Trimmed before validation; the normalized reason must not be blank and must contain between 1 and 2,000 Unicode code points. */
+            /** @description Trimmed by removing only leading and trailing Unicode White_Space code points before validation; the normalized reason must not be blank and must contain from 1 through 2,000 Unicode code points. */
             reason: string;
+        };
+        ApiValidationViolation: {
+            /** @enum {string} */
+            location: "body" | "path" | "query" | "header" | "cookie";
+            field: string;
+            /** @enum {string} */
+            code: "REQUIRED" | "NOT_BLANK" | "SIZE" | "RANGE" | "FORMAT" | "ALLOWED_VALUE" | "RELATION" | "INVALID_VALUE";
+            message: string;
+        };
+        ApiValidationErrorDetails: {
+            violations: components["schemas"]["ApiValidationViolation"][];
+        };
+        ApiMalformedJsonDetails: {
+            /** @enum {string} */
+            reason: "SYNTAX_ERROR" | "UNKNOWN_FIELD" | "TYPE_MISMATCH";
+            /** @enum {string} */
+            location: "body";
+            field?: string;
+        };
+        ApiInvalidParameterTypeDetails: {
+            /** @enum {string} */
+            location: "path" | "query" | "header" | "cookie";
+            field: string;
+            /** @enum {string} */
+            expectedType: "UUID" | "INTEGER" | "DECIMAL" | "BOOLEAN" | "DATE" | "DATE_TIME" | "ENUM";
+        };
+        ApiResourceNotFoundDetails: {
+            resource: string;
+            identifier: string;
+        };
+        ApiInvalidSearchFilterDetails: {
+            /** Format: int32 */
+            filterIndex: number;
+            field?: string;
+            /** @enum {string} */
+            comparisonMethod?: "EQUALS" | "LIKE" | "IN" | "GREATER_THAN_OR_EQUAL" | "LESS_THAN_OR_EQUAL";
+        };
+        ApiEmptyErrorDetails: Record<string, never>;
+        ApiFeatureErrorDetails: {
+            [key: string]: unknown;
         };
         ApiErrorDTO: {
             /** Format: date-time */
             timestamp: string;
             /** Format: int32 */
             status: number;
-            code: string;
+            /** @enum {string} */
+            code: "VALIDATION_ERROR" | "MALFORMED_JSON" | "INVALID_PARAMETER_TYPE" | "AUTHENTICATION_REQUIRED" | "INVALID_CREDENTIALS" | "INVALID_REFRESH_TOKEN" | "ACCESS_DENIED" | "FORBIDDEN_OPERATION" | "REQUEST_SECURITY_REJECTED" | "RESOURCE_NOT_FOUND" | "INVALID_SEARCH_FILTER" | "CONFLICT" | "RESOURCE_CONFLICT" | "EVENT_AUDIENCE_PERMISSION_INVALID" | "EVENT_HAS_PRESENCES" | "EVENT_STATUS_TRANSITION_NOT_ALLOWED" | "EVENT_TYPE_NOT_MANAGEABLE" | "GAM_LOCATION_ALREADY_EXISTS" | "GAM_LOCATION_IN_USE" | "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED" | "ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER" | "ORATORIO_DATE_ALREADY_EXISTS" | "PRESENCE_ALREADY_REGISTERED" | "PRESENCE_EDIT_NOT_ALLOWED" | "PRESENCE_REGISTRATION_NOT_ALLOWED" | "PRESENCE_REMOVAL_NOT_ALLOWED";
             message: string;
-            details: Record<string, never>;
+            details: components["schemas"]["ApiValidationErrorDetails"] | components["schemas"]["ApiMalformedJsonDetails"] | components["schemas"]["ApiInvalidParameterTypeDetails"] | components["schemas"]["ApiResourceNotFoundDetails"] | components["schemas"]["ApiInvalidSearchFilterDetails"] | components["schemas"]["ApiEmptyErrorDetails"] | components["schemas"]["ApiFeatureErrorDetails"];
         };
     };
     responses: never;
@@ -2193,77 +2249,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2272,6 +2342,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2305,77 +2379,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2384,6 +2472,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2427,6 +2519,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2439,6 +2533,8 @@ export interface operations {
                      *         "description": "Synthetic GAM value",
                      *         "gamLocation": {
                      *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "code": null,
+                     *           "systemManaged": false,
                      *           "name": "Synthetic GAM value",
                      *           "street": "Synthetic GAM value",
                      *           "city": "Synthetic GAM value",
@@ -2493,73 +2589,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorioRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2568,6 +2676,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2600,6 +2712,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2619,73 +2733,85 @@ export interface operations {
                     "*/*": components["schemas"]["AttendanceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2694,6 +2820,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2735,77 +2865,91 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2814,6 +2958,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2846,6 +2994,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2865,73 +3015,85 @@ export interface operations {
                     "*/*": components["schemas"]["AttendanceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2940,6 +3102,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -2981,77 +3147,91 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3060,6 +3240,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3091,6 +3275,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3106,73 +3292,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorianoRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Oratoriano not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Oratoriano not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Oratoriano",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3181,6 +3379,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3225,6 +3427,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3240,73 +3444,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorianoRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3315,6 +3531,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3355,77 +3575,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3434,6 +3668,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3466,6 +3704,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3488,73 +3728,85 @@ export interface operations {
                     "*/*": components["schemas"]["FormRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3563,6 +3815,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3690,6 +3946,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3712,73 +3970,85 @@ export interface operations {
                     "*/*": components["schemas"]["FormRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3787,6 +4057,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3828,77 +4102,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3907,6 +4195,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3952,6 +4244,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -3969,73 +4263,85 @@ export interface operations {
                     "*/*": components["schemas"]["AttachmentRDTO"][];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4044,6 +4350,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4075,12 +4385,16 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
                      *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "code": null,
+                     *       "systemManaged": false,
                      *       "name": "Synthetic GAM value",
                      *       "street": "Synthetic GAM value",
                      *       "city": "Synthetic GAM value",
@@ -4094,73 +4408,85 @@ export interface operations {
                     "*/*": components["schemas"]["GamLocationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description GamLocation not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "GamLocation not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "GamLocation",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4169,6 +4495,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4216,12 +4546,16 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
                      *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "code": null,
+                     *       "systemManaged": false,
                      *       "name": "Synthetic GAM value",
                      *       "street": "Synthetic GAM value",
                      *       "city": "Synthetic GAM value",
@@ -4235,73 +4569,76 @@ export interface operations {
                     "*/*": components["schemas"]["GamLocationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Possible codes: ACCESS_DENIED, FORBIDDEN_OPERATION. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4310,6 +4647,10 @@ export interface operations {
             /** @description The request conflicts with an existing GamLocation. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4350,77 +4691,82 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Possible codes: ACCESS_DENIED, FORBIDDEN_OPERATION. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4429,6 +4775,10 @@ export interface operations {
             /** @description The GamLocation has historical Event references. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4437,9 +4787,9 @@ export interface operations {
                      *       "message": "The GamLocation has historical Event references.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventReferenceCount": 2,
                      *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
-                     *         "resource": "GamLocation"
+                     *         "resource": "GamLocation",
+                     *         "eventReferenceCount": 2
                      *       },
                      *       "status": 409,
                      *       "code": "GAM_LOCATION_IN_USE"
@@ -4464,6 +4814,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4474,6 +4826,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -4500,91 +4854,39 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Public path-parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The authenticated account is not allowed to perform this operation. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
+            /** @description Event not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Event not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Event",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4621,6 +4923,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4631,6 +4935,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -4657,73 +4963,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4732,6 +5050,10 @@ export interface operations {
             /** @description Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4740,9 +5062,9 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED"
+                     *         "currentStatus": "SCHEDULED",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
@@ -4776,77 +5098,91 @@ export interface operations {
             /** @description Event deleted */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4855,6 +5191,10 @@ export interface operations {
             /** @description Possible codes: EVENT_HAS_PRESENCES, EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Details include eventId, activePresenceCount, currentStatus, and requestedStatus as applicable. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4863,8 +5203,8 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_HAS_PRESENCES, EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Details include eventId, activePresenceCount, currentStatus, and requestedStatus as applicable.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
-                     *         "activePresenceCount": 2
+                     *         "activePresenceCount": 2,
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_HAS_PRESENCES"
@@ -4898,6 +5238,8 @@ export interface operations {
                 headers: {
                     /** @description Public API URI of the created Oratorio resource. */
                     Location?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -4910,6 +5252,8 @@ export interface operations {
                      *         "description": "Synthetic GAM value",
                      *         "gamLocation": {
                      *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "code": null,
+                     *           "systemManaged": false,
                      *           "name": "Synthetic GAM value",
                      *           "street": "Synthetic GAM value",
                      *           "city": "Synthetic GAM value",
@@ -4964,73 +5308,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorioRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5039,6 +5395,10 @@ export interface operations {
             /** @description An active Oratorio occurrence already uses the supplied local date. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5047,8 +5407,8 @@ export interface operations {
                      *       "message": "An active Oratorio occurrence already uses the supplied local date.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "identifier": "2026-07-25",
-                     *         "resource": "Oratorio"
+                     *         "resource": "Oratorio",
+                     *         "identifier": "2026-07-25"
                      *       },
                      *       "status": 409,
                      *       "code": "ORATORIO_DATE_ALREADY_EXISTS"
@@ -5083,6 +5443,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5111,73 +5473,85 @@ export interface operations {
                     "*/*": components["schemas"]["QuickRegistrationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5186,6 +5560,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5227,6 +5605,8 @@ export interface operations {
                 headers: {
                     /** @description Public API URI of the created Oratoriano resource. */
                     Location?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5242,73 +5622,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorianoRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5317,6 +5709,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5353,6 +5749,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5392,73 +5790,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseFormHistoryRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5467,6 +5877,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5509,6 +5923,8 @@ export interface operations {
                 headers: {
                     /** @description Public API URI of the created Oratoriano form draft resource. */
                     Location?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5531,73 +5947,85 @@ export interface operations {
                     "*/*": components["schemas"]["FormRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5606,6 +6034,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5638,6 +6070,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5656,73 +6090,85 @@ export interface operations {
                     "*/*": components["schemas"]["PrintSnapshotRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5731,6 +6177,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5769,9 +6219,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
-                 *           "value": "Ana Silva",
                  *           "comparisonMethod": "LIKE",
-                 *           "field": "name"
+                 *           "field": "name",
+                 *           "value": "Ana Silva"
                  *         }
                  *       ]
                  *     }
@@ -5783,6 +6233,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5808,82 +6260,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseOratorianoRDTO"];
                 };
             };
-            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER. */
+            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER, INVALID_PARAMETER_TYPE. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5906,8 +6336,7 @@ export interface operations {
                  *       "surname": "Synthetic GAM value",
                  *       "birthDate": "2026-07-15",
                  *       "phoneNumber": "Synthetic GAM value",
-                 *       "justification": "Synthetic GAM value",
-                 *       "accountId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                 *       "justification": "Synthetic GAM value"
                  *     }
                  */
                 "application/json": components["schemas"]["SubmitMembershipSolicitationDTO"];
@@ -5917,6 +6346,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -5948,73 +6379,85 @@ export interface operations {
                     "*/*": components["schemas"]["MembershipSolicitationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6023,6 +6466,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6060,9 +6507,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
-                 *           "value": "PENDING",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "status"
+                 *           "field": "status",
+                 *           "value": "PENDING"
                  *         }
                  *       ]
                  *     }
@@ -6074,6 +6521,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6115,82 +6564,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseMembershipSolicitationRDTO"];
                 };
             };
-            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER. */
+            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER, INVALID_PARAMETER_TYPE. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6224,6 +6651,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6245,73 +6674,85 @@ export interface operations {
                     "*/*": components["schemas"]["MemberRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6320,6 +6761,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6357,9 +6802,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
-                 *           "value": "ACTIVE",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "status"
+                 *           "field": "status",
+                 *           "value": "ACTIVE"
                  *         }
                  *       ]
                  *     }
@@ -6371,6 +6816,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6402,82 +6849,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseMemberRDTO"];
                 };
             };
-            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER. */
+            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER, INVALID_PARAMETER_TYPE. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6504,6 +6929,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6512,6 +6939,8 @@ export interface operations {
                      *       "items": [
                      *         {
                      *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "code": null,
+                     *           "systemManaged": false,
                      *           "name": "Synthetic GAM value",
                      *           "street": "Synthetic GAM value",
                      *           "city": "Synthetic GAM value",
@@ -6533,91 +6962,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseGamLocationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Query validation or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6655,12 +7053,16 @@ export interface operations {
                 headers: {
                     /** @description Public API URI of the created GamLocation resource. */
                     Location?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
                      *       "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *       "code": null,
+                     *       "systemManaged": false,
                      *       "name": "Synthetic GAM value",
                      *       "street": "Synthetic GAM value",
                      *       "city": "Synthetic GAM value",
@@ -6674,73 +7076,85 @@ export interface operations {
                     "*/*": components["schemas"]["GamLocationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6749,6 +7163,10 @@ export interface operations {
             /** @description The request conflicts with an existing GamLocation. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6792,6 +7210,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     /** @description URI of the created Event */
                     Location?: string;
                     [name: string]: unknown;
@@ -6804,6 +7224,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -6830,73 +7252,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6905,6 +7339,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6945,6 +7383,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -6982,73 +7422,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponsePresenceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7057,6 +7509,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7098,6 +7554,8 @@ export interface operations {
             /** @description Presence registered */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     /** @description URI of the registered Presence */
                     Location?: string;
                     [name: string]: unknown;
@@ -7127,92 +7585,108 @@ export interface operations {
                     "*/*": components["schemas"]["RegisterPresenceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. Duplicate details include eventId, memberId, and presenceId. Eligibility details include eventId, status, beginDate, and evaluationInstant. */
+            /** @description Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. Duplicate details include eventId, memberId, and presenceId. Eligibility details include eventId, status, and evaluationInstant. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. Duplicate details include eventId, memberId, and presenceId. Eligibility details include eventId, status, beginDate, and evaluationInstant.",
+                     *       "message": "Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. Duplicate details include eventId, memberId, and presenceId. Eligibility details include eventId, status, and evaluationInstant.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "memberId": "019f6343-321a-7c90-a096-a551e8f88eb5",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "PRESENCE_ALREADY_REGISTERED"
@@ -7243,9 +7717,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
-                 *           "value": "Synthetic event",
                  *           "comparisonMethod": "LIKE",
-                 *           "field": "title"
+                 *           "field": "title",
+                 *           "value": "Synthetic event"
                  *         }
                  *       ]
                  *     }
@@ -7257,6 +7731,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7269,6 +7745,8 @@ export interface operations {
                      *           "description": "Synthetic GAM value",
                      *           "gamLocation": {
                      *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *             "code": null,
+                     *             "systemManaged": false,
                      *             "name": "Synthetic GAM value",
                      *             "street": "Synthetic GAM value",
                      *             "city": "Synthetic GAM value",
@@ -7303,82 +7781,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseEventRDTO"];
                 };
             };
-            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER. */
+            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER, INVALID_PARAMETER_TYPE. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7409,6 +7865,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7420,81 +7878,26 @@ export interface operations {
                     "*/*": components["schemas"]["RegisterAccountRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description Authentication is required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The authenticated account is not allowed to perform this operation. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7532,6 +7935,8 @@ export interface operations {
                 headers: {
                     /** @description Sets and rotates the browser-managed refreshToken cookie. */
                     "Set-Cookie"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7543,91 +7948,45 @@ export interface operations {
                     "*/*": components["schemas"]["LoginAccountRDTO"];
                 };
             };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description Authentication is required. */
+            /** @description The refresh token is invalid. Please sign in again. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "The refresh token is invalid. Please sign in again.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "INVALID_REFRESH_TOKEN"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Required request security proof was rejected. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "REQUEST_SECURITY_REJECTED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7655,6 +8014,8 @@ export interface operations {
                 headers: {
                     /** @description Expires the browser-managed refreshToken cookie with Max-Age=0. */
                     "Set-Cookie"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7662,91 +8023,23 @@ export interface operations {
                     "*/*": string;
                 };
             };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description Authentication is required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Required request security proof was rejected. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "REQUEST_SECURITY_REJECTED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7781,6 +8074,8 @@ export interface operations {
                 headers: {
                     /** @description Sets the browser-managed refreshToken cookie to establish the authentication session. */
                     "Set-Cookie"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7792,91 +8087,58 @@ export interface operations {
                     "*/*": components["schemas"]["LoginAccountRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description The supplied credentials are invalid. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "The supplied credentials are invalid.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "INVALID_CREDENTIALS"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Required request security proof was rejected. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "REQUEST_SECURITY_REJECTED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7898,6 +8160,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -7916,73 +8180,85 @@ export interface operations {
                     "*/*": components["schemas"]["AccountRolesRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Account not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Account",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7991,6 +8267,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8032,6 +8312,8 @@ export interface operations {
             /** @description Created */
             201: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8064,73 +8346,76 @@ export interface operations {
                     "*/*": components["schemas"]["AccountRoleRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Possible codes: ACCESS_DENIED, FORBIDDEN_OPERATION. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8139,6 +8424,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8176,9 +8465,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
-                 *           "value": "Synthetic Member",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "displayName"
+                 *           "field": "displayName",
+                 *           "value": "Synthetic Member"
                  *         }
                  *       ]
                  *     }
@@ -8190,6 +8479,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8223,82 +8514,60 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseAccountRDTO"];
                 };
             };
-            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER. */
+            /** @description Possible codes: MALFORMED_JSON, VALIDATION_ERROR, INVALID_SEARCH_FILTER, INVALID_PARAMETER_TYPE. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8330,77 +8599,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8409,6 +8692,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8440,77 +8727,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8519,6 +8820,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8550,77 +8855,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8629,6 +8948,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8669,77 +8992,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8748,6 +9085,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8788,77 +9129,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8867,6 +9222,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -8908,77 +9267,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8987,6 +9360,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9029,77 +9406,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9108,6 +9499,10 @@ export interface operations {
             /** @description Possible codes: ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED, ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER. Completion requires an explicit authorized overwrite choice when values recorded after the form was signed would be replaced, and rejects a source form that is older than the current form-backed profile source. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9116,8 +9511,8 @@ export interface operations {
                      *       "message": "Possible codes: ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED, ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER. Completion requires an explicit authorized overwrite choice when values recorded after the form was signed would be replaced, and rejects a source form that is older than the current form-backed profile source.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
-                     *         "resource": "OratorianoForm"
+                     *         "resource": "OratorianoForm",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED"
@@ -9151,6 +9546,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9182,73 +9579,85 @@ export interface operations {
                     "*/*": components["schemas"]["MembershipSolicitationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9257,6 +9666,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9297,6 +9710,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9328,73 +9743,85 @@ export interface operations {
                     "*/*": components["schemas"]["MembershipSolicitationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9403,6 +9830,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9443,77 +9874,91 @@ export interface operations {
             /** @description Oratorio Coordinator designation revoked */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9522,6 +9967,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9562,77 +10011,91 @@ export interface operations {
             /** @description Oratorio Coordinator designation granted */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9641,6 +10104,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9681,77 +10148,91 @@ export interface operations {
             /** @description Coordinator designation revoked */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9760,6 +10241,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9800,77 +10285,91 @@ export interface operations {
             /** @description Coordinator designation granted */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9879,6 +10378,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -9919,77 +10422,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9998,6 +10515,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10038,77 +10559,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10117,6 +10652,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10158,6 +10697,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10168,6 +10709,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -10194,73 +10737,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10269,6 +10824,10 @@ export interface operations {
             /** @description Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10277,9 +10836,9 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED"
+                     *         "currentStatus": "SCHEDULED",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
@@ -10304,6 +10863,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10314,6 +10875,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -10340,73 +10903,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10415,6 +10990,10 @@ export interface operations {
             /** @description Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10423,9 +11002,9 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED"
+                     *         "currentStatus": "SCHEDULED",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
@@ -10450,6 +11029,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10460,6 +11041,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -10486,73 +11069,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10561,6 +11156,10 @@ export interface operations {
             /** @description Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10569,9 +11168,9 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED"
+                     *         "currentStatus": "SCHEDULED",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
@@ -10605,6 +11204,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10615,6 +11216,8 @@ export interface operations {
                      *       "description": "Synthetic GAM value",
                      *       "gamLocation": {
                      *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "code": null,
+                     *         "systemManaged": false,
                      *         "name": "Synthetic GAM value",
                      *         "street": "Synthetic GAM value",
                      *         "city": "Synthetic GAM value",
@@ -10641,73 +11244,85 @@ export interface operations {
                     "*/*": components["schemas"]["EventRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10716,6 +11331,10 @@ export interface operations {
             /** @description Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10724,9 +11343,9 @@ export interface operations {
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED"
+                     *         "currentStatus": "SCHEDULED",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
@@ -10752,6 +11371,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10779,73 +11400,85 @@ export interface operations {
                     "*/*": components["schemas"]["PresenceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10854,6 +11487,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10895,77 +11532,91 @@ export interface operations {
             /** @description Presence removed */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10974,6 +11625,10 @@ export interface operations {
             /** @description Removal is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -10982,9 +11637,9 @@ export interface operations {
                      *       "message": "Removal is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "status": "LOCKED",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "PRESENCE_REMOVAL_NOT_ALLOWED"
@@ -11019,6 +11674,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11046,73 +11703,85 @@ export interface operations {
                     "*/*": components["schemas"]["PresenceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11121,6 +11790,10 @@ export interface operations {
             /** @description Editing is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11129,9 +11802,9 @@ export interface operations {
                      *       "message": "Editing is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "status": "LOCKED",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
                      *       },
                      *       "status": 409,
                      *       "code": "PRESENCE_EDIT_NOT_ALLOWED"
@@ -11166,77 +11839,82 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description Possible codes: ACCESS_DENIED, FORBIDDEN_OPERATION. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11245,6 +11923,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11277,6 +11959,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11295,55 +11979,60 @@ export interface operations {
                     "*/*": components["schemas"]["RolesRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11365,6 +12054,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11379,91 +12070,85 @@ export interface operations {
                     "*/*": components["schemas"]["RoleRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Public path-parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Role not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Role not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Role",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11485,6 +12170,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11504,73 +12191,85 @@ export interface operations {
                     "*/*": components["schemas"]["GetRolePermissionsRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Role not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Role not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Role",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11579,6 +12278,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11610,6 +12313,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11625,73 +12330,85 @@ export interface operations {
                     "*/*": components["schemas"]["PermissionRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Permission not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Permission not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Permission",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11700,6 +12417,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11731,6 +12452,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11743,6 +12466,8 @@ export interface operations {
                      *         "description": "Synthetic GAM value",
                      *         "gamLocation": {
                      *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "code": null,
+                     *           "systemManaged": false,
                      *           "name": "Synthetic GAM value",
                      *           "street": "Synthetic GAM value",
                      *           "city": "Synthetic GAM value",
@@ -11797,73 +12522,85 @@ export interface operations {
                     "*/*": components["schemas"]["OratorioRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11872,6 +12609,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -11912,77 +12653,91 @@ export interface operations {
             /** @description No content */
             204: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content?: never;
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11991,6 +12746,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12022,6 +12781,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12058,73 +12819,85 @@ export interface operations {
                     "*/*": components["schemas"]["PresentSummaryRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12133,6 +12906,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12167,6 +12944,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12205,73 +12984,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseRosterEntryRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12280,6 +13071,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12314,6 +13109,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12352,73 +13149,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseRosterEntryRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12427,6 +13236,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12460,6 +13273,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12467,73 +13282,85 @@ export interface operations {
                     "*/*": string;
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12542,6 +13369,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12575,6 +13406,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12582,73 +13415,85 @@ export interface operations {
                     "application/pdf": string;
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12657,6 +13502,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12691,6 +13540,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12714,73 +13565,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponseAttendanceHistoryItemRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12789,6 +13652,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12823,6 +13690,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12839,91 +13708,85 @@ export interface operations {
                     "application/json": components["schemas"]["AttendanceSummaryRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Query validation or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Resource not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Resource",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12945,6 +13808,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -12976,73 +13841,85 @@ export interface operations {
                     "*/*": components["schemas"]["MembershipSolicitationRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description MembershipSolicitation not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "MembershipSolicitation not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "MembershipSolicitation",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13051,6 +13928,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13089,6 +13970,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13126,73 +14009,85 @@ export interface operations {
                     "*/*": components["schemas"]["PagedResponsePresenceRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Member not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Member not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Member",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13201,6 +14096,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13232,6 +14131,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13253,73 +14154,85 @@ export interface operations {
                     "*/*": components["schemas"]["MemberRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Member not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Member not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Member",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13328,6 +14241,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13361,6 +14278,8 @@ export interface operations {
                 headers: {
                     /** @description Prevents storage of the CSRF bootstrap response. */
                     "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     /** @description Host-only XSRF-TOKEN cookie using SameSite=Lax and Path=/api/auth. */
                     "Set-Cookie"?: string;
                     [name: string]: unknown;
@@ -13375,96 +14294,6 @@ export interface operations {
                     "application/json": components["schemas"]["CsrfBootstrapRDTO"];
                 };
             };
-            /** @description Invalid request */
-            400: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description Authentication is required. */
-            401: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "Authentication is required.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The authenticated account is not allowed to perform this operation. */
-            403: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 403,
-                     *       "code": "FORBIDDEN"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The requested resource was not found. */
-            404: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The requested resource was not found.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 404,
-                     *       "code": "NOT_FOUND"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
-            /** @description The request conflicts with the current resource state. */
-            409: {
-                headers: {
-                    [name: string]: unknown;
-                };
-                content: {
-                    /**
-                     * @example {
-                     *       "message": "The request conflicts with the current resource state.",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
-                     *     }
-                     */
-                    "application/json": components["schemas"]["ApiErrorDTO"];
-                };
-            };
         };
     };
     getAccount: {
@@ -13472,7 +14301,7 @@ export interface operations {
             query?: never;
             header?: never;
             path: {
-                id: string;
+                accountId: string;
             };
             cookie?: never;
         };
@@ -13481,6 +14310,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13504,73 +14335,85 @@ export interface operations {
                     "*/*": components["schemas"]["AccountRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Account not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Account",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13579,6 +14422,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13611,6 +14458,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13643,73 +14492,85 @@ export interface operations {
                     "*/*": components["schemas"]["AccountRoleRDTO"];
                 };
             };
-            /** @description Invalid request */
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
             400: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
-                    /**
-                     * @example {
-                     *       "message": "Invalid request",
-                     *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
-                     *       "status": 400,
-                     *       "code": "INVALID_REQUEST"
-                     *     }
-                     */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The authenticated account is not allowed to perform this operation. */
+            /** @description The authenticated Account lacks authority for this operation. */
             403: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The authenticated account is not allowed to perform this operation.",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 403,
-                     *       "code": "FORBIDDEN"
+                     *       "code": "ACCESS_DENIED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
                 };
             };
-            /** @description The requested resource was not found. */
+            /** @description Account not found with the supplied identifier. */
             404: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "The requested resource was not found.",
+                     *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
-                     *       "details": {},
+                     *       "details": {
+                     *         "resource": "Account",
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *       },
                      *       "status": 404,
-                     *       "code": "NOT_FOUND"
+                     *       "code": "RESOURCE_NOT_FOUND"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13718,6 +14579,10 @@ export interface operations {
             /** @description The request conflicts with the current resource state. */
             409: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13747,6 +14612,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
@@ -13772,19 +14639,25 @@ export interface operations {
                     "application/json": components["schemas"]["CurrentAccountContextRDTO"];
                 };
             };
-            /** @description Authentication is required. */
+            /** @description Bearer authentication is required. */
             401: {
                 headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
                     [name: string]: unknown;
                 };
                 content: {
                     /**
                      * @example {
-                     *       "message": "Authentication is required.",
+                     *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
                      *       "status": 401,
-                     *       "code": "UNAUTHORIZED"
+                     *       "code": "AUTHENTICATION_REQUIRED"
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];

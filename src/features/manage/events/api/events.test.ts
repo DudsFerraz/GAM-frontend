@@ -77,6 +77,41 @@ describe('events API', () => {
     })
   })
 
+  it('serializa o intervalo inclusivo da data de início', async () => {
+    apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await searchEvents({
+      filters: {
+        beginDateFrom: '2026-08-02T03:00:00.000Z',
+        beginDateTo: '2026-08-03T02:59:59.999Z',
+        title: '',
+        status: 'ALL',
+        type: 'ORATORIO',
+      },
+      sorts: [],
+    }, 0)
+
+    expect(apiMocks.post.mock.calls[0]?.[1]).toEqual({
+      filters: [
+        {
+          field: 'type',
+          value: 'ORATORIO',
+          comparisonMethod: 'EQUALS',
+        },
+        {
+          field: 'beginDate',
+          value: '2026-08-02T03:00:00.000Z',
+          comparisonMethod: 'GREATER_THAN_OR_EQUAL',
+        },
+        {
+          field: 'beginDate',
+          value: '2026-08-03T02:59:59.999Z',
+          comparisonMethod: 'LESS_THAN_OR_EQUAL',
+        },
+      ],
+    })
+  })
+
   it('retorna a representação completa do evento criado', async () => {
     const payload = {
       beginDate: '2026-07-25T18:00:00.000Z',

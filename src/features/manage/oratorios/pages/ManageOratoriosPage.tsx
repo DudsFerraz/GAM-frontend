@@ -35,7 +35,6 @@ import {
 } from '@/features/account'
 import {
   getEventStatusLabel,
-  useEvents,
 } from '@/features/manage/events'
 import { isForbiddenError } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
@@ -43,13 +42,14 @@ import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 import { CreateOratorioDialog } from '../components/CreateOratorioDialog'
 import {
   ORATORIO_SEARCH_CONFIG,
-  toEventSearch,
 } from '../../events/eventSearchConfig'
 import { formatOratorioDate } from '../presentation'
+import { toOratorioSearch } from '../oratorioSearch'
+import { useOratorioSearch } from '../hooks/useOratorioSearch'
 
 export function ManageOratoriosPage() {
   const [search, setSearch] = useState(() =>
-    toEventSearch([], [], 'ORATORIO'),
+    toOratorioSearch([], []),
   )
   const [page, setPage] = useState(0)
   const navigate = useNavigate()
@@ -64,12 +64,12 @@ export function ManageOratoriosPage() {
     canOpenCreate,
     false,
   )
-  const query = useEvents(search, page, canView && canSearch)
+  const query = useOratorioSearch(search, page, canView && canSearch)
   const items = query.data?.items ?? []
 
   const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     setPage(0)
-    setSearch(toEventSearch(filters, sorts, 'ORATORIO'))
+    setSearch(toOratorioSearch(filters, sorts))
   }
 
   if (!canView && canViewOratorianos) {
@@ -119,7 +119,7 @@ export function ManageOratoriosPage() {
           <div className="rounded-xl border bg-card p-4">
             <SearchAndFilter
               config={ORATORIO_SEARCH_CONFIG}
-              mainFilterField="title"
+              mainFilterField="beginDate"
               onSearch={handleSearch}
             />
           </div>

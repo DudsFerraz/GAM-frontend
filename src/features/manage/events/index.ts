@@ -7,8 +7,10 @@ export {
 } from './presentation'
 export { useEvents } from './hooks/useEvents'
 export { eventQueryKeys } from './queryKeys'
+export { searchEvents } from './api/events'
 export type {
   Event,
+  EventPage,
   EventFilters,
   EventSearch,
   EventStatus,
