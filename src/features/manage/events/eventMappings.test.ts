@@ -50,6 +50,7 @@ describe('mapeamento da edição de evento', () => {
       endDate: '2026-08-01T14:00:00.000Z',
       gamLocation: {
         city: 'Piracicaba',
+        code: null,
         countryCode: 'BR',
         id: validForm.locationId,
         latitude: null,
@@ -58,6 +59,7 @@ describe('mapeamento da edição de evento', () => {
         postalCode: null,
         state: 'SP',
         street: null,
+        systemManaged: false,
       },
       requiredPermission: {
         code: 'EVENT_GET_MEMBER',

@@ -32,6 +32,7 @@ const event = {
   endDate: '2026-08-08T23:37:00.000Z',
   gamLocation: {
     city: 'Piracicaba',
+    code: null,
     countryCode: 'BR',
     id: '650e8400-e29b-41d4-a716-446655440000',
     latitude: null,
@@ -40,6 +41,7 @@ const event = {
     postalCode: null,
     state: 'SP',
     street: null,
+    systemManaged: false,
   },
   id: '750e8400-e29b-41d4-a716-446655440000',
   requiredPermission: undefined,
