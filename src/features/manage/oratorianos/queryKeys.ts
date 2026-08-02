@@ -1,8 +1,10 @@
+import type { OratorianoSearch } from './api/oratorianos'
+
 export const oratorianoQueryKeys = {
   all: ['oratorianos'] as const,
   lists: () => [...oratorianoQueryKeys.all, 'list'] as const,
-  list: (name: string, page: number) =>
-    [...oratorianoQueryKeys.lists(), { name, page }] as const,
+  list: (search: OratorianoSearch, page: number) =>
+    [...oratorianoQueryKeys.lists(), { search, page }] as const,
   details: () => [...oratorianoQueryKeys.all, 'detail'] as const,
   detail: (oratorianoId: string) =>
     [...oratorianoQueryKeys.details(), oratorianoId] as const,

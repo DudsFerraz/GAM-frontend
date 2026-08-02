@@ -4,10 +4,9 @@ import {
   ChevronRight,
   Phone,
   Plus,
-  Search,
   UserRound,
 } from 'lucide-react'
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 
 import {
   EmptyState,
@@ -16,6 +15,11 @@ import {
   LoadingState,
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
+import {
+  SearchAndFilter,
+  type SearchFilter,
+  type SortCriteria,
+} from '@/components/SearchAndFilter'
 import { Button } from '@/components/ui/Button'
 import {
   Card,
@@ -24,8 +28,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/Card'
-import { Input } from '@/components/ui/Input'
-import { Label } from '@/components/ui/Label'
 import {
   useAccountInfo,
   useAccountPermissions,
@@ -36,6 +38,10 @@ import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 
 import { RegisterOratorianoDialog } from '../components/RegisterOratorianoDialog'
 import { OratorianoProfileNotice } from '../components/OratorianoProfileNotice'
+import {
+  ORATORIANO_SEARCH_CONFIG,
+  toOratorianoSearch,
+} from '../oratorianoSearchConfig'
 import { useOratorianos } from '../hooks/useOratorianos'
 import { getOratorianoFullName } from '../presentation'
 import {
@@ -52,8 +58,7 @@ export function ManageOratorianosPage({
   initialDeletionNotice?: boolean
   onNoticeDismiss?: () => void
 }) {
-  const [nameInput, setNameInput] = useState('')
-  const [name, setName] = useState('')
+  const [search, setSearch] = useState(() => toOratorianoSearch([], []))
   const [page, setPage] = useState(0)
   const initialProfileNotice = initialNotice
     ?? (initialDeletionNotice
@@ -70,13 +75,12 @@ export function ManageOratorianosPage({
     canOpenRegister,
     false,
   )
-  const query = useOratorianos(name, page, canView)
+  const query = useOratorianos(search, page, canView)
   const items = query.data?.items ?? []
 
-  const submitSearch = (event: FormEvent) => {
-    event.preventDefault()
+  const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     setPage(0)
-    setName(nameInput)
+    setSearch(toOratorianoSearch(filters, sorts))
   }
 
   if (!canView) {
@@ -107,24 +111,13 @@ export function ManageOratorianosPage({
         )}
       </div>
 
-      <form
-        className="flex flex-col gap-2 rounded-xl border bg-card p-4 sm:flex-row sm:items-end"
-        onSubmit={submitSearch}
-      >
-        <div className="flex-1">
-          <Label htmlFor="oratoriano-name">Nome</Label>
-          <Input
-            id="oratoriano-name"
-            onChange={(event) => setNameInput(event.target.value)}
-            placeholder="Buscar pelo nome completo"
-            value={nameInput}
-          />
-        </div>
-        <Button type="submit">
-          <Search aria-hidden="true" className="h-4 w-4" />
-          Buscar
-        </Button>
-      </form>
+      <div className="rounded-xl border bg-card p-4">
+        <SearchAndFilter
+          config={ORATORIANO_SEARCH_CONFIG}
+          mainFilterField="name"
+          onSearch={handleSearch}
+        />
+      </div>
 
       {initialProfileNotice && !isNoticeDismissed && (
         <OratorianoProfileNotice

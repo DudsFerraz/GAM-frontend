@@ -19,3 +19,4 @@ export {
   type RegisterOratorianoFormValues,
 } from './schemas/oratorianoSchemas'
 export type { Oratoriano } from './api/oratorianos'
+export type { OratorianoSearch } from './api/oratorianos'

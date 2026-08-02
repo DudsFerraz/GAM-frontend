@@ -1,4 +1,5 @@
 import type { components } from '@/api/generated/gam-api'
+import type { SearchFilter } from '@/components/SearchAndFilter'
 import { api } from '@/lib/http'
 
 export type Oratoriano = components['schemas']['OratorianoRDTO']
@@ -15,24 +16,48 @@ export type OratorianoAttendancePage =
 export type OratorianoAttendanceSummary =
   components['schemas']['AttendanceSummaryRDTO']
 
+export type OratorianoSearch = {
+  filters: SearchFilter[]
+  sorts: string[]
+}
+
+const ORATORIANO_SORT_FIELDS = ['oratorioYearAttendances'] as const
+
+function isSupportedOratorianoSort(value: string): boolean {
+  const [field, direction, ...rest] = value.split(',')
+  return (
+    rest.length === 0 &&
+    ORATORIANO_SORT_FIELDS.some((allowedField) => allowedField === field) &&
+    (direction === 'asc' || direction === 'desc')
+  )
+}
+
 export async function searchOratorianos(
-  name: string,
+  search: OratorianoSearch,
   page: number,
   size = 12,
 ): Promise<OratorianoPage> {
-  const normalizedName = name.trim()
-  const filters: components['schemas']['SpecificationFilterDTO'][] =
-    normalizedName
-      ? [{
-          field: 'name',
-          value: normalizedName,
-          comparisonMethod: 'LIKE',
-        }]
-      : []
+  const filters = search.filters.filter(
+    (filter) =>
+      filter.field === 'name' &&
+      filter.comparisonMethod === 'LIKE' &&
+      typeof filter.value === 'string' &&
+      filter.value.trim().length > 0,
+  ).map((filter) => ({
+    ...filter,
+    value: typeof filter.value === 'string' ? filter.value.trim() : filter.value,
+  }))
+  const requestedSorts = search.sorts.filter(isSupportedOratorianoSort)
   const { data } = await api.post<OratorianoPage>(
     '/oratorianos/search',
     { filters },
-    { params: { page, size } },
+    {
+      params: {
+        page,
+        size,
+        ...(requestedSorts.length > 0 ? { sort: requestedSorts } : {}),
+      },
+    },
   )
   return data
 }

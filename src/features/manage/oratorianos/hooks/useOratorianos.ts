@@ -15,17 +15,18 @@ import {
   searchOratorianos,
   type RegisterOratoriano,
   type ReplaceOratoriano,
+  type OratorianoSearch,
 } from '../api/oratorianos'
 import { oratorianoQueryKeys } from '../queryKeys'
 
 export function useOratorianos(
-  name: string,
+  search: OratorianoSearch,
   page: number,
   enabled = true,
 ) {
   return useQuery({
-    queryKey: oratorianoQueryKeys.list(name, page),
-    queryFn: () => searchOratorianos(name, page),
+    queryKey: oratorianoQueryKeys.list(search, page),
+    queryFn: () => searchOratorianos(search, page),
     enabled,
     placeholderData: keepPreviousData,
   })

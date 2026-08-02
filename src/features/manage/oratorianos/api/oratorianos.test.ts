@@ -23,10 +23,32 @@ beforeEach(() => {
 })
 
 describe('API de Oratorianos', () => {
+  it('envia somente a ordenação de frequência aceita pelo contrato', async () => {
+    apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await searchOratorianos({
+      filters: [],
+      sorts: ['oratorioYearAttendances,desc', 'name,asc'],
+    }, 1)
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/oratorianos/search',
+      { filters: [] },
+      { params: { page: 1, size: 12, sort: ['oratorioYearAttendances,desc'] } },
+    )
+  })
+
   it('busca por nome humano e usa paginação explícita', async () => {
     apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
 
-    await searchOratorianos('  Ana Souza  ', 2)
+    await searchOratorianos({
+      filters: [{
+        field: 'name',
+        value: '  Ana Souza  ',
+        comparisonMethod: 'LIKE',
+      }],
+      sorts: [],
+    }, 2)
 
     expect(apiMocks.post).toHaveBeenCalledWith(
       '/oratorianos/search',
