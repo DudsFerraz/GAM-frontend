@@ -1,4 +1,4 @@
-import type { FieldConfig } from './components/SearchAndFilter/types';
+import type { FieldConfig } from '@/components/SearchAndFilter'
 import { MEMBER_STATUS_LABELS } from './presentation'
 
 export const MEMBERS_FILTER_CONFIG: FieldConfig[] = [
@@ -35,10 +35,14 @@ export const MEMBERS_FILTER_CONFIG: FieldConfig[] = [
     label: 'Situação',
     inputType: 'select',
     options: [
-      { label: MEMBER_STATUS_LABELS.ACTIVE, value: 'ACTIVE' },
-      { label: MEMBER_STATUS_LABELS.INACTIVE, value: 'INACTIVE' },
+      { label: MEMBER_STATUS_LABELS.ACTIVE, value: ['ACTIVE'] },
+      { label: MEMBER_STATUS_LABELS.INACTIVE, value: ['INACTIVE'] },
+      {
+        label: 'Ativos e inativos',
+        value: ['ACTIVE', 'INACTIVE'],
+      },
     ],
-    allowedOperators: ['EQUALS'],
+    allowedOperators: ['IN'],
     sortable: true,
   },
   {

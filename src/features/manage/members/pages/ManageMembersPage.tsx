@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useNavigate } from '@tanstack/react-router'
 
@@ -6,37 +6,21 @@ import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
 import { Button } from '@/components/ui/Button'
 import { useAccountInfo, useAccountPermissions } from '@/features/account'
+import {
+  SearchAndFilter,
+  type SearchFilter,
+  type SortCriteria,
+} from '@/components/SearchAndFilter'
 
 import { MemberCard } from '../components/MemberCard'
 import { MemberDetailsDialog } from '../components/MemberDetailsDialog'
 import { RegisterMemberDialog } from '../components/RegisterMemberDialog'
-import { SearchAndFilter } from '../components/SearchAndFilter'
-import type { SortCriteria } from '../components/SearchAndFilter/types'
 import { useSearchMembers } from '../hooks/useSearchMembers'
 import { MEMBERS_FILTER_CONFIG } from '../memberSearchConfig'
-import type {
-  MemberListItem,
-  PageParams,
-  SpecificationFilter,
-} from '../types'
-
-const SHOW_INACTIVE_STORAGE_KEY = 'gam:manage-members:show-inactive'
-
-function readShowInactivePreference(): boolean {
-  if (typeof window === 'undefined') {
-    return false
-  }
-
-  try {
-    return window.localStorage.getItem(SHOW_INACTIVE_STORAGE_KEY) === 'true'
-  } catch {
-    return false
-  }
-}
+import type { MemberListItem, PageParams } from '../types'
 
 export function ManageMembersPage() {
-  const [filters, setFilters] = useState<SpecificationFilter[]>([])
-  const [showInactive, setShowInactive] = useState(readShowInactivePreference)
+  const [filters, setFilters] = useState<SearchFilter[]>([])
   const [pageParams, setPageParams] = useState<PageParams>({
     page: 0,
     size: 12,
@@ -51,21 +35,13 @@ export function ManageMembersPage() {
   const canManageMemberTransitions = permissions.includes('MEMBER_ACTIVATION')
   const canCreateMember = permissions.includes('MEMBER_MANAGE') && permissions.includes('ACCOUNT_SEARCH')
 
-  useEffect(() => {
-    try {
-      window.localStorage.setItem(SHOW_INACTIVE_STORAGE_KEY, String(showInactive))
-    } catch {
-      // A preferência local não deve impedir a busca de membros.
-    }
-  }, [showInactive])
-
   const { data, isLoading, isError, refetch } = useSearchMembers({
     filters,
     pageParams,
-    showInactive,
+    showInactive: false,
   })
 
-  const handleSearch = (filters: SpecificationFilter[], sorts: SortCriteria[]) => {
+  const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     const apiSorts = sorts.map((sort) => `${sort.field},${sort.direction.toLowerCase()}`)
     setFilters(filters)
     setPageParams((previous) => ({ ...previous, page: 0, sort: apiSorts }))
@@ -73,11 +49,6 @@ export function ManageMembersPage() {
 
   const handlePageChange = (page: number) => {
     setPageParams((previous) => ({ ...previous, page }))
-  }
-
-  const handleShowInactiveChange = (nextShowInactive: boolean) => {
-    setShowInactive(nextShowInactive)
-    setPageParams((previous) => ({ ...previous, page: 0 }))
   }
 
   return (
@@ -100,8 +71,6 @@ export function ManageMembersPage() {
           config={MEMBERS_FILTER_CONFIG}
           mainFilterField="name"
           onSearch={handleSearch}
-          onShowInactiveChange={handleShowInactiveChange}
-          showInactive={showInactive}
         />
       </div>
 

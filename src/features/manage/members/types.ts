@@ -1,4 +1,4 @@
-import type { components } from '@/api/generated/gam-api'
+import type { SearchFilter as SharedSearchFilter } from '@/components/SearchAndFilter'
 
 export type PageParams = {
   page?: number
@@ -6,15 +6,9 @@ export type PageParams = {
   sort?: string[]
 }
 
-export type SearchFilter = NonNullable<
-  components['schemas']['SearchDTO']['filters']
->[number]
-
+export type SearchFilter = SharedSearchFilter
 export type ComparisonMethod = SearchFilter['comparisonMethod']
-
-export type SpecificationFilter = SearchFilter & {
-  value: string
-}
+export type SpecificationFilter = SearchFilter
 
 export type MemberListItem = {
   id: string
