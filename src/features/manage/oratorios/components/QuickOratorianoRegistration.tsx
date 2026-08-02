@@ -211,6 +211,7 @@ export function QuickOratorianoRegistration({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={(event) => {
               event.preventDefault()
               void checkName()
@@ -221,7 +222,7 @@ export function QuickOratorianoRegistration({
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
                       <Input
@@ -239,7 +240,7 @@ export function QuickOratorianoRegistration({
                 control={form.control}
                 name="surname"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Sobrenome completo</FormLabel>
                     <FormControl>
                       <Input

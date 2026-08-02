@@ -92,16 +92,16 @@ export function RegisterMemberDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="accountId"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem className="sm:col-span-2" required>
                     <FormLabel>Conta</FormLabel>
-                    <FormControl>
-                      <div className="space-y-3 rounded-lg border p-3">
+                    <FormControl nativeRequired={false}>
+                      <div className="space-y-3 rounded-lg border p-3" role="group">
                         <Input
                           onChange={(event) => setAccountSearch(event.target.value)}
                           placeholder="Busque a conta pelo nome"
@@ -164,7 +164,7 @@ export function RegisterMemberDialog({
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Nome</FormLabel>
                     <FormControl><Input autoComplete="given-name" {...field} /></FormControl>
                     <FormMessage />
@@ -175,7 +175,7 @@ export function RegisterMemberDialog({
                 control={form.control}
                 name="surname"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Sobrenome</FormLabel>
                     <FormControl><Input autoComplete="family-name" {...field} /></FormControl>
                     <FormMessage />
@@ -186,7 +186,7 @@ export function RegisterMemberDialog({
                 control={form.control}
                 name="birthDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Data de nascimento</FormLabel>
                     <FormControl><Input max={new Date().toISOString().slice(0, 10)} type="date" {...field} /></FormControl>
                     <FormMessage />
@@ -197,7 +197,7 @@ export function RegisterMemberDialog({
                 control={form.control}
                 name="phoneNumber"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Telefone</FormLabel>
                     <FormControl><Input autoComplete="tel" placeholder="+5519999999999" {...field} /></FormControl>
                     <FormMessage />
@@ -208,7 +208,7 @@ export function RegisterMemberDialog({
                 control={form.control}
                 name="reason"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem className="sm:col-span-2" required>
                     <FormLabel>Motivo do cadastro</FormLabel>
                     <FormControl><Textarea maxLength={2000} {...field} /></FormControl>
                     <FormMessage />

@@ -313,13 +313,14 @@ function ReasonLifecycleDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(submit)}
           >
             <FormField
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo</FormLabel>
                   <FormControl>
                     <Textarea maxLength={2000} {...field} />

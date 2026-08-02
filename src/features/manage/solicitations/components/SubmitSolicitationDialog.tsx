@@ -43,13 +43,13 @@ export function SubmitSolicitationDialog({ open, onOpenChange }: Props) {
           <DialogDescription>Envie seus dados para análise da coordenação. O envio não concede a participação como membro automaticamente.</DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(handleSubmit)}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit(handleSubmit)}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <FormField control={form.control} name="firstName" render={({ field }) => <FormItem><FormLabel>Nome</FormLabel><FormControl><Input autoComplete="given-name" {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="surname" render={({ field }) => <FormItem><FormLabel>Sobrenome</FormLabel><FormControl><Input autoComplete="family-name" {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="birthDate" render={({ field }) => <FormItem><FormLabel>Data de nascimento</FormLabel><FormControl><Input max={new Date().toISOString().slice(0, 10)} type="date" {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="phoneNumber" render={({ field }) => <FormItem><FormLabel>Telefone</FormLabel><FormControl><BrazilianPhoneInput name={field.name} onAccept={field.onChange} onBlur={field.onBlur} ref={field.ref} value={field.value} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="justification" render={({ field }) => <FormItem className="sm:col-span-2"><FormLabel>Por que deseja participar?</FormLabel><FormControl><Textarea maxLength={2000} {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="firstName" render={({ field }) => <FormItem required><FormLabel>Nome</FormLabel><FormControl><Input autoComplete="given-name" {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="surname" render={({ field }) => <FormItem required><FormLabel>Sobrenome</FormLabel><FormControl><Input autoComplete="family-name" {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="birthDate" render={({ field }) => <FormItem required><FormLabel>Data de nascimento</FormLabel><FormControl><Input max={new Date().toISOString().slice(0, 10)} type="date" {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="phoneNumber" render={({ field }) => <FormItem required><FormLabel>Telefone</FormLabel><FormControl><BrazilianPhoneInput name={field.name} onAccept={field.onChange} onBlur={field.onBlur} ref={field.ref} value={field.value} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="justification" render={({ field }) => <FormItem className="sm:col-span-2" required><FormLabel>Por que deseja participar?</FormLabel><FormControl><Textarea maxLength={2000} {...field} /></FormControl><FormMessage /></FormItem>} />
             </div>
             {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível enviar a solicitação.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
             <DialogFooter><Button onClick={() => changeOpen(false)} type="button" variant="outline">Cancelar</Button><Button disabled={mutation.isPending} type="submit">{mutation.isPending ? 'Enviando...' : 'Enviar solicitação'}</Button></DialogFooter>

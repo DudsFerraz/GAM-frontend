@@ -5,7 +5,11 @@ import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
 import { Controller, FormProvider, useFormContext, useFormState, type ControllerProps, type FieldPath, type FieldValues } from "react-hook-form"
 import { cn } from "@/lib/utils"
-import { Label } from "@/components/ui/Label"
+import {
+  Label,
+  RequiredDescription,
+  RequiredIndicator,
+} from "@/components/ui/Label"
 import { AlertCircle } from "lucide-react"
 
 const Form = FormProvider
@@ -53,23 +57,30 @@ const useFormField = () => {
     formItemId: `${id}-form-item`,
     formDescriptionId: `${id}-form-item-description`,
     formMessageId: `${id}-form-item-message`,
+    formRequiredDescriptionId: `${id}-form-item-required-description`,
+    required: itemContext.required,
     ...fieldState,
   }
 }
 
 type FormItemContextValue = {
   id: string
+  required: boolean
 }
 
 const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
+  { id: "", required: false }
 )
 
-function FormItem({ className, ...props }: React.ComponentProps<"div">) {
+function FormItem({
+  className,
+  required = false,
+  ...props
+}: React.ComponentProps<"div"> & { required?: boolean }) {
   const id = React.useId()
 
   return (
-    <FormItemContext.Provider value={{ id }}>
+    <FormItemContext.Provider value={{ id, required }}>
       <div
         data-slot="form-item"
         className={cn("grid gap-2", className)}
@@ -80,37 +91,81 @@ function FormItem({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function FormLabel({
+  children,
   className,
   ...props
 }: React.ComponentProps<typeof LabelPrimitive.Root>) {
-  const { error, formItemId } = useFormField()
-
+  const {
+    error,
+    formItemId,
+    formRequiredDescriptionId,
+    required,
+  } = useFormField()
   return (
-    <Label
-      data-slot="form-label"
-      data-error={!!error}
-      className={cn("data-[error=true]:text-red-600 text-muted-foreground", className)}
-      htmlFor={formItemId}
-      {...props}
-    />
+    <>
+      <Label
+        data-slot="form-label"
+        data-error={!!error}
+        className={cn("data-[error=true]:text-red-600 text-muted-foreground", className)}
+        htmlFor={formItemId}
+        required={required}
+        {...props}
+      >
+        {children}
+      </Label>
+      {required && <RequiredDescription id={formRequiredDescriptionId} />}
+    </>
   )
 }
 
-function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField()
+function FormControl({
+  nativeRequired = true,
+  ...props
+}: React.ComponentProps<typeof Slot> & { nativeRequired?: boolean }) {
+  const {
+    error,
+    formDescriptionId,
+    formItemId,
+    formMessageId,
+    formRequiredDescriptionId,
+    required,
+  } = useFormField()
+  const requiredProps = {
+    'aria-required': required || undefined,
+    required: required && nativeRequired ? true : undefined,
+  }
 
   return (
     <Slot
       data-slot="form-control"
       id={formItemId}
       aria-describedby={
-        !error
-          ? `${formDescriptionId}`
-          : `${formDescriptionId} ${formMessageId}`
+        [
+          formDescriptionId,
+          required ? formRequiredDescriptionId : null,
+          error ? formMessageId : null,
+        ].filter(Boolean).join(' ')
       }
       aria-invalid={!!error}
+      {...requiredProps}
       {...props}
     />
+  )
+}
+
+function FormLegend({
+  children,
+  className,
+  ...props
+}: React.ComponentProps<"legend">) {
+  const { required } = useFormField()
+
+  return (
+    <legend className={className} {...props}>
+      {children}
+      {required && <RequiredIndicator />}
+      {required && <RequiredDescription />}
+    </legend>
   )
 }
 
@@ -152,6 +207,7 @@ export {
   Form,
   FormItem,
   FormLabel,
+  FormLegend,
   FormControl,
   FormDescription,
   FormMessage,

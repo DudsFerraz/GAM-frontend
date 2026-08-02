@@ -23,7 +23,7 @@ export function CreateLocationDialog({ open, onOpenChange, onCreated }: Props) {
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader><DialogTitle>Novo local</DialogTitle><DialogDescription>Cadastre um local que poderá ser associado a eventos.</DialogDescription></DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate(toLocationMutationPayload(values), { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }))}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate(toLocationMutationPayload(values), { onSuccess: (created) => created.id ? onCreated(created.id) : changeOpen(false) }))}>
             <LocationFormFields form={form} />
             {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível criar o local.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
             <DialogFooter><Button onClick={() => changeOpen(false)} type="button" variant="outline">Cancelar</Button><Button disabled={mutation.isPending} type="submit">{mutation.isPending ? 'Criando...' : 'Criar local'}</Button></DialogFooter>

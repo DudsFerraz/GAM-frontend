@@ -121,6 +121,7 @@ export function AccountCoordinatorTransitionSection({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason }) => {
               coordinatorMutation.mutate(
                 { memberId: member.id, action, reason },
@@ -143,7 +144,7 @@ export function AccountCoordinatorTransitionSection({
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo da alteração</FormLabel>
                   <FormControl>
                     <Input

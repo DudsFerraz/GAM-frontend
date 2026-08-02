@@ -121,6 +121,7 @@ export function DeleteOratorianoFormDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason: normalizedReason }) => {
               onDelete({ reason: normalizedReason })
             })}
@@ -129,7 +130,7 @@ export function DeleteOratorianoFormDialog({
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo da exclusão</FormLabel>
                   <FormControl>
                     <Textarea

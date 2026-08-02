@@ -46,8 +46,8 @@ export function SolicitationDetailsDialog({ id, canReview, onClose }: Props) {
             </dl>
             {canReview && solicitation.status === 'PENDING' && (
               <Form {...form}>
-                <form className="space-y-4 border-t pt-4" onSubmit={(event) => event.preventDefault()}>
-                  <FormField control={form.control} name="reason" render={({ field }) => <FormItem><FormLabel>Motivo da decisão</FormLabel><FormControl><Textarea maxLength={2000} {...field} /></FormControl><FormMessage /></FormItem>} />
+                <form className="space-y-4 border-t pt-4" noValidate onSubmit={(event) => event.preventDefault()}>
+                  <FormField control={form.control} name="reason" render={({ field }) => <FormItem required><FormLabel>Motivo da decisão</FormLabel><FormControl><Textarea maxLength={2000} {...field} /></FormControl><FormMessage /></FormItem>} />
                   {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível registrar a decisão.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
                   <DialogFooter>
                     <Button disabled={mutation.isPending} onClick={form.handleSubmit(({ reason }) => mutation.mutate({ id, decision: 'reject', reason }))} type="button" variant="destructive">Rejeitar</Button>

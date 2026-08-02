@@ -57,7 +57,7 @@ export function EditLocationDialog({ location, onOpenChange, open }: EditLocatio
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-2xl">
         <DialogHeader><DialogTitle>Editar local</DialogTitle><DialogDescription>Atualize os dados compartilhados deste local.</DialogDescription></DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit((values) => mutation.mutate({ locationId: location.id, payload: toLocationMutationPayload(values) }, { onSuccess: () => changeOpen(false) }))}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit((values) => mutation.mutate({ locationId: location.id, payload: toLocationMutationPayload(values) }, { onSuccess: () => changeOpen(false) }))}>
             <LocationFormFields form={form} />
             {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível atualizar o local.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
             <DialogFooter><Button onClick={() => changeOpen(false)} type="button" variant="outline">Cancelar</Button><Button disabled={mutation.isPending} type="submit">{mutation.isPending ? 'Salvando...' : 'Salvar alterações'}</Button></DialogFooter>

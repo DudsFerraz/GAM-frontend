@@ -36,8 +36,8 @@ export function RemoveLocationDialog({ location, onOpenChange, onRemoved, open }
       <DialogContent>
         <DialogHeader><DialogTitle>Remover local</DialogTitle><DialogDescription>Esta ação remove o local do uso futuro. Locais associados a eventos não podem ser removidos.</DialogDescription></DialogHeader>
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(({ reason }) => mutation.mutate({ locationId: location.id, reason }, { onSuccess: () => { changeOpen(false); onRemoved() } }))}>
-            <FormField control={form.control} name="reason" render={({ field }) => <FormItem><FormLabel>Motivo da remoção</FormLabel><FormControl><Textarea maxLength={2000} placeholder="Descreva o motivo da remoção" {...field} /></FormControl><FormMessage /></FormItem>} />
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit(({ reason }) => mutation.mutate({ locationId: location.id, reason }, { onSuccess: () => { changeOpen(false); onRemoved() } }))}>
+            <FormField control={form.control} name="reason" render={({ field }) => <FormItem required><FormLabel>Motivo da remoção</FormLabel><FormControl><Textarea maxLength={2000} placeholder="Descreva o motivo da remoção" {...field} /></FormControl><FormMessage /></FormItem>} />
             {mutation.isError && <Alert variant="destructive"><AlertTitle>Não foi possível remover o local.</AlertTitle><AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription></Alert>}
             <DialogFooter><Button onClick={() => changeOpen(false)} type="button" variant="outline">Cancelar</Button><Button disabled={mutation.isPending} type="submit" variant="destructive">{mutation.isPending ? 'Removendo...' : 'Confirmar remoção'}</Button></DialogFooter>
           </form>

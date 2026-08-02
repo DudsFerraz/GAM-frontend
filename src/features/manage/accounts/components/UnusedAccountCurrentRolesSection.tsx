@@ -92,6 +92,7 @@ export function UnusedAccountCurrentRolesSection({
                   <Form {...dropForm}>
                     <form
                       className="mt-3 space-y-3 border-t pt-3"
+                      noValidate
                       onSubmit={dropForm.handleSubmit(({ reason }) => {
                         dropMutation.mutate(
                           { roleId: role.id, reason },
@@ -108,7 +109,7 @@ export function UnusedAccountCurrentRolesSection({
                         control={dropForm.control}
                         name="reason"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem required>
                             <FormLabel>Motivo da remoção</FormLabel>
                             <FormControl>
                               <Textarea maxLength={2000} {...field} />

@@ -123,12 +123,13 @@ export function RegisterPresenceDialog({
         )}
 
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(submit)}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit(submit)}>
             {canSearchMembers && (
               <MemberSearchPicker
                 includeInactive={canViewInactiveMembers}
                 onSelectionClear={clearSelectedMember}
                 onSelect={selectMember}
+                required={canSearchMembers}
                 selectedMemberId={selectedMember?.id}
               />
             )}
@@ -136,7 +137,7 @@ export function RegisterPresenceDialog({
               control={form.control}
               name="memberId"
               render={() => (
-                <FormItem>
+                <FormItem required>
                   <FormMessage />
                 </FormItem>
               )}

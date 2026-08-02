@@ -66,6 +66,7 @@ export function RegisterOratorianoDialog({
         <Form {...form}>
           <form
             className="space-y-5"
+            noValidate
             onSubmit={form.handleSubmit((values) =>
               mutation.mutate(values, {
                 onSuccess: (oratoriano) => {
@@ -83,7 +84,7 @@ export function RegisterOratorianoDialog({
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
                       <Input
@@ -100,7 +101,7 @@ export function RegisterOratorianoDialog({
                 control={form.control}
                 name="surname"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Sobrenome completo</FormLabel>
                     <FormControl>
                       <Input

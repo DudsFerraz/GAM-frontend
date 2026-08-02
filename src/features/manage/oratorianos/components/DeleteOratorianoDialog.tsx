@@ -103,6 +103,7 @@ export function DeleteOratorianoDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason: normalizedReason }) => {
               mutation.mutate(
                 {
@@ -122,7 +123,7 @@ export function DeleteOratorianoDialog({
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo da exclusão</FormLabel>
                   <FormControl>
                     <Textarea

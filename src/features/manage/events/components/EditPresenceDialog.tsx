@@ -68,6 +68,7 @@ export function EditPresenceDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ observations }) => mutation.mutate(
               {
                 eventId,

@@ -75,7 +75,7 @@ Use the backend OpenAPI document URL, not `http://localhost:5173/api`: `/api` on
 
 ## User-facing presentation workflow
 
-Before rendering response data, classify it using the [user-facing language and presentation boundary](user-facing-language.md). Contract enums, roles, permissions, backend catalog text, error envelopes, and identifiers are not UI copy. Add or update the owning feature's typed presentation map, retain the raw value for requests and capability checks, and use a neutral Portuguese fallback for unexpected runtime values. Form schemas must provide explicit Portuguese validation messages rather than relying on library defaults.
+Before rendering response data, classify it using the [user-facing language and presentation boundary](user-facing-language.md). Contract enums, roles, permissions, backend catalog text, error envelopes, and identifiers are not UI copy. Add or update the owning feature's typed presentation map, retain the raw value for requests and capability checks, and use a neutral Portuguese fallback for unexpected runtime values. Form schemas must provide explicit Portuguese validation messages rather than relying on library defaults. Mark schema-required fields with the shared `FormItem required` convention; leave search and filter fields unmarked when empty input is valid, and preserve `noValidate` on forms whose validation belongs to Zod/RHF.
 
 ## Typography and visual identity
 

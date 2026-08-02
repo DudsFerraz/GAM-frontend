@@ -67,6 +67,7 @@ export function CreateOratorioDialog({
         <Form {...form}>
           <form
             className="space-y-5"
+            noValidate
             onSubmit={form.handleSubmit((values) =>
               mutation.mutate(values, {
                 onSuccess: (created) => {
@@ -83,7 +84,7 @@ export function CreateOratorioDialog({
               control={form.control}
               name="date"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Data do Oratório</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />

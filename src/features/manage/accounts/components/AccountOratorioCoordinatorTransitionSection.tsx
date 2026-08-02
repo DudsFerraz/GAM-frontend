@@ -172,6 +172,7 @@ export function AccountOratorioCoordinatorTransitionSection({
           <Form {...form}>
             <form
               className="space-y-4"
+              noValidate
               onSubmit={form.handleSubmit(({ reason }) => {
                 coordinatorMutation.mutate(
                   {
@@ -197,7 +198,7 @@ export function AccountOratorioCoordinatorTransitionSection({
                 control={form.control}
                 name="reason"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Motivo da alteração</FormLabel>
                     <FormControl>
                       <Textarea

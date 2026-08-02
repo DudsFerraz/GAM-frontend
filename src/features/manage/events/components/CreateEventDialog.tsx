@@ -82,6 +82,7 @@ export function CreateEventDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit((values) =>
               mutation.mutate(mapEventFormToCreateEvent(values), {
                 onSuccess: (created) =>
@@ -94,7 +95,7 @@ export function CreateEventDialog({
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem className="sm:col-span-2" required>
                     <FormLabel>Título</FormLabel>
                     <FormControl>
                       <Input maxLength={255} {...field} />
@@ -120,7 +121,7 @@ export function CreateEventDialog({
                 control={form.control}
                 name="locationId"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Local</FormLabel>
                     <FormControl>
                       <Select disabled={locationsQuery.isLoading} {...field}>
@@ -140,7 +141,7 @@ export function CreateEventDialog({
                 control={form.control}
                 name="beginDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Início</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
@@ -153,7 +154,7 @@ export function CreateEventDialog({
                 control={form.control}
                 name="endDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Término</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />

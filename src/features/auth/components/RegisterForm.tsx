@@ -51,12 +51,12 @@ export const RegisterForm = () => {
       {serverError && <FormError message={serverError} />}      
 
       <Form {...form}>
-         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+         <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <FormField
               control={form.control}
               name="displayName"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Nome de exibição</FormLabel>
                   <FormControl>
                     <Input placeholder="Como você quer ser chamado?" autoComplete="name" {...field} />
@@ -70,7 +70,7 @@ export const RegisterForm = () => {
               control={form.control}
               name="email"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>E-mail</FormLabel>
                   <FormControl>
                     <Input type="email" placeholder="seu@email.com" autoComplete="email" {...field} />
@@ -85,7 +85,7 @@ export const RegisterForm = () => {
                 control={form.control}
                 name="password"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Senha</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />
@@ -98,7 +98,7 @@ export const RegisterForm = () => {
                 control={form.control}
                 name="confirmPassword"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Confirmar Senha</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" autoComplete="new-password" {...field} />

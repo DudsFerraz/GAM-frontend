@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/Alert";
 import { Button } from "@/components/ui/Button";
@@ -70,6 +70,12 @@ export function EditEventDialog({
   });
   const locationsQuery = useLocationOptions();
   const mutation = useReplaceEvent();
+  const selectedAudienceId = useWatch({
+    control: form.control,
+    name: "requiredPermissionId",
+  });
+  const audienceChangeRequiresReason =
+    selectedAudienceId !== currentAudienceId;
 
   const locationOptions = useMemo(() => {
     const locations = locationsQuery.data?.items ?? [];
@@ -131,13 +137,13 @@ export function EditEventDialog({
         </DialogHeader>
 
         <Form {...form}>
-          <form className="space-y-4" onSubmit={form.handleSubmit(submit)}>
+          <form className="space-y-4" noValidate onSubmit={form.handleSubmit(submit)}>
             <div className="grid items-start gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
                 name="title"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem className="sm:col-span-2" required>
                     <FormLabel>Título</FormLabel>
                     <FormControl>
                       <Input maxLength={255} {...field} />
@@ -163,7 +169,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="locationId"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Local</FormLabel>
                     <FormControl>
                       <Select disabled={locationsQuery.isLoading} {...field}>
@@ -183,7 +189,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="requiredPermissionId"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Público do evento</FormLabel>
                     <FormControl>
                       <Select {...field}>
@@ -211,7 +217,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="beginDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Início</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
@@ -224,7 +230,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="endDate"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Término</FormLabel>
                     <FormControl>
                       <Input type="datetime-local" {...field} />
@@ -237,7 +243,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="reason"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
+                  <FormItem className="sm:col-span-2" required={audienceChangeRequiresReason}>
                     <FormLabel>Motivo da alteração</FormLabel>
                     <FormControl>
                       <Textarea

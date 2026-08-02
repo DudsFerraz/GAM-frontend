@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/Dialog'
-import { Form, FormField, FormItem, FormMessage } from '@/components/ui/Form'
+import { Form, FormField, FormItem, FormLegend, FormMessage } from '@/components/ui/Form'
 import { getErrorMessage } from '@/lib/http'
 import { cn } from '@/lib/utils'
 
@@ -99,16 +99,16 @@ export function CreateOratorianoFormDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form className="space-y-5" onSubmit={submit}>
+          <form className="space-y-5" noValidate onSubmit={submit}>
             <FormField
               control={form.control}
               name="origin"
               render={({ field }) => (
-                <FormItem>
-                  <fieldset className="space-y-3">
-                    <legend className="text-sm font-semibold">
+                <FormItem required>
+                  <fieldset aria-required="true" className="space-y-3">
+                    <FormLegend className="text-sm font-semibold">
                       Como esta ficha será preenchida?
-                    </legend>
+                    </FormLegend>
                     {ORIGIN_OPTIONS.map((option) => {
                       const Icon = option.icon
                       const selected = field.value === option.value
@@ -131,6 +131,7 @@ export function CreateOratorianoFormDialog({
                             onBlur={field.onBlur}
                             onChange={() => field.onChange(option.value)}
                             ref={field.ref}
+                            required
                             type="radio"
                             value={option.value}
                           />

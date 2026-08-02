@@ -105,6 +105,7 @@ export function EditOratorianoDialog({
         <Form {...form}>
           <form
             className="space-y-5"
+            noValidate
             onSubmit={form.handleSubmit((values) =>
               mutation.mutate(
                 {
@@ -126,7 +127,7 @@ export function EditOratorianoDialog({
                 control={form.control}
                 name="firstName"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Nome</FormLabel>
                     <FormControl>
                       <Input
@@ -143,7 +144,7 @@ export function EditOratorianoDialog({
                 control={form.control}
                 name="surname"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Sobrenome completo</FormLabel>
                     <FormControl>
                       <Input
@@ -196,7 +197,7 @@ export function EditOratorianoDialog({
                   control={form.control}
                   name="reason"
                   render={({ field }) => (
-                    <FormItem className="sm:col-span-2">
+                    <FormItem className="sm:col-span-2" required>
                       <FormLabel>Motivo da correção do nome</FormLabel>
                       <FormControl>
                         <Textarea maxLength={2000} {...field} />

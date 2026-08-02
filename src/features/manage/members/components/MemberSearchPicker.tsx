@@ -26,6 +26,7 @@ type MemberSearchPickerProps = {
   includeInactive?: boolean;
   onSelectionClear: () => void;
   onSelect: (member: MemberListItem) => void;
+  required?: boolean;
   selectedMemberId?: string;
 };
 
@@ -34,6 +35,7 @@ export function MemberSearchPicker({
   includeInactive = false,
   onSelectionClear,
   onSelect,
+  required = false,
   selectedMemberId,
 }: MemberSearchPickerProps) {
   const [search, setSearch] = useState("");
@@ -93,7 +95,7 @@ export function MemberSearchPicker({
   return (
     <div className="space-y-3">
       <div className="space-y-2">
-        <Label htmlFor={searchInputId}>Buscar membro</Label>
+        <Label htmlFor={searchInputId} required={required}>Buscar membro</Label>
         <div className="relative">
           <Search
             aria-hidden="true"
@@ -106,6 +108,8 @@ export function MemberSearchPicker({
             name="memberSearch"
             onChange={changeSearch}
             placeholder="Digite o nome ou e-mail"
+            aria-required={required || undefined}
+            required={required || undefined}
             spellCheck={false}
             type="search"
             value={search}

@@ -168,13 +168,14 @@ export function MemberDetailsDialog({
               <Form {...statusForm}>
                 <form
                   className="space-y-4"
+                  noValidate
                   onSubmit={statusForm.handleSubmit(handleSubmit)}
                 >
                   <FormField
                     control={statusForm.control}
                     name="reason"
                     render={({ field }) => (
-                      <FormItem>
+                      <FormItem required>
                         <FormLabel>
                           Motivo para {actionLabel.toLowerCase()}
                         </FormLabel>

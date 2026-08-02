@@ -138,6 +138,7 @@ export function UnusedAccountRoleAssignmentSection({
                   <Form {...assignForm}>
                     <form
                       className="mt-3 space-y-3 border-t pt-3"
+                      noValidate
                       onSubmit={assignForm.handleSubmit(({ roleId, reason }) => {
                         assignMutation.mutate(
                           { roleId, reason },
@@ -154,7 +155,7 @@ export function UnusedAccountRoleAssignmentSection({
                         control={assignForm.control}
                         name="reason"
                         render={({ field }) => (
-                          <FormItem>
+                          <FormItem required>
                             <FormLabel>Motivo da atribuição</FormLabel>
                             <FormControl>
                               <Textarea maxLength={2000} {...field} />

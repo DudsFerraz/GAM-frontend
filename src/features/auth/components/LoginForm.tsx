@@ -64,14 +64,14 @@ export const LoginForm = () => {
       )}
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
+        <form noValidate onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
           
           {/* Email */}
           <FormField
             control={form.control}
             name="email"
             render={({ field }) => (
-              <FormItem>
+              <FormItem required>
                 <FormLabel>E-mail</FormLabel>
                 <FormControl>
                   <Input type="email" placeholder="seu@email.com" {...field} />
@@ -86,7 +86,7 @@ export const LoginForm = () => {
             control={form.control}
             name="password"
             render={({ field }) => (
-              <FormItem>
+              <FormItem required>
                 <FormLabel>Senha</FormLabel>
                 <div className="relative">
                   <FormControl>

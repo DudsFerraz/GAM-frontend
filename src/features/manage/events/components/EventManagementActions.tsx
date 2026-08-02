@@ -274,6 +274,7 @@ function CancelEventDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason }) => mutation.mutate(
               { action: 'cancel', eventId, reason },
               { onSuccess: () => changeOpen(false) },
@@ -333,6 +334,7 @@ function ReopenEventDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason, targetStatus }) => mutation.mutate(
               { action: 'reopen', eventId, reason, targetStatus },
               { onSuccess: () => changeOpen(false) },
@@ -343,7 +345,7 @@ function ReopenEventDialog({
                 control={form.control}
                 name="targetStatus"
                 render={({ field }) => (
-                  <FormItem>
+                  <FormItem required>
                     <FormLabel>Forma de reabertura</FormLabel>
                     <FormControl>
                       <Select {...field}>
@@ -360,7 +362,7 @@ function ReopenEventDialog({
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo da reabertura</FormLabel>
                   <FormControl><Textarea maxLength={2000} {...field} /></FormControl>
                   <FormMessage />
@@ -419,6 +421,7 @@ function RemoveEventDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason }) => mutation.mutate(
               { eventId, reason },
               {
@@ -463,7 +466,7 @@ function ReasonField({
       control={control}
       name="reason"
       render={({ field }) => (
-        <FormItem>
+        <FormItem required>
           <FormLabel>{label}</FormLabel>
           <FormControl><Textarea maxLength={2000} {...field} /></FormControl>
           <FormMessage />

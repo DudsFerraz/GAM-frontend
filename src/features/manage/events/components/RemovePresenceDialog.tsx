@@ -68,6 +68,7 @@ export function RemovePresenceDialog({
         <Form {...form}>
           <form
             className="space-y-4"
+            noValidate
             onSubmit={form.handleSubmit(({ reason }) => mutation.mutate(
               {
                 eventId,
@@ -86,7 +87,7 @@ export function RemovePresenceDialog({
               control={form.control}
               name="reason"
               render={({ field }) => (
-                <FormItem>
+                <FormItem required>
                   <FormLabel>Motivo da remoção</FormLabel>
                   <FormControl><Textarea maxLength={2000} {...field} /></FormControl>
                   <FormMessage />
