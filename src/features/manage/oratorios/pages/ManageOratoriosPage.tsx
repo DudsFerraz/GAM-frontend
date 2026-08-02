@@ -15,6 +15,11 @@ import {
   LoadingState,
 } from '@/components/AsyncState'
 import { Pagination } from '@/components/Pagination'
+import {
+  SearchAndFilter,
+  type SearchFilter,
+  type SortCriteria,
+} from '@/components/SearchAndFilter'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
 import {
@@ -24,33 +29,28 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/Card'
-import { Label } from '@/components/ui/Label'
-import { Select } from '@/components/ui/Select'
 import {
   useAccountInfo,
   useAccountPermissions,
 } from '@/features/account'
 import {
-  EVENT_STATUS_LABELS,
   getEventStatusLabel,
   useEvents,
-  type EventFilters,
-  type EventStatus,
 } from '@/features/manage/events'
 import { isForbiddenError } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
 
 import { CreateOratorioDialog } from '../components/CreateOratorioDialog'
+import {
+  ORATORIO_SEARCH_CONFIG,
+  toEventSearch,
+} from '../../events/eventSearchConfig'
 import { formatOratorioDate } from '../presentation'
 
-const initialFilters: EventFilters = {
-  status: 'ALL',
-  title: '',
-  type: 'ORATORIO',
-}
-
 export function ManageOratoriosPage() {
-  const [filters, setFilters] = useState(initialFilters)
+  const [search, setSearch] = useState(() =>
+    toEventSearch([], [], 'ORATORIO'),
+  )
   const [page, setPage] = useState(0)
   const navigate = useNavigate()
   const { account } = useAccountInfo()
@@ -64,8 +64,13 @@ export function ManageOratoriosPage() {
     canOpenCreate,
     false,
   )
-  const query = useEvents(filters, page, canView && canSearch)
+  const query = useEvents(search, page, canView && canSearch)
   const items = query.data?.items ?? []
+
+  const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
+    setPage(0)
+    setSearch(toEventSearch(filters, sorts, 'ORATORIO'))
+  }
 
   if (!canView && canViewOratorianos) {
     return (
@@ -111,26 +116,12 @@ export function ManageOratoriosPage() {
         />
       ) : (
         <>
-          <div className="max-w-xs">
-            <Label htmlFor="oratorio-status">Situação</Label>
-            <Select
-              id="oratorio-status"
-              onChange={(event) => {
-                setPage(0)
-                setFilters((current) => ({
-                  ...current,
-                  status: event.target.value as EventStatus | 'ALL',
-                }))
-              }}
-              value={filters.status}
-            >
-              <option value="ALL">Todas</option>
-              {Object.entries(EVENT_STATUS_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>
-                  {label}
-                </option>
-              ))}
-            </Select>
+          <div className="rounded-xl border bg-card p-4">
+            <SearchAndFilter
+              config={ORATORIO_SEARCH_CONFIG}
+              mainFilterField="title"
+              onSearch={handleSearch}
+            />
           </div>
 
           {query.isLoading && (

@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, within } from '@testing-library/react'
 import { forwardRef, type AnchorHTMLAttributes } from 'react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -115,24 +115,28 @@ describe('ManageEventsPage', () => {
       />,
     )
 
+    fireEvent.click(screen.getByRole('button', { name: 'Filtrar' }))
+    fireEvent.change(screen.getByRole('combobox', { name: 'Campo do filtro' }), {
+      target: { value: 'type' },
+    })
     expect(
-      within(screen.getByLabelText('Tipo')).getAllByRole('option').map(
-        (option) => option.textContent,
-      ),
-    ).toEqual(['Todos', 'Genérico', 'Oratório', 'Missa'])
+      within(screen.getByRole('combobox', { name: 'Valor do filtro' }))
+        .getAllByRole('option')
+        .map((option) => option.textContent),
+    ).toEqual(['Selecione...', 'Genérico', 'Oratório', 'Missa'])
 
     const genericCard = screen
       .getByRole('button', { name: 'Ver detalhes de Evento genérico' })
-      .closest('[data-slot="card"]')
+      .closest<HTMLElement>('[data-slot="card"]')
     const oratorioCard = screen
       .getByRole('link', { name: 'Abrir Oratório Encontro do Oratório' })
-      .closest('[data-slot="card"]')
+      .closest<HTMLElement>('[data-slot="card"]')
     const missaCard = screen
       .getByRole('button', { name: 'Ver detalhes de Missa da comunidade' })
-      .closest('[data-slot="card"]')
+      .closest<HTMLElement>('[data-slot="card"]')
     const futureCard = screen
       .getByRole('button', { name: 'Ver detalhes de Evento futuro' })
-      .closest('[data-slot="card"]')
+      .closest<HTMLElement>('[data-slot="card"]')
 
     if (!genericCard || !oratorioCard || !missaCard || !futureCard) {
       throw new Error('Todos os cards de teste devem estar presentes.')

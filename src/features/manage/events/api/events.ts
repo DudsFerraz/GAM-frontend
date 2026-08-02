@@ -26,34 +26,61 @@ export type EventFilters = {
   type: EventType | "ALL";
 };
 
+export type EventSearch = {
+  filters: EventFilters;
+  sorts: string[];
+};
+
+const EVENT_SORT_FIELDS = [
+  "title",
+  "beginDate",
+  "endDate",
+  "type",
+  "status",
+] as const;
+
+function isSupportedEventSort(value: string): boolean {
+  const [field, direction, ...rest] = value.split(",");
+  return (
+    rest.length === 0 &&
+    EVENT_SORT_FIELDS.some((allowedField) => allowedField === field) &&
+    (direction === "asc" || direction === "desc")
+  );
+}
+
 export async function searchEvents(
-  filters: EventFilters,
+  search: EventSearch,
   page: number,
 ): Promise<EventPage> {
   const apiFilters: components["schemas"]["SpecificationFilterDTO"][] = [];
-  if (filters.title.trim())
+  if (search.filters.title.trim())
     apiFilters.push({
       field: "title",
-      value: filters.title.trim(),
+      value: search.filters.title.trim(),
       comparisonMethod: "LIKE",
     });
-  if (filters.status !== "ALL")
+  if (search.filters.status !== "ALL")
     apiFilters.push({
       field: "status",
-      value: filters.status,
+      value: search.filters.status,
       comparisonMethod: "EQUALS",
     });
-  if (filters.type !== "ALL")
+  if (search.filters.type !== "ALL")
     apiFilters.push({
       field: "type",
-      value: filters.type,
+      value: search.filters.type,
       comparisonMethod: "EQUALS",
     });
+  const requestedSorts = search.sorts.filter(isSupportedEventSort);
   const { data } = await api.post<EventPage>(
     "/events/search",
     { filters: apiFilters },
     {
-      params: { page, size: 12, sort: ["beginDate,desc"] },
+      params: {
+        page,
+        size: 12,
+        sort: requestedSorts.length > 0 ? requestedSorts : ["beginDate,desc"],
+      },
       paramsSerializer: { indexes: null },
     },
   );

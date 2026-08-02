@@ -12,6 +12,7 @@ import {
   removeEvent,
   reopenEvent,
   replaceEvent,
+  searchEvents,
   updateEventPresenceObservations,
 } from './events'
 
@@ -34,6 +35,48 @@ beforeEach(() => {
 })
 
 describe('events API', () => {
+  it('serializa filtros e ordenação da busca e remove sorts inválidos', async () => {
+    apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await searchEvents({
+      filters: {
+        title: ' Encontro ',
+        status: 'SCHEDULED',
+        type: 'GENERIC',
+      },
+      sorts: ['status,asc', 'unknown,desc', 'beginDate,sideways'],
+    }, 2)
+
+    expect(apiMocks.post).toHaveBeenCalledWith(
+      '/events/search',
+      {
+        filters: [
+          { field: 'title', value: 'Encontro', comparisonMethod: 'LIKE' },
+          { field: 'status', value: 'SCHEDULED', comparisonMethod: 'EQUALS' },
+          { field: 'type', value: 'GENERIC', comparisonMethod: 'EQUALS' },
+        ],
+      },
+      {
+        params: { page: 2, size: 12, sort: ['status,asc'] },
+        paramsSerializer: { indexes: null },
+      },
+    )
+  })
+
+  it('preserva a ordenação cronológica padrão sem sort selecionado', async () => {
+    apiMocks.post.mockResolvedValueOnce({ data: { items: [] } })
+
+    await searchEvents({
+      filters: { title: '', status: 'ALL', type: 'ALL' },
+      sorts: [],
+    }, 0)
+
+    expect(apiMocks.post.mock.calls[0]?.[2]).toEqual({
+      params: { page: 0, size: 12, sort: ['beginDate,desc'] },
+      paramsSerializer: { indexes: null },
+    })
+  })
+
   it('retorna a representação completa do evento criado', async () => {
     const payload = {
       beginDate: '2026-07-25T18:00:00.000Z',

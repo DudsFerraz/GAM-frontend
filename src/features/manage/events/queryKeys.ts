@@ -1,9 +1,9 @@
-import type { EventFilters } from "./api/events";
+import type { EventSearch } from "./api/events";
 
 export const eventQueryKeys = {
   all: ["events"] as const,
-  search: (filters: EventFilters, page: number) =>
-    [...eventQueryKeys.all, "search", filters, page] as const,
+  search: (search: EventSearch, page: number) =>
+    [...eventQueryKeys.all, "search", search, page] as const,
   detail: (eventId: string) =>
     [...eventQueryKeys.all, "detail", eventId] as const,
   presenceLists: (eventId: string) =>

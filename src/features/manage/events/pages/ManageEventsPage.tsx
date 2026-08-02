@@ -1,13 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import {
-  CalendarDays,
-  ChevronRight,
-  MapPin,
-  Plus,
-  Search,
-  Settings2,
-} from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { CalendarDays, ChevronRight, MapPin, Plus, Settings2 } from "lucide-react";
+import { useState } from "react";
 
 import {
   EmptyState,
@@ -16,6 +9,11 @@ import {
   LoadingState,
 } from "@/components/AsyncState";
 import { Pagination } from "@/components/Pagination";
+import {
+  SearchAndFilter,
+  type SearchFilter,
+  type SortCriteria,
+} from "@/components/SearchAndFilter";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import {
@@ -26,9 +24,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import { Input } from "@/components/ui/Input";
-import { Label } from "@/components/ui/Label";
-import { Select } from "@/components/ui/Select";
 import {
   useAccountInfo,
   useAccountPermissionRecords,
@@ -38,23 +33,15 @@ import { formatDateTime } from "@/lib/format";
 import { isForbiddenError } from "@/lib/http";
 import { cn } from "@/lib/utils";
 
-import type { EventFilters, EventStatus, EventType } from "../api/events";
 import { CreateEventDialog } from "../components/CreateEventDialog";
 import { EventDetailsDialog } from "../components/EventDetailsDialog";
+import { EVENT_SEARCH_CONFIG, toEventSearch } from "../eventSearchConfig";
 import { useEvents } from "../hooks/useEvents";
 import {
-  EVENT_STATUS_LABELS,
-  EVENT_TYPE_PRESENTATIONS,
   getEventMapUrl,
   getEventStatusLabel,
   getEventTypePresentation,
 } from "../presentation";
-
-const initialFilters: EventFilters = {
-  title: "",
-  status: "ALL",
-  type: "ALL",
-};
 
 type ManageEventsPageProps = {
   selectedEventId: string | null;
@@ -65,8 +52,9 @@ export function ManageEventsPage({
   selectedEventId,
   onSelectedEventIdChange,
 }: ManageEventsPageProps) {
-  const [title, setTitle] = useState("");
-  const [filters, setFilters] = useState<EventFilters>(initialFilters);
+  const [search, setSearch] = useState(() =>
+    toEventSearch([], []),
+  );
   const [page, setPage] = useState(0);
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const navigate = useNavigate();
@@ -80,7 +68,7 @@ export function ManageEventsPage({
     isLoading: audiencePermissionsLoading,
     permissionRecords,
   } = useAccountPermissionRecords(account, canCreate);
-  const query = useEvents(filters, page);
+  const query = useEvents(search, page);
   const items = query.data?.items ?? [];
   const audiencePermissions = permissionRecords.filter(
     (permission) =>
@@ -88,10 +76,9 @@ export function ManageEventsPage({
       permission.code === "EVENT_GET_COORD",
   );
 
-  const submitSearch = (event: FormEvent) => {
-    event.preventDefault();
+  const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     setPage(0);
-    setFilters((current) => ({ ...current, title }));
+    setSearch(toEventSearch(filters, sorts));
   };
 
   return (
@@ -114,68 +101,13 @@ export function ManageEventsPage({
         )}
       </div>
 
-      <form
-        className="grid gap-3 rounded-xl border bg-card p-4 md:grid-cols-[1fr_180px_180px_auto] md:items-end"
-        onSubmit={submitSearch}
-      >
-        <div>
-          <Label htmlFor="event-title">Título</Label>
-          <Input
-            id="event-title"
-            onChange={(event) => setTitle(event.target.value)}
-            placeholder="Buscar por título"
-            value={title}
-          />
-        </div>
-        <div>
-          <Label htmlFor="event-status">Situação</Label>
-          <Select
-            id="event-status"
-            onChange={(event) => {
-              setPage(0);
-              setFilters((current) => ({
-                ...current,
-                status: event.target.value as EventStatus | "ALL",
-              }));
-            }}
-            value={filters.status}
-          >
-            <option value="ALL">Todas</option>
-            {Object.entries(EVENT_STATUS_LABELS).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <div>
-          <Label htmlFor="event-type">Tipo</Label>
-          <Select
-            id="event-type"
-            onChange={(event) => {
-              setPage(0);
-              setFilters((current) => ({
-                ...current,
-                type: event.target.value as EventType | "ALL",
-              }));
-            }}
-            value={filters.type}
-          >
-            <option value="ALL">Todos</option>
-            {Object.entries(EVENT_TYPE_PRESENTATIONS).map(
-              ([value, presentation]) => (
-                <option key={value} value={value}>
-                  {presentation.label}
-                </option>
-              ),
-            )}
-          </Select>
-        </div>
-        <Button type="submit">
-          <Search className="h-4 w-4" />
-          Buscar
-        </Button>
-      </form>
+      <div className="rounded-xl border bg-card p-4">
+        <SearchAndFilter
+          config={EVENT_SEARCH_CONFIG}
+          mainFilterField="title"
+          onSearch={handleSearch}
+        />
+      </div>
 
       {query.isLoading && <LoadingState title="Carregando eventos..." />}
       {query.isError &&

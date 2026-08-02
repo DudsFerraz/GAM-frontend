@@ -19,7 +19,7 @@ import {
   replaceEvent,
   searchEvents,
   updateEventPresenceObservations,
-  type EventFilters,
+  type EventSearch,
   type EventReplacement,
 } from "../api/events";
 import { memberQueryKeys } from "@/features/manage/members/queryKeys";
@@ -35,10 +35,10 @@ export type EventLifecycleCommand =
       targetStatus: "LOCKED" | "COMPLETED";
     };
 
-export function useEvents(filters: EventFilters, page: number, enabled = true) {
+export function useEvents(search: EventSearch, page: number, enabled = true) {
   return useQuery({
-    queryKey: eventQueryKeys.search(filters, page),
-    queryFn: () => searchEvents(filters, page),
+    queryKey: eventQueryKeys.search(search, page),
+    queryFn: () => searchEvents(search, page),
     enabled,
     placeholderData: keepPreviousData,
   });
