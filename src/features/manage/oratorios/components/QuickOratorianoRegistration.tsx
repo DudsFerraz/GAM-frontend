@@ -1,44 +1,17 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Search, UserCheck, UserPlus, UsersRound } from 'lucide-react'
+import { UserPlus } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 
-import {
-  EmptyState,
-  ErrorState,
-  LoadingState,
-} from '@/components/AsyncState'
-import { Pagination } from '@/components/Pagination'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/AlertDialog'
-import { Badge } from '@/components/ui/Badge'
-import { Button } from '@/components/ui/Button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/Form'
-import { Input } from '@/components/ui/Input'
 import {
   areHumanEquivalentNames,
   registerOratorianoSchema,
   type RegisterOratorianoFormValues,
 } from '@/features/manage/oratorianos'
-import { getErrorMessage } from '@/lib/http'
 import { useCapabilityBoundState } from '@/hooks/useCapabilityBoundState'
+import { getErrorMessage } from '@/lib/http'
 
 import type { AttendanceRosterEntry } from '../api/oratorios'
 import {
@@ -47,10 +20,12 @@ import {
   useRegisterAndMarkOratoriano,
 } from '../hooks/useOratorios'
 import { getAttendancePersonName } from '../presentation'
-
-type CheckedName = RegisterOratorianoFormValues & {
-  key: string
-}
+import { QuickOratorianoConfirmationDialog } from './QuickOratorianoConfirmationDialog'
+import { QuickOratorianoNameForm } from './QuickOratorianoNameForm'
+import {
+  QuickOratorianoRegistrationResults,
+  type CheckedOratorianoName,
+} from './QuickOratorianoRegistrationResults'
 
 type QuickOratorianoRegistrationProps = {
   enabled: boolean
@@ -63,7 +38,7 @@ export function QuickOratorianoRegistration({
   onMarkExisting,
   oratorioId,
 }: QuickOratorianoRegistrationProps) {
-  const [checkedName, setCheckedName] = useState<CheckedName | null>(null)
+  const [checkedName, setCheckedName] = useState<CheckedOratorianoName | null>(null)
   const [page, setPage] = useState(0)
   const [feedback, setFeedback] = useState<string | null>(null)
   const mutation = useRegisterAndMarkOratoriano()
@@ -71,14 +46,8 @@ export function QuickOratorianoRegistration({
     defaultValues: { firstName: '', surname: '' },
     resolver: zodResolver(registerOratorianoSchema),
   })
-  const firstName = useWatch({
-    control: form.control,
-    name: 'firstName',
-  })
-  const surname = useWatch({
-    control: form.control,
-    name: 'surname',
-  })
+  const firstName = useWatch({ control: form.control, name: 'firstName' })
+  const surname = useWatch({ control: form.control, name: 'surname' })
   const currentKey = `${firstName}\u0000${surname}`
   const hasCurrentCheck = checkedName?.key === currentKey
   const fullName = checkedName
@@ -98,10 +67,9 @@ export function QuickOratorianoRegistration({
     enabled && hasCurrentCheck,
   )
   const results = useMemo(
-    () =>
-      hasCurrentCheck && !query.isError && !query.isPlaceholderData
-        ? query.data?.items ?? []
-        : [],
+    () => hasCurrentCheck && !query.isError && !query.isPlaceholderData
+      ? query.data?.items ?? []
+      : [],
     [
       hasCurrentCheck,
       query.data?.items,
@@ -111,12 +79,7 @@ export function QuickOratorianoRegistration({
   )
   const currentPageExactMatch = useMemo(
     () => checkedName
-      ? results.find((entry) =>
-          areHumanEquivalentNames(
-            checkedName,
-            entry.person ?? {},
-          ),
-        )
+      ? results.find((entry) => areHumanEquivalentNames(checkedName, entry.person ?? {}))
       : undefined,
     [checkedName, results],
   )
@@ -153,6 +116,7 @@ export function QuickOratorianoRegistration({
     setPage(0)
     setFeedback(null)
     mutation.reset()
+    // The similar-name check must complete before creation can be enabled.
     setCheckedName({
       ...parsedValues.data,
       key: `${rawValues.firstName}\u0000${rawValues.surname}`,
@@ -208,67 +172,12 @@ export function QuickOratorianoRegistration({
         </p>
       </CardHeader>
       <CardContent>
-        <Form {...form}>
-          <form
-            className="space-y-4"
-            noValidate
-            onSubmit={(event) => {
-              event.preventDefault()
-              void checkName()
-            }}
-          >
-            <div className="grid gap-4 sm:grid-cols-2">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem required>
-                    <FormLabel>Nome</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        disabled={!enabled}
-                        maxLength={32}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="surname"
-                render={({ field }) => (
-                  <FormItem required>
-                    <FormLabel>Sobrenome completo</FormLabel>
-                    <FormControl>
-                      <Input
-                        autoComplete="off"
-                        disabled={!enabled}
-                        maxLength={64}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <Button
-              disabled={
-                !enabled
-                || query.isFetching
-                || exactQuery.isFetching
-              }
-              type="submit"
-              variant="outline"
-            >
-              <Search aria-hidden="true" className="h-4 w-4" />
-              Conferir nome
-            </Button>
-          </form>
-        </Form>
+        <QuickOratorianoNameForm
+          enabled={enabled}
+          form={form}
+          isCheckingName={isCheckingName}
+          onCheckName={() => void checkName()}
+        />
 
         {!enabled && (
           <Alert className="mt-4">
@@ -280,140 +189,28 @@ export function QuickOratorianoRegistration({
           </Alert>
         )}
 
-        {hasCurrentCheck && (
-          <div className="mt-5 space-y-4">
-            <div>
-              <h3 className="font-semibold">
-                Confira antes de cadastrar
-              </h3>
-              <p className="text-sm text-muted-foreground">
-                Nenhum resultado é marcado automaticamente.
-              </p>
-            </div>
-
-            {isCheckingName && (
-              <LoadingState title="Procurando nomes parecidos..." />
-            )}
-            {hasSearchError && (
-              <ErrorState
-                onRetry={() => {
-                  void query.refetch()
-                  void exactQuery.refetch()
-                }}
-              />
-            )}
-            {hasResolvedSearch && results.length === 0 && (
-              <EmptyState
-                description="Confira a grafia com a pessoa antes de continuar."
-                title="Nenhum cadastro parecido encontrado."
-              />
-            )}
-            {!hasSearchError && results.length > 0 && (
-              <ul className="space-y-2">
-                {results.map((entry, index) => {
-                  const personId = entry.person?.id
-                  const name = getAttendancePersonName(entry.person)
-                  const isExact = checkedName
-                    ? areHumanEquivalentNames(
-                        checkedName,
-                        entry.person ?? {},
-                      )
-                    : false
-
-                  return (
-                    <li
-                      className="flex flex-col gap-3 rounded-lg border bg-background px-3 py-3 sm:flex-row sm:items-center"
-                      key={personId ?? index}
-                    >
-                      <UsersRound
-                        aria-hidden="true"
-                        className="h-4 w-4 shrink-0 text-primary"
-                      />
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-medium">{name}</span>
-                        {isExact && (
-                          <span className="mt-1 block text-xs text-muted-foreground">
-                            Mesmo nome após ignorar caixa, acentos e espaços.
-                          </span>
-                        )}
-                      </span>
-                      {entry.attendance ? (
-                        <Badge variant="secondary">Já presente</Badge>
-                      ) : (
-                        <Button
-                          disabled={!personId}
-                          onClick={() => void markFoundEntry(entry)}
-                          size="sm"
-                          type="button"
-                        >
-                          <UserCheck
-                            aria-hidden="true"
-                            className="h-4 w-4"
-                          />
-                          Marcar este cadastro
-                        </Button>
-                      )}
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-
-            {!hasSearchError
-              && !query.isPlaceholderData
-              && query.data && (
-              <Pagination
-                disabled={query.isFetching}
-                itemLabel="Oratorianos"
-                onPageChange={setPage}
-                page={query.data.page ?? page}
-                totalElements={query.data.totalElements ?? results.length}
-                totalPages={query.data.totalPages ?? 0}
-              />
-              )}
-
-            {exactMatch ? (
-              <Alert>
-                <AlertTitle>Use o cadastro encontrado.</AlertTitle>
-                <AlertDescription>
-                  <p>
-                    Um nome equivalente já existe, por isso um novo cadastro
-                    não pode ser criado.
-                  </p>
-                  {!currentPageExactMatch && (
-                    exactMatch.attendance ? (
-                      <Badge variant="secondary">
-                        Cadastro já marcado como presente
-                      </Badge>
-                    ) : (
-                      <Button
-                        disabled={!enabled || !exactMatch.person?.id}
-                        onClick={() => void markFoundEntry(exactMatch)}
-                        size="sm"
-                        type="button"
-                        variant="outline"
-                      >
-                        <UserCheck
-                          aria-hidden="true"
-                          className="h-4 w-4"
-                        />
-                        Marcar cadastro encontrado
-                      </Button>
-                    )
-                  )}
-                </AlertDescription>
-              </Alert>
-            ) : hasResolvedSearch ? (
-              <Button
-                disabled={!enabled}
-                onClick={() => setIsConfirmOpen(true)}
-                type="button"
-              >
-                <UserPlus aria-hidden="true" className="h-4 w-4" />
-                Cadastrar e marcar
-              </Button>
-            ) : null}
-          </div>
+        {checkedName && hasCurrentCheck && (
+          <QuickOratorianoRegistrationResults
+            checkedName={checkedName}
+            currentPageExactMatch={currentPageExactMatch}
+            enabled={enabled}
+            exactMatch={exactMatch}
+            hasResolvedSearch={hasResolvedSearch}
+            hasSearchError={hasSearchError}
+            isCheckingName={isCheckingName}
+            isFetching={query.isFetching}
+            isPlaceholderData={query.isPlaceholderData}
+            onMarkExisting={markFoundEntry}
+            onOpenConfirmation={() => setIsConfirmOpen(true)}
+            onPageChange={setPage}
+            onRetry={() => {
+              void query.refetch()
+              void exactQuery.refetch()
+            }}
+            page={page}
+            results={results}
+            rosterPage={query.data}
+          />
         )}
 
         {mutation.isError && (
@@ -421,9 +218,7 @@ export function QuickOratorianoRegistration({
             <AlertTitle>
               Não foi possível cadastrar e marcar a presença.
             </AlertTitle>
-            <AlertDescription>
-              {getErrorMessage(mutation.error)}
-            </AlertDescription>
+            <AlertDescription>{getErrorMessage(mutation.error)}</AlertDescription>
           </Alert>
         )}
         {feedback && (
@@ -436,46 +231,15 @@ export function QuickOratorianoRegistration({
         )}
       </CardContent>
 
-      <AlertDialog
+      <QuickOratorianoConfirmationDialog
+        canConfirm={canConfirmCreation}
+        error={mutation.error}
+        fullName={fullName}
+        isOpen={isConfirmOpen}
+        isPending={mutation.isPending}
+        onConfirm={createAndMark}
         onOpenChange={setIsConfirmOpen}
-        open={isConfirmOpen && canConfirmCreation}
-      >
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>
-              Cadastrar e marcar como presente?
-            </AlertDialogTitle>
-            <AlertDialogDescription>
-              Será criado um cadastro para {fullName} e a presença será
-              registrada nesta mesma operação.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          {mutation.isError && (
-            <Alert variant="destructive">
-              <AlertTitle>Não foi possível concluir.</AlertTitle>
-              <AlertDescription>
-                {getErrorMessage(mutation.error)}
-              </AlertDescription>
-            </Alert>
-          )}
-          <AlertDialogFooter>
-            <AlertDialogCancel disabled={mutation.isPending}>
-              Voltar e conferir
-            </AlertDialogCancel>
-            <AlertDialogAction
-              disabled={!canConfirmCreation || mutation.isPending}
-              onClick={(event) => {
-                event.preventDefault()
-                createAndMark()
-              }}
-            >
-              {mutation.isPending
-                ? 'Cadastrando...'
-                : 'Confirmar cadastro e presença'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+      />
     </Card>
   )
 }
