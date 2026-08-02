@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Save } from 'lucide-react'
-import { useEffect } from 'react'
+import { useEffect, type ReactNode } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
@@ -9,7 +9,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -27,26 +26,25 @@ import {
 
 const planningFields = [
   {
-    description: 'O que será servido e orientações para a preparação.',
     label: 'Lanche',
     name: 'lancheDescription',
   },
   {
-    description: 'Dinâmica, materiais e organização da atividade.',
     label: 'Gincana',
     name: 'gincanaDescription',
   },
   {
-    description: 'Tema e condução do Boa Tarde das Crianças.',
     label: 'Boa Tarde das Crianças',
     name: 'boaTardeCriancasPlan',
   },
   {
-    description: 'Tema e condução do Boa Tarde dos Jovens.',
     label: 'Boa Tarde dos Jovens',
     name: 'boaTardeJovensPlan',
   },
 ] as const
+
+export type OratorioPlanningFieldName =
+  (typeof planningFields)[number]['name']
 
 function toFormValues(
   planning?: OratorioPlanning | null,
@@ -59,14 +57,20 @@ function toFormValues(
   }
 }
 
+type OratorioPlanningFormRenderProps = {
+  renderField: (name: OratorioPlanningFieldName) => ReactNode
+}
+
 type OratorioPlanningFormProps = {
   canEdit: boolean
+  children: (props: OratorioPlanningFormRenderProps) => ReactNode
   oratorioId: string
   planning?: OratorioPlanning | null
 }
 
 export function OratorioPlanningForm({
   canEdit,
+  children,
   oratorioId,
   planning,
 }: OratorioPlanningFormProps) {
@@ -80,18 +84,47 @@ export function OratorioPlanningForm({
     form.reset(toFormValues(planning))
   }, [form, planning])
 
+  const renderField = (name: OratorioPlanningFieldName) => {
+    const item = planningFields.find((field) => field.name === name)
+    if (!item) return null
+
+    return (
+      <FormField
+        control={form.control}
+        key={name}
+        name={name}
+        render={({ field }) => (
+          <FormItem>
+            <FormLabel>{item.label}</FormLabel>
+            <FormControl>
+              <Textarea
+                className="min-h-28 resize-y"
+                disabled={!canEdit}
+                maxLength={10000}
+                placeholder={
+                  canEdit
+                    ? 'Escreva o planejamento desta frente.'
+                    : 'Nenhum planejamento informado.'
+                }
+                {...field}
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        )}
+      />
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Planejamento</CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Registre as orientações essenciais para as quatro frentes do dia.
-        </p>
+        <CardTitle>Programação</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
           <form
-            className="space-y-5"
+            className="space-y-4"
             onSubmit={form.handleSubmit((values) =>
               mutation.mutate({
                 oratorioId,
@@ -99,43 +132,13 @@ export function OratorioPlanningForm({
               }),
             )}
           >
-            <div className="grid gap-5 lg:grid-cols-2">
-              {planningFields.map((item) => (
-                <FormField
-                  control={form.control}
-                  key={item.name}
-                  name={item.name}
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{item.label}</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          className="min-h-28 resize-y"
-                          disabled={!canEdit}
-                          maxLength={10000}
-                          placeholder={
-                            canEdit
-                              ? 'Escreva o planejamento desta frente.'
-                              : 'Nenhum planejamento informado.'
-                          }
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        {item.description}
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              ))}
-            </div>
+            {children({ renderField })}
+
             {!canEdit && (
               <Alert>
                 <AlertTitle>Planejamento em modo de leitura.</AlertTitle>
                 <AlertDescription>
-                  A situação atual ou suas atribuições não permitem
-                  alterações.
+                  A situação ou as atribuições atuais não permitem alterações.
                 </AlertDescription>
               </Alert>
             )}

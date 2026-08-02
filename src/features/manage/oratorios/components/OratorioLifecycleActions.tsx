@@ -11,7 +11,7 @@ import { useForm } from 'react-hook-form'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent } from '@/components/ui/Card'
 import {
   Dialog,
   DialogContent,
@@ -72,14 +72,12 @@ export function OratorioLifecycleActions({
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle>Gestão da ocorrência</CardTitle>
-          <p className="text-sm text-muted-foreground">
-            As ações disponíveis acompanham a situação atual do Oratório.
-          </p>
-        </CardHeader>
-        <CardContent className="flex flex-wrap gap-2">
+      <Card
+        aria-label="Ações da ocorrência"
+        className="gap-0 py-3"
+        role="group"
+      >
+        <CardContent className="flex flex-wrap gap-2 px-4 sm:px-6">
           {actions.includes('lock') && (
             <Button
               onClick={() => setActiveAction('lock')}

@@ -17,7 +17,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/Alert'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/Button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card'
+import { Card, CardContent } from '@/components/ui/Card'
 import {
   useAccountInfo,
   useAccountPermissions,
@@ -26,9 +26,7 @@ import { getEventStatusLabel } from '@/features/manage/events'
 import { isForbiddenError } from '@/lib/http'
 
 import { OratorioLifecycleActions } from '../components/OratorioLifecycleActions'
-import { OratorioPlanningForm } from '../components/OratorioPlanningForm'
 import { OratorioSchedule } from '../components/OratorioSchedule'
-import { OratorioTeamsSection } from '../components/OratorioTeamsSection'
 import { getEffectiveOratorioStatus } from '../attendanceRules'
 import { useOratorioClock } from '../hooks/useOratorioClock'
 import { useOratorio } from '../hooks/useOratorios'
@@ -91,7 +89,7 @@ export function OratorioDetailPage({
     && canEditOratorioPlanning(effectiveStatus)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <Button asChild size="sm" variant="ghost">
         <Link to="/manage/oratorios">
           <ArrowLeft aria-hidden="true" className="h-4 w-4" />
@@ -107,9 +105,6 @@ export function OratorioDetailPage({
           <h1 className="font-heading text-2xl font-bold tracking-tight sm:text-3xl">
             {formatOratorioDate(event.beginDate)}
           </h1>
-          <p className="mt-1 text-sm text-muted-foreground">
-            Planejamento, responsáveis e operação desta data.
-          </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <Badge
@@ -149,18 +144,15 @@ export function OratorioDetailPage({
         </Alert>
       )}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Informações do dia</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <dl className="grid gap-5 text-sm sm:grid-cols-2 lg:grid-cols-3">
+      <Card className="gap-0 py-3">
+        <CardContent className="px-4 sm:px-6">
+          <dl className="grid gap-3 text-sm sm:grid-cols-3 sm:gap-5">
             <div>
               <dt className="flex items-center gap-2 text-muted-foreground">
                 <CalendarDays aria-hidden="true" className="h-4 w-4" />
                 Data
               </dt>
-              <dd className="mt-1 font-medium">
+              <dd className="mt-0.5 font-medium">
                 {formatOratorioDate(event.beginDate)}
               </dd>
             </div>
@@ -169,14 +161,14 @@ export function OratorioDetailPage({
                 <Clock3 aria-hidden="true" className="h-4 w-4" />
                 Horário
               </dt>
-              <dd className="mt-1 font-medium">14h às 17h</dd>
+              <dd className="mt-0.5 font-medium">14h às 17h</dd>
             </div>
             <div>
               <dt className="flex items-center gap-2 text-muted-foreground">
                 <MapPin aria-hidden="true" className="h-4 w-4" />
                 Local
               </dt>
-              <dd className="mt-1 font-medium">
+              <dd className="mt-0.5 font-medium">
                 {event.gamLocation?.name ?? 'Local não informado'}
               </dd>
             </div>
@@ -184,19 +176,13 @@ export function OratorioDetailPage({
         </CardContent>
       </Card>
 
-      <div className="grid items-start gap-6 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
-        <OratorioSchedule schedule={oratorio.schedule} />
-        <OratorioPlanningForm
-          canEdit={planningEditable}
-          oratorioId={oratorioId}
-          planning={oratorio.planning}
-        />
-      </div>
-
-      <OratorioTeamsSection
-        canManage={planningEditable}
+      <OratorioSchedule
+        canEditPlanning={planningEditable}
+        canManageTeams={planningEditable}
         canReadRoster={canReadAttendance}
         oratorioId={oratorioId}
+        planning={oratorio.planning}
+        schedule={oratorio.schedule}
         teams={oratorio.teams}
       />
 
