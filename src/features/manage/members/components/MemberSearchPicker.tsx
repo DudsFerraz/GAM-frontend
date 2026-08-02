@@ -40,6 +40,7 @@ export function MemberSearchPicker({
 }: MemberSearchPickerProps) {
   const [search, setSearch] = useState("");
   const searchInputId = useId();
+  const searchLabelId = `${searchInputId}-label`;
   const normalizedSearch = search.trim();
   const deferredSearch = useDeferredValue(search.trim());
   const isSearchDeferred = normalizedSearch !== deferredSearch;
@@ -93,9 +94,16 @@ export function MemberSearchPicker({
   };
 
   return (
-    <div className="space-y-3">
+    <div
+      aria-labelledby={searchLabelId}
+      aria-required={required || undefined}
+      className="space-y-3"
+      role="group"
+    >
       <div className="space-y-2">
-        <Label htmlFor={searchInputId} required={required}>Buscar membro</Label>
+        <Label id={searchLabelId} htmlFor={searchInputId} required={required}>
+          Buscar membro
+        </Label>
         <div className="relative">
           <Search
             aria-hidden="true"
@@ -108,8 +116,6 @@ export function MemberSearchPicker({
             name="memberSearch"
             onChange={changeSearch}
             placeholder="Digite o nome ou e-mail"
-            aria-required={required || undefined}
-            required={required || undefined}
             spellCheck={false}
             type="search"
             value={search}

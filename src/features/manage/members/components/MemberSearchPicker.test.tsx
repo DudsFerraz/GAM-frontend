@@ -34,6 +34,26 @@ beforeEach(() => {
 })
 
 describe('MemberSearchPicker', () => {
+  it('marca a seleção como obrigatória sem exigir o texto de busca', () => {
+    render(
+      <MemberSearchPicker
+        onSelectionClear={vi.fn()}
+        onSelect={vi.fn()}
+        required
+      />,
+    )
+
+    expect(screen.getByRole('group', { name: 'Buscar membro' }))
+      .toHaveAttribute('aria-required', 'true')
+    expect(screen.getByText('Buscar membro')).toHaveAttribute(
+      'data-required',
+      'true',
+    )
+    expect(screen.getByRole('searchbox', { name: 'Buscar membro' })).not.toHaveAttribute(
+      'required',
+    )
+  })
+
   it('seleciona um membro por dados de negócio sem exibir o identificador', async () => {
     const onSelect = vi.fn()
 
@@ -45,7 +65,7 @@ describe('MemberSearchPicker', () => {
       />,
     )
 
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Ana' },
     })
 
@@ -75,7 +95,7 @@ describe('MemberSearchPicker', () => {
       />,
     )
 
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Ana' },
     })
     expect(await screen.findByText('Ana Silva')).toBeInTheDocument()
@@ -87,7 +107,7 @@ describe('MemberSearchPicker', () => {
         selectedMemberId={member.id}
       />,
     )
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Bia' },
     })
 
@@ -110,7 +130,7 @@ describe('MemberSearchPicker', () => {
         onSelect={vi.fn()}
       />,
     )
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Ana' },
     })
 
@@ -136,7 +156,7 @@ describe('MemberSearchPicker', () => {
         onSelect={vi.fn()}
       />,
     )
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Ana' },
     })
 
@@ -165,7 +185,7 @@ describe('MemberSearchPicker', () => {
         onSelect={vi.fn()}
       />,
     )
-    fireEvent.change(screen.getByLabelText('Buscar membro'), {
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Buscar membro' }), {
       target: { value: 'Ana' },
     })
 

@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useState } from 'react'
+import { useId, useState } from 'react'
 import { useForm } from 'react-hook-form'
 
 import { EmptyState, ErrorState, LoadingState } from '@/components/AsyncState'
@@ -44,6 +44,7 @@ export function RegisterMemberDialog({
   onCreated,
 }: RegisterMemberDialogProps) {
   const mutation = useCreateMember()
+  const accountLabelId = useId()
   const [accountSearch, setAccountSearch] = useState('')
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null)
   const accountsQuery = useSearchAccounts(accountSearch, 'displayName', 0, open)
@@ -99,9 +100,13 @@ export function RegisterMemberDialog({
                 name="accountId"
                 render={({ field }) => (
                   <FormItem className="sm:col-span-2" required>
-                    <FormLabel>Conta</FormLabel>
+                    <FormLabel id={accountLabelId}>Conta</FormLabel>
                     <FormControl nativeRequired={false}>
-                      <div className="space-y-3 rounded-lg border p-3" role="group">
+                      <div
+                        aria-labelledby={accountLabelId}
+                        className="space-y-3 rounded-lg border p-3"
+                        role="group"
+                      >
                         <Input
                           onChange={(event) => setAccountSearch(event.target.value)}
                           placeholder="Busque a conta pelo nome"

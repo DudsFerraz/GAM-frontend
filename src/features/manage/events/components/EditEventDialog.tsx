@@ -189,7 +189,7 @@ export function EditEventDialog({
                 control={form.control}
                 name="requiredPermissionId"
                 render={({ field }) => (
-                  <FormItem required>
+                  <FormItem>
                     <FormLabel>Público do evento</FormLabel>
                     <FormControl>
                       <Select {...field}>
