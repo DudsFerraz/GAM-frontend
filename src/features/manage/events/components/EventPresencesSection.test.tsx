@@ -70,4 +70,30 @@ describe('EventPresencesSection', () => {
       false,
     )
   })
+
+  it('habilita o registro antes do início do evento agendado', () => {
+    render(
+      <EventPresencesSection
+        canEditPresences={false}
+        canRegisterPresences
+        canRemovePresences={false}
+        canSearchMembers
+        canViewInactiveMembers={false}
+        canViewPresences={false}
+        event={{
+          beginDate: '2036-08-01T13:00:00.000Z',
+          status: 'SCHEDULED',
+          type: 'GENERIC',
+        } as Event}
+        eventId="event-id"
+      />,
+    )
+
+    expect(screen.getByRole('button', {
+      name: 'Registrar presença',
+    })).toBeEnabled()
+    expect(screen.queryByText(
+      'O registro ficará disponível quando a janela de presença deste evento estiver aberta.',
+    )).not.toBeInTheDocument()
+  })
 })

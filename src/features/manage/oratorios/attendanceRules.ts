@@ -84,35 +84,6 @@ export function getOratorioAttendanceAvailability(
     }
   }
 
-  if (!event?.beginDate || Number.isNaN(evaluationInstant.getTime())) {
-    return {
-      canMark: false,
-      canUncheck: false,
-      message: UNAVAILABLE_MESSAGE,
-      removalReasonRequired: false,
-    }
-  }
-
-  const beginDate = new Date(event.beginDate)
-  if (Number.isNaN(beginDate.getTime())) {
-    return {
-      canMark: false,
-      canUncheck: false,
-      message: UNAVAILABLE_MESSAGE,
-      removalReasonRequired: false,
-    }
-  }
-
-  const openingInstant = new Date(beginDate.getTime() - 30 * 60 * 1000)
-  if (evaluationInstant < openingInstant) {
-    return {
-      canMark: false,
-      canUncheck: false,
-      message: 'O controle de presença será aberto às 13h30.',
-      removalReasonRequired: false,
-    }
-  }
-
   return {
     canMark: true,
     canUncheck: true,

@@ -6,7 +6,7 @@ import {
 } from './attendanceRules'
 
 describe('disponibilidade de presença do Oratório', () => {
-  it('abre a ocorrência agendada às 13h30 de São Paulo', () => {
+  it('permite a ocorrência agendada antes do início e da antiga janela', () => {
     const event = {
       beginDate: '2026-08-02T14:00:00-03:00',
       status: 'SCHEDULED' as const,
@@ -15,14 +15,19 @@ describe('disponibilidade de presença do Oratório', () => {
     expect(
       getOratorioAttendanceAvailability(
         event,
-        new Date('2026-08-02T13:29:59-03:00'),
+        new Date('2026-08-02T13:00:00-03:00'),
       ),
-    ).toMatchObject({ canMark: false, canUncheck: false })
+    ).toEqual({
+      canMark: true,
+      canUncheck: true,
+      message: null,
+      removalReasonRequired: false,
+    })
+  })
+
+  it('não exige datas para liberar uma ocorrência agendada', () => {
     expect(
-      getOratorioAttendanceAvailability(
-        event,
-        new Date('2026-08-02T13:30:00-03:00'),
-      ),
+      getOratorioAttendanceAvailability({ status: 'SCHEDULED' }),
     ).toEqual({
       canMark: true,
       canUncheck: true,

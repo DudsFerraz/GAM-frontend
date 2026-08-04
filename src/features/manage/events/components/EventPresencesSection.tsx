@@ -6,7 +6,7 @@ import {
   UserPlus,
   UserRound,
 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import {
   EmptyState,
@@ -62,33 +62,12 @@ export function EventPresencesSection({
   const [presenceDialog, setPresenceDialog] =
     useState<PresenceDialogState>(null);
   const [presenceFeedback, setPresenceFeedback] = useState<string | null>(null);
-  const [presenceEvaluationInstant, setPresenceEvaluationInstant] = useState(
-    () => new Date(),
-  );
   const presencesQuery = useEventPresences(eventId, page, canViewPresences);
-  const registrationAvailability = getPresenceRegistrationAvailability(
-    event,
-    presenceEvaluationInstant,
-  );
+  const registrationAvailability = getPresenceRegistrationAvailability(event);
   const presenceChangesAvailable = canChangePresence(event);
   const presenceItems = canViewPresences
     ? (presencesQuery.data?.items ?? [])
     : [];
-
-  useEffect(() => {
-    if (
-      !canRegisterPresences ||
-      registrationAvailability.state !== "before-window"
-    ) {
-      return;
-    }
-
-    const intervalId = window.setInterval(() => {
-      setPresenceEvaluationInstant(new Date());
-    }, 30_000);
-
-    return () => window.clearInterval(intervalId);
-  }, [canRegisterPresences, registrationAvailability.state]);
 
   return (
     <>

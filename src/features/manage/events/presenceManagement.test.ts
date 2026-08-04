@@ -14,41 +14,54 @@ const scheduledEvent = {
 }
 
 describe('canRegisterPresence', () => {
-  it('abre a janela comum no início do evento', () => {
-    expect(canRegisterPresence(
-      scheduledEvent,
-      new Date('2026-08-01T12:59:59.000Z'),
-    )).toBe(false)
-    expect(canRegisterPresence(
-      scheduledEvent,
-      new Date('2026-08-01T13:00:00.000Z'),
-    )).toBe(true)
+  it('permite registrar um evento agendado antes do início', () => {
+    expect(canRegisterPresence({
+      ...scheduledEvent,
+      beginDate: '2036-08-01T13:00:00.000Z',
+    })).toBe(true)
   })
 
-  it('abre a janela do Oratório trinta minutos antes', () => {
-    expect(canRegisterPresence(
-      { ...scheduledEvent, type: 'ORATORIO' },
-      new Date('2026-08-01T12:30:00.000Z'),
-    )).toBe(true)
+  it('permite registrar um evento concluído depois do término', () => {
+    expect(canRegisterPresence({
+      ...scheduledEvent,
+      beginDate: '2020-08-01T13:00:00.000Z',
+      status: 'COMPLETED',
+    })).toBe(true)
   })
 
   it('não oferece registro após o fechamento administrativo', () => {
-    expect(canRegisterPresence(
-      { ...scheduledEvent, status: 'LOCKED' },
-      new Date('2026-08-01T14:00:00.000Z'),
-    )).toBe(false)
+    expect(canRegisterPresence({ ...scheduledEvent, status: 'LOCKED' })).toBe(false)
   })
 })
 
 describe('getPresenceRegistrationAvailability', () => {
-  it('explica quando a janela de presença ainda não abriu', () => {
-    expect(getPresenceRegistrationAvailability(
-      scheduledEvent,
-      new Date('2026-08-01T12:59:59.000Z'),
-    )).toEqual({
-      state: 'before-window',
-      message:
-        'O registro ficará disponível quando a janela de presença deste evento estiver aberta.',
+  it('não depende da data para liberar um evento agendado', () => {
+    expect(getPresenceRegistrationAvailability({
+      ...scheduledEvent,
+      beginDate: '2036-08-01T13:00:00.000Z',
+    })).toEqual({
+      state: 'available',
+      message: null,
+    })
+  })
+
+  it('não exige datas nem tipo para uma situação aberta', () => {
+    expect(getPresenceRegistrationAvailability({
+      status: 'SCHEDULED',
+    })).toEqual({
+      state: 'available',
+      message: null,
+    })
+  })
+
+  it('não depende da data para liberar um evento concluído', () => {
+    expect(getPresenceRegistrationAvailability({
+      ...scheduledEvent,
+      beginDate: '2020-08-01T13:00:00.000Z',
+      status: 'COMPLETED',
+    })).toEqual({
+      state: 'available',
+      message: null,
     })
   })
 
@@ -78,43 +91,14 @@ describe('getPresenceRegistrationAvailability', () => {
     },
   )
 
-  it('usa uma mensagem neutra quando a janela não pode ser determinada', () => {
+  it('usa uma mensagem neutra quando falta a situação do evento', () => {
     expect(getPresenceRegistrationAvailability({
-      ...scheduledEvent,
-      beginDate: 'data-inválida',
+      beginDate: '2036-08-01T13:00:00.000Z',
     })).toEqual({
       state: 'unavailable',
       message:
-        'Não foi possível determinar a janela de presença deste evento. Atualize a página e tente novamente.',
+        'Não foi possível determinar a disponibilidade do registro de presença deste evento. Atualize a página e tente novamente.',
     })
-  })
-
-  it('orienta uma nova tentativa quando faltam dados para avaliar a janela', () => {
-    expect(getPresenceRegistrationAvailability({
-      ...scheduledEvent,
-      beginDate: undefined,
-    })).toEqual({
-      state: 'unavailable',
-      message:
-        'Não foi possível determinar a janela de presença deste evento. Atualize a página e tente novamente.',
-    })
-  })
-
-  it('mantém o registro indisponível quando o instante de avaliação é inválido', () => {
-    const invalidEvaluationInstant = new Date('data-inválida')
-
-    expect(getPresenceRegistrationAvailability(
-      scheduledEvent,
-      invalidEvaluationInstant,
-    )).toEqual({
-      state: 'unavailable',
-      message:
-        'Não foi possível determinar a janela de presença deste evento. Atualize a página e tente novamente.',
-    })
-    expect(canRegisterPresence(
-      scheduledEvent,
-      invalidEvaluationInstant,
-    )).toBe(false)
   })
 })
 
