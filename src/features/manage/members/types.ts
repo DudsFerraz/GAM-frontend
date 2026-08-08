@@ -12,6 +12,7 @@ export type SpecificationFilter = SearchFilter
 
 export type MemberListItem = {
   id: string
+  accountId: string | null
   firstName: string
   surname: string | null
   displayName: string

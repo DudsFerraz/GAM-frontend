@@ -10,29 +10,6 @@ const hookMocks = vi.hoisted(() => ({
 
 vi.mock('../hooks/useAccountAdministration', () => hookMocks)
 
-vi.mock('./AccountCoordinatorTransitionSection', () => ({
-  AccountCoordinatorTransitionSection: () => (
-    <div>Gestão da coordenação geral</div>
-  ),
-}))
-
-vi.mock('./AccountOratorioCoordinatorTransitionSection', () => ({
-  AccountOratorioCoordinatorTransitionSection: ({
-    hasActiveMemberProjection,
-    isOratorioCoordinator,
-  }: {
-    hasActiveMemberProjection: boolean
-    isOratorioCoordinator: boolean
-  }) => (
-    <div
-      data-active-member-projection={String(hasActiveMemberProjection)}
-      data-oratorio-coordinator={String(isOratorioCoordinator)}
-    >
-      Gestão da coordenação do Oratório
-    </div>
-  ),
-}))
-
 const account: Account = {
   displayName: 'Maria Silva',
   email: 'maria@example.test',
@@ -50,7 +27,9 @@ const role = (name: string) => ({
 beforeEach(() => {
   hookMocks.useAccountRoles.mockReset()
   hookMocks.useAccountRoles.mockReturnValue({
-    data: { roles: [role('MEMBER')] },
+    data: {
+      roles: [role('MEMBER'), role('COORD'), role('ORATORIO_COORD')],
+    },
     isError: false,
     isLoading: false,
     refetch: vi.fn(),
@@ -58,62 +37,17 @@ beforeEach(() => {
 })
 
 describe('AccountDetailsDialog', () => {
-  it('não mostra a gestão do Oratório sem a permissão dedicada', () => {
+  it('apresenta os cargos associados sem oferecer ações de gestão', () => {
     render(
-      <AccountDetailsDialog
-        account={account}
-        canManageMemberTransitions={false}
-        canManageOratorioCoordinators={false}
-        onClose={vi.fn()}
-      />,
+      <AccountDetailsDialog account={account} onClose={vi.fn()} />,
     )
 
+    expect(screen.getByRole('heading', { name: 'Tipos de acesso' })).toBeInTheDocument()
+    expect(screen.getByText('Membro')).toBeInTheDocument()
+    expect(screen.getByText('Coordenação')).toBeInTheDocument()
+    expect(screen.getByText('Coordenação do Oratório')).toBeInTheDocument()
     expect(
-      screen.queryByText('Gestão da coordenação do Oratório'),
+      screen.queryByRole('button', { name: /conceder|designar|remover/i }),
     ).not.toBeInTheDocument()
-  })
-
-  it('deriva a ação e a projeção ativa dos papéis autoritativos', () => {
-    hookMocks.useAccountRoles.mockReturnValue({
-      data: { roles: [role('MEMBER'), role('ORATORIO_COORD')] },
-      isError: false,
-      isLoading: false,
-      refetch: vi.fn(),
-    })
-
-    render(
-      <AccountDetailsDialog
-        account={account}
-        canManageMemberTransitions={false}
-        canManageOratorioCoordinators
-        onClose={vi.fn()}
-      />,
-    )
-
-    const section = screen.getByText('Gestão da coordenação do Oratório')
-    expect(section).toHaveAttribute('data-active-member-projection', 'true')
-    expect(section).toHaveAttribute('data-oratorio-coordinator', 'true')
-  })
-
-  it('marca como inconsistente a projeção que também contém visitante', () => {
-    hookMocks.useAccountRoles.mockReturnValue({
-      data: { roles: [role('MEMBER'), role('VISITOR')] },
-      isError: false,
-      isLoading: false,
-      refetch: vi.fn(),
-    })
-
-    render(
-      <AccountDetailsDialog
-        account={account}
-        canManageMemberTransitions={false}
-        canManageOratorioCoordinators
-        onClose={vi.fn()}
-      />,
-    )
-
-    expect(
-      screen.getByText('Gestão da coordenação do Oratório'),
-    ).toHaveAttribute('data-active-member-projection', 'false')
   })
 })

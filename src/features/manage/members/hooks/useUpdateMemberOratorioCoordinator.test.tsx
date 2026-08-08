@@ -38,6 +38,7 @@ describe('useUpdateMemberOratorioCoordinator', () => {
     await act(async () => {
       await result.current.mutateAsync({
         action: 'grant',
+        accountId: 'account-id',
         memberId: 'member-id',
         reason: 'Apoio ao Oratório',
       })
@@ -50,6 +51,12 @@ describe('useUpdateMemberOratorioCoordinator', () => {
     )
     expect(invalidateQueries).toHaveBeenCalledWith({
       queryKey: ['members'],
+    })
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['account-administration', 'account-id', 'roles'],
+    })
+    expect(invalidateQueries).toHaveBeenCalledWith({
+      queryKey: ['account-administration', 'search'],
     })
   })
 })

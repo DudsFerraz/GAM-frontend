@@ -32,6 +32,7 @@ import {
 } from "../presentation";
 import { useUpdateMemberStatus } from "../hooks/useUpdateMemberStatus";
 import type { MemberListItem } from "../types";
+import { MemberRolesManagementSection } from "./MemberRolesManagementSection";
 
 const memberStatusSchema = z.object({
   reason: z
@@ -45,13 +46,17 @@ type MemberStatusFormValues = z.infer<typeof memberStatusSchema>;
 
 type MemberDetailsDialogProps = {
   member: MemberListItem | null;
-  canManageMemberTransitions: boolean;
+  canManageCoordinator: boolean;
+  canManageMemberStatus: boolean;
+  canManageOratorioCoordinators: boolean;
   onClose: () => void;
 };
 
 export function MemberDetailsDialog({
   member,
-  canManageMemberTransitions,
+  canManageCoordinator,
+  canManageMemberStatus,
+  canManageOratorioCoordinators,
   onClose,
 }: MemberDetailsDialogProps) {
   const [isStatusFormOpen, setIsStatusFormOpen] = useState(false);
@@ -94,11 +99,11 @@ export function MemberDetailsDialog({
 
   return (
     <Dialog open onOpenChange={handleOpenChange}>
-      <DialogContent>
+      <DialogContent className="max-h-[calc(100vh-2rem)] overflow-y-auto sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>{fullName}</DialogTitle>
           <DialogDescription>
-            Informações do membro e ações de ciclo de vida disponíveis.
+            Informações do membro e ações de gestão disponíveis.
           </DialogDescription>
         </DialogHeader>
 
@@ -136,7 +141,7 @@ export function MemberDetailsDialog({
           </div>
         </dl>
 
-        {canManageMemberTransitions && member.status && (
+        {canManageMemberStatus && member.status && (
           <section
             className="space-y-4 border-t pt-4"
             aria-labelledby="member-status-transition-title"
@@ -228,7 +233,15 @@ export function MemberDetailsDialog({
           </section>
         )}
 
-        {(!canManageMemberTransitions ||
+        {(canManageCoordinator || canManageOratorioCoordinators) && (
+          <MemberRolesManagementSection
+            canManageCoordinator={canManageCoordinator}
+            canManageOratorioCoordinator={canManageOratorioCoordinators}
+            member={member}
+          />
+        )}
+
+        {(!canManageMemberStatus ||
           !member.status ||
           !isStatusFormOpen) && (
           <DialogFooter>

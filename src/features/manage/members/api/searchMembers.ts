@@ -78,6 +78,7 @@ function toMemberListItem(member: MemberTransport): MemberListItem | null {
 
   return {
     id: member.id,
+    accountId: member.account?.id ?? null,
     firstName: member.firstName ?? 'Membro sem nome',
     surname: member.surname ?? null,
     displayName: member.account?.displayName ?? member.firstName ?? 'Membro',

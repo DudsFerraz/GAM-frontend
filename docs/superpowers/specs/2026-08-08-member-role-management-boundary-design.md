@@ -40,9 +40,9 @@ Essa dependência fica em uma única direção: Members consome a leitura públi
 
 ### Permissões e regras preservadas
 
-- A Coordenação geral é exibida somente com `MEMBER_ACTIVATION`, mantendo a regra atual da interface.
+- A Coordenação geral é exibida somente com `COORDINATOR_MANAGE`, conforme o contrato autoritativo. O uso anterior de `MEMBER_ACTIVATION` era incompatível com a autorização exigida pela rota.
 - A Coordenação do Oratório é exibida somente com `ORATORIO_COORD_MANAGE`.
-- A responsabilidade do Oratório permanece indisponível para Member inativo ou quando a projeção de Roles não representa um Member ativo de modo consistente.
+- As duas responsabilidades permanecem indisponíveis para Member inativo ou quando a projeção de Roles não representa um Member ativo de modo consistente.
 - A autorização final continua pertencendo ao backend.
 - Quando nenhuma das permissões estiver presente, o diálogo não consulta Roles apenas para oferecer ações indisponíveis.
 

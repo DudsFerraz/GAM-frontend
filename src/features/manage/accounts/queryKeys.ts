@@ -7,9 +7,4 @@ export const accountAdminQueryKeys = {
   all: ['account-administration'] as const,
   search: (search: AccountSearch, page: number) => [...accountAdminQueryKeys.all, 'search', search, page] as const,
   roles: (accountId: string) => [...accountAdminQueryKeys.all, accountId, 'roles'] as const,
-  roleSearch: (name: string) => [...accountAdminQueryKeys.all, 'role-search', name] as const,
-  assignment: (accountId: string, assignmentId: string) => [...accountAdminQueryKeys.all, accountId, 'assignments', assignmentId] as const,
-  role: (roleId: string) => ['rbac', 'roles', roleId] as const,
-  rolePermissions: (roleId: string) => ['rbac', 'roles', roleId, 'permissions'] as const,
-  permission: (permissionId: string) => ['rbac', 'permissions', permissionId] as const,
 }

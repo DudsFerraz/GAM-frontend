@@ -32,7 +32,11 @@ export function ManageMembersPage() {
 
   const { account } = useAccountInfo()
   const { permissions } = useAccountPermissions(account)
-  const canManageMemberTransitions = permissions.includes('MEMBER_ACTIVATION')
+  const canManageMemberStatus = permissions.includes('MEMBER_ACTIVATION')
+  const canManageCoordinator = permissions.includes('COORDINATOR_MANAGE')
+  const canManageOratorioCoordinators = permissions.includes(
+    'ORATORIO_COORD_MANAGE',
+  )
   const canCreateMember = permissions.includes('MEMBER_MANAGE') && permissions.includes('ACCOUNT_SEARCH')
 
   const { data, isLoading, isError, refetch } = useSearchMembers({
@@ -112,7 +116,9 @@ export function ManageMembersPage() {
       </div>
 
       <MemberDetailsDialog
-        canManageMemberTransitions={canManageMemberTransitions}
+        canManageCoordinator={canManageCoordinator}
+        canManageMemberStatus={canManageMemberStatus}
+        canManageOratorioCoordinators={canManageOratorioCoordinators}
         member={selectedMember}
         onClose={() => setSelectedMember(null)}
       />

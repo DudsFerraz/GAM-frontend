@@ -6,6 +6,7 @@ import type { MemberListItem } from '../types'
 import { MemberCard } from './MemberCard'
 
 const member: MemberListItem = {
+  accountId: 'account-id',
   birthDate: '2000-01-01',
   displayName: 'Ana Silva',
   email: 'ana@example.test',

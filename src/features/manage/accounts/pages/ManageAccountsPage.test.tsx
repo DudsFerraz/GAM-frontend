@@ -5,15 +5,11 @@ import { ManageAccountsPage } from './ManageAccountsPage'
 
 const pageMocks = vi.hoisted(() => ({
   accountDetailsDialog: vi.fn(),
-  useAccountInfo: vi.fn(),
-  useAccountPermissions: vi.fn(),
   useSearchAccounts: vi.fn(),
 }))
 
 vi.mock('@/features/account', () => ({
   getRoleLabel: vi.fn(() => 'Tipo de acesso'),
-  useAccountInfo: pageMocks.useAccountInfo,
-  useAccountPermissions: pageMocks.useAccountPermissions,
 }))
 
 vi.mock('../hooks/useAccountAdministration', () => ({
@@ -29,10 +25,6 @@ vi.mock('../components/AccountDetailsDialog', () => ({
 
 beforeEach(() => {
   pageMocks.accountDetailsDialog.mockReset()
-  pageMocks.useAccountInfo.mockReset()
-  pageMocks.useAccountInfo.mockReturnValue({ account: { id: 'current-account' } })
-  pageMocks.useAccountPermissions.mockReset()
-  pageMocks.useAccountPermissions.mockReturnValue({ permissions: [] })
   pageMocks.useSearchAccounts.mockReset()
   pageMocks.useSearchAccounts.mockReturnValue({
     data: {
@@ -48,33 +40,14 @@ beforeEach(() => {
 })
 
 describe('ManageAccountsPage', () => {
-  it('usa somente a permissão dedicada para gerir a coordenação do Oratório', () => {
-    pageMocks.useAccountPermissions.mockReturnValue({
-      permissions: ['ORATORIO_COORD_MANAGE'],
-    })
-
+  it('mantém o diálogo restrito à consulta da conta selecionada', () => {
     render(<ManageAccountsPage />)
 
-    expect(pageMocks.accountDetailsDialog).toHaveBeenCalledWith(
-      expect.objectContaining({
-        canManageMemberTransitions: false,
-        canManageOratorioCoordinators: true,
-      }),
-    )
-  })
+    const props = pageMocks.accountDetailsDialog.mock.calls.at(-1)?.[0]
 
-  it('não usa a permissão de ativação de membros como substituta', () => {
-    pageMocks.useAccountPermissions.mockReturnValue({
-      permissions: ['MEMBER_ACTIVATION'],
+    expect(props).toEqual({
+      account: null,
+      onClose: expect.any(Function),
     })
-
-    render(<ManageAccountsPage />)
-
-    expect(pageMocks.accountDetailsDialog).toHaveBeenCalledWith(
-      expect.objectContaining({
-        canManageMemberTransitions: true,
-        canManageOratorioCoordinators: false,
-      }),
-    )
   })
 })

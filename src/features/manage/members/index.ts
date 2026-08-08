@@ -1,7 +1,6 @@
 export { ManageMembersPage } from './pages/ManageMembersPage'
 export { MemberDetailPage } from './pages/MemberDetailPage'
 export { MemberSearchPicker } from './components/MemberSearchPicker'
-export { useMemberByAccountEmail } from './hooks/useMemberByAccountEmail'
 export { useUpdateMemberCoordinator } from './hooks/useUpdateMemberCoordinator'
 export { useUpdateMemberOratorioCoordinator } from './hooks/useUpdateMemberOratorioCoordinator'
 export type { MemberListItem } from './types'

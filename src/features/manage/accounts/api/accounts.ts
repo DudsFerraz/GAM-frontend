@@ -8,9 +8,7 @@ type AccountPageTransport = components['schemas']['PagedResponseAccountRDTO']
 export type Account = Omit<AccountTransport, 'roles'> & { roles: Role[] }
 export type AccountPage = Omit<AccountPageTransport, 'items'> & { items?: Account[] }
 export type AccountRoles = { roles: Role[] }
-export type AccountRoleAssignment = components['schemas']['AccountRoleRDTO']
 export type Role = components['schemas']['RoleRDTO']
-export type Permission = components['schemas']['PermissionRDTO']
 
 export type AccountSearch = {
   filters: SearchFilter[]
@@ -69,40 +67,4 @@ export async function searchAccounts(search: AccountSearch, page: number): Promi
 export async function getAccountRoles(accountId: string): Promise<AccountRoles> {
   const { data } = await api.get<unknown>(`/accounts/${accountId}/roles`)
   return { roles: normalizeAccountRoles(data) }
-}
-
-export async function searchRoles(name: string): Promise<Role[]> {
-  const { data } = await api.get<components['schemas']['RolesRDTO']>('/roles', {
-    params: { name: name.trim() },
-  })
-  return data.roles
-}
-
-export async function assignAccountRole(accountId: string, roleId: string, reason: string): Promise<AccountRoleAssignment> {
-  const { data } = await api.post<AccountRoleAssignment>(`/accounts/${accountId}/roles`, { roleId, reason })
-  return data
-}
-
-export async function dropAccountRole(accountId: string, roleId: string, reason: string): Promise<void> {
-  await api.patch(`/accounts/${accountId}/roles/${roleId}/drop`, { reason })
-}
-
-export async function getAccountRoleAssignment(accountId: string, assignmentId: string): Promise<AccountRoleAssignment> {
-  const { data } = await api.get<AccountRoleAssignment>(`/accounts/${accountId}/role-assignments/${assignmentId}`)
-  return data
-}
-
-export async function getRole(roleId: string): Promise<Role> {
-  const { data } = await api.get<Role>(`/roles/${roleId}`)
-  return data
-}
-
-export async function getRolePermissions(roleId: string): Promise<Permission[]> {
-  const { data } = await api.get<components['schemas']['GetRolePermissionsRDTO']>(`/roles/${roleId}/permissions`)
-  return data.permissions ?? []
-}
-
-export async function getPermission(permissionId: string): Promise<Permission> {
-  const { data } = await api.get<Permission>(`/permissions/${permissionId}`)
-  return data
 }

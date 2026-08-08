@@ -21,11 +21,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
-import {
-  getRoleLabel,
-  useAccountInfo,
-  useAccountPermissions,
-} from "@/features/account";
+import { getRoleLabel } from "@/features/account";
 import { isForbiddenError } from "@/lib/http";
 
 import type { Account } from "../api/accounts";
@@ -37,14 +33,8 @@ export function ManageAccountsPage() {
   const [search, setSearch] = useState(() => toAccountSearch([], []));
   const [page, setPage] = useState(0);
   const [selectedAccount, setSelectedAccount] = useState<Account | null>(null);
-  const { account } = useAccountInfo();
-  const { permissions } = useAccountPermissions(account);
   const query = useSearchAccounts(search, page);
   const items = query.data?.items ?? [];
-  const canManageMemberTransitions = permissions.includes("MEMBER_ACTIVATION");
-  const canManageOratorioCoordinators = permissions.includes(
-    "ORATORIO_COORD_MANAGE",
-  );
 
   const handleSearch = (filters: SearchFilter[], sorts: SortCriteria[]) => {
     setPage(0);
@@ -144,8 +134,6 @@ export function ManageAccountsPage() {
 
       <AccountDetailsDialog
         account={selectedAccount}
-        canManageMemberTransitions={canManageMemberTransitions}
-        canManageOratorioCoordinators={canManageOratorioCoordinators}
         onClose={() => setSelectedAccount(null)}
       />
     </div>

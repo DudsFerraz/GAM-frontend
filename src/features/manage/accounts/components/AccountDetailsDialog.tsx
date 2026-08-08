@@ -14,27 +14,19 @@ import {
 import { getRolePresentation } from '@/features/account'
 
 import type { Account } from '../api/accounts'
-import { AccountCoordinatorTransitionSection } from './AccountCoordinatorTransitionSection'
-import { AccountOratorioCoordinatorTransitionSection } from './AccountOratorioCoordinatorTransitionSection'
 import { useAccountRoles } from '../hooks/useAccountAdministration'
 
 type AccountDetailsDialogProps = {
   account: Account | null
-  canManageMemberTransitions: boolean
-  canManageOratorioCoordinators: boolean
   onClose: () => void
 }
 
 export function AccountDetailsDialog({
   account,
-  canManageMemberTransitions,
-  canManageOratorioCoordinators,
   onClose,
 }: AccountDetailsDialogProps) {
   const rolesQuery = useAccountRoles(account?.id ?? null)
   const roles = rolesQuery.data?.roles ?? []
-  const hasMemberRole = roles.some((role) => role.name === 'MEMBER')
-  const hasVisitorRole = roles.some((role) => role.name === 'VISITOR')
 
   if (!account) {
     return null
@@ -119,31 +111,6 @@ export function AccountDetailsDialog({
             </div>
           )}
         </section>
-
-        {canManageMemberTransitions
-          && !rolesQuery.isLoading
-          && !rolesQuery.isError
-          && account.id && (
-            <AccountCoordinatorTransitionSection
-              accountEmail={account.email}
-              accountId={account.id}
-              isCoordinator={roles.some((role) => role.name === 'COORD')}
-            />
-          )}
-
-        {canManageOratorioCoordinators
-          && !rolesQuery.isLoading
-          && !rolesQuery.isError
-          && account.id && (
-            <AccountOratorioCoordinatorTransitionSection
-              accountEmail={account.email}
-              accountId={account.id}
-              hasActiveMemberProjection={hasMemberRole && !hasVisitorRole}
-              isOratorioCoordinator={roles.some(
-                (role) => role.name === 'ORATORIO_COORD',
-              )}
-            />
-          )}
 
         <DialogFooter>
           <Button onClick={onClose} type="button" variant="outline">

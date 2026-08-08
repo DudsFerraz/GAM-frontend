@@ -17,7 +17,11 @@ describe('searchMembers', () => {
       data: {
         items: [
           {
-            account: { displayName: 'Maria GAM', email: 'maria@example.test' },
+            account: {
+              displayName: 'Maria GAM',
+              email: 'maria@example.test',
+              id: 'account-id',
+            },
             firstName: 'Maria',
             id: '550e8400-e29b-41d4-a716-446655440000',
             status: 'ACTIVE',
@@ -55,6 +59,7 @@ describe('searchMembers', () => {
     )
     expect(result.items).toEqual([
       {
+        accountId: 'account-id',
         birthDate: null,
         displayName: 'Maria GAM',
         email: 'maria@example.test',
