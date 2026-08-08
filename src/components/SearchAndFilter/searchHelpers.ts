@@ -84,6 +84,14 @@ export function getDisplayValue(
   const field = config.find((item) => item.key === filter.field)
 
   if (field?.inputType === 'select' && field.options) {
+    const selectedOption = field.options.find(
+      (option) => getOptionKey(option.value) === getOptionKey(filter.value),
+    )
+
+    if (selectedOption) {
+      return selectedOption.label
+    }
+
     const values = Array.isArray(filter.value)
       ? filter.value
       : [filter.value]

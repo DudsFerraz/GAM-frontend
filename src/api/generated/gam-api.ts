@@ -159,12 +159,140 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Recover active signed-attachment metadata
+         * @description Lists the form's active signed-attachment collection in page order without reading file bytes.
+         */
+        get: operations["getOratorianoFormSignedAttachments"];
         /**
          * Replace a draft's complete signed attachment collection
          * @description Performs the documented GAM operation: Replace a draft's complete signed attachment collection.
          */
         put: operations["replaceOratorianoFormSignedAttachments"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace the Member core profile
+         * @description Performs the documented GAM operation: Replace the Member core profile.
+         */
+        put: operations["updateMemberProfile"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/sacraments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace all Member sacrament statuses
+         * @description Performs the documented GAM operation: Replace all Member sacrament statuses.
+         */
+        put: operations["updateMemberSacraments"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/gam-entry-date": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace the Member GAM entry date
+         * @description Performs the documented GAM operation: Replace the Member GAM entry date.
+         */
+        put: operations["updateMemberGamEntryDate"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/experiences": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace all Member experience statuses
+         * @description Performs the documented GAM operation: Replace all Member experience statuses.
+         */
+        put: operations["updateMemberExperiences"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/dietary-restriction": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace the Member dietary restriction
+         * @description Performs the documented GAM operation: Replace the Member dietary restriction.
+         */
+        put: operations["updateMemberDietaryRestriction"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/contribution-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current Member contribution profile
+         * @description Performs the documented GAM operation: Get current Member contribution profile.
+         */
+        get: operations["getMemberContributionProfile"];
+        /**
+         * Replace the Member contribution profile
+         * @description Performs the documented GAM operation: Replace the Member contribution profile.
+         */
+        put: operations["updateMemberContributionProfile"];
         post?: never;
         delete?: never;
         options?: never;
@@ -319,7 +447,11 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /**
+         * Recover print-snapshot metadata
+         * @description Lists every active immutable print snapshot for the form, including older draft revisions.
+         */
+        get: operations["getOratorianoFormPrintSnapshots"];
         put?: never;
         /**
          * Create an immutable print snapshot
@@ -904,6 +1036,26 @@ export interface paths {
         patch: operations["grantCoordinator"];
         trace?: never;
     };
+    "/members/{memberId}/account/link": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /**
+         * Link an existing Account to an Account-less Member
+         * @description Links one eligible existing Account to one eligible Account-less Member and projects the Member lifecycle Role. If the Account has a pending Membership Solicitation for an existing Member, a Coordinator must first reject that solicitation after human review; approving it would create a second Member instead of linking the existing one.
+         */
+        patch: operations["linkMemberAccount"];
+        trace?: never;
+    };
     "/members/{id}/deactivate": {
         parameters: {
             query?: never;
@@ -1356,6 +1508,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/members/{memberId}/experiences-and-sacraments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get current Member experiences and sacraments
+         * @description Performs the documented GAM operation: Get current Member experiences and sacraments.
+         */
+        get: operations["getMemberExperiencesAndSacraments"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/members/{memberId}/annual-information/{surveyCycle}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get protected annual Member information
+         * @description Performs the documented GAM operation: Get protected annual Member information.
+         */
+        get: operations["getAnnualMemberInformation"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/members/{id}": {
         parameters: {
             query?: never;
@@ -1567,42 +1759,42 @@ export interface components {
             birthDate?: string;
             phoneNumber?: string;
         };
-        AddressDTO: {
-            addressLine?: string;
-            addressNumber?: string;
-            neighborhood?: string;
-            cep?: string;
-            city?: string;
+        AddressDTO: null | {
+            addressLine?: string | null;
+            addressNumber?: string | null;
+            neighborhood?: string | null;
+            cep?: string | null;
+            city?: string | null;
         };
-        DeclarationsDTO: {
-            signerRelationshipConfirmed?: boolean;
-            informationTruthConfirmed?: boolean;
-            healthInformationCurrentConfirmed?: boolean;
-            informationUseUnderstood?: boolean;
-            formReviewed?: boolean;
-            imageAndVoiceAuthorizationAccepted?: boolean;
+        DeclarationsDTO: null | {
+            signerRelationshipConfirmed?: boolean | null;
+            informationTruthConfirmed?: boolean | null;
+            healthInformationCurrentConfirmed?: boolean | null;
+            informationUseUnderstood?: boolean | null;
+            formReviewed?: boolean | null;
+            imageAndVoiceAuthorizationAccepted?: boolean | null;
         };
         /** @description Editable structured transcription for one additional-form draft */
         FormDraftDTO: {
-            firstName?: string;
-            surname?: string;
+            firstName?: string | null;
+            surname?: string | null;
             /** Format: date */
-            birthDate?: string;
-            cpf?: string;
-            rg?: string;
+            birthDate?: string | null;
+            cpf?: string | null;
+            rg?: string | null;
             address?: components["schemas"]["AddressDTO"];
-            phoneNumber?: string;
-            schoolName?: string;
-            schoolGrade?: string;
+            phoneNumber?: string | null;
+            schoolName?: string | null;
+            schoolGrade?: string | null;
             responsible?: components["schemas"]["ResponsibleDTO"];
             father?: components["schemas"]["ParentDTO"];
             mother?: components["schemas"]["ParentDTO"];
             health?: components["schemas"]["HealthDTO"];
             declarations?: components["schemas"]["DeclarationsDTO"];
             /** Format: date */
-            signedOn?: string;
+            signedOn?: string | null;
         };
-        HealthDTO: {
+        HealthDTO: null | {
             medicalFollowUp?: components["schemas"]["HealthQuestionDTO"];
             physicalActivityRestriction?: components["schemas"]["HealthQuestionDTO"];
             medicineUse?: components["schemas"]["HealthQuestionDTO"];
@@ -1611,65 +1803,110 @@ export interface components {
             frequentFainting?: components["schemas"]["HealthQuestionDTO"];
             heartCondition?: components["schemas"]["HealthQuestionDTO"];
             otherHealthCondition?: components["schemas"]["HealthQuestionDTO"];
-            otherCare?: string;
+            otherCare?: string | null;
         };
-        HealthQuestionDTO: {
-            /** @enum {string} */
-            answer?: "YES" | "NO" | "NOT_INFORMED";
-            explanation?: string;
-            importantInstructions?: string;
+        HealthQuestionDTO: null | {
+            /** @enum {string|null} */
+            answer?: "YES" | "NO" | "NOT_INFORMED" | null;
+            explanation?: string | null;
+            importantInstructions?: string | null;
         };
-        ParentDTO: {
-            firstName?: string;
-            surname?: string;
-            cpf?: string;
+        ParentDTO: null | {
+            firstName?: string | null;
+            surname?: string | null;
+            cpf?: string | null;
         };
-        ResponsibleDTO: {
-            /** @enum {string} */
-            relationship?: "SELF" | "MOTHER" | "FATHER" | "RELATIVE" | "REFERENCE_ADULT";
-            relationshipComplement?: string;
-            firstName?: string;
-            surname?: string;
-            cpf?: string;
-            phoneNumber?: string;
-            email?: string;
-            atLeast18?: boolean;
+        ResponsibleDTO: null | {
+            /** @enum {string|null} */
+            relationship?: "SELF" | "MOTHER" | "FATHER" | "RELATIVE" | "REFERENCE_ADULT" | null;
+            relationshipComplement?: string | null;
+            firstName?: string | null;
+            surname?: string | null;
+            cpf?: string | null;
+            phoneNumber?: string | null;
+            email?: string | null;
+            atLeast18?: boolean | null;
         };
         AccountReferenceRDTO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
+            displayName: string;
         };
         FormRDTO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: uuid */
-            oratorianoId?: string;
+            oratorianoId: string;
             /** Format: int32 */
-            version?: number;
+            version: number;
             /** @enum {string} */
-            status?: "DRAFT" | "COMPLETED" | "SUPERSEDED" | "REVOKED";
+            status: "DRAFT" | "COMPLETED" | "SUPERSEDED" | "REVOKED";
             /** @enum {string} */
-            origin?: "PAPER_TRANSCRIPTION" | "DIRECT_SYSTEM_ENTRY";
+            origin: "PAPER_TRANSCRIPTION" | "DIRECT_SYSTEM_ENTRY";
             /** Format: int64 */
-            draftRevision?: number;
-            data?: {
-                [key: string]: unknown;
-            };
+            draftRevision: number;
+            data: components["schemas"]["FormDraftDTO"];
             /** Format: date */
-            signedOn?: string;
-            createdBy?: components["schemas"]["AccountReferenceRDTO"];
+            signedOn: string | null;
+            createdBy: components["schemas"]["AccountReferenceRDTO"] | null;
             /** Format: date-time */
-            createdAt?: string;
+            createdAt: string;
+            /** Format: date-time */
+            completedAt: string | null;
+            completedBy: components["schemas"]["AccountReferenceRDTO"] | null;
+            /** Format: date-time */
+            revokedAt: string | null;
+            revokedBy: components["schemas"]["AccountReferenceRDTO"] | null;
         };
         AttachmentRDTO: {
             /** Format: uuid */
-            id?: string;
-            originalFilename?: string;
-            verifiedMimeType?: string;
+            id: string;
+            originalFilename: string;
+            verifiedMimeType: string;
             /** Format: int64 */
-            byteLength?: number;
+            byteLength: number;
             /** Format: int32 */
-            pageOrder?: number;
+            pageOrder: number;
+            /** Format: int32 */
+            pageCount: number;
+        };
+        Core: {
+            firstName: string;
+            surname: string;
+            /** Format: date */
+            birthDate: string;
+            residentialCity: string;
+            phoneNumber: string;
+            contactEmail: string;
+            reason: string;
+        };
+        Sacraments: {
+            sacraments: {
+                [key: string]: "YES" | "NO" | "NOT_INFORMED";
+            };
+            reason: string;
+        };
+        GamEntryDate: {
+            /** Format: date */
+            gamEntryDate: string;
+            reason: string;
+        };
+        Experiences: {
+            experiences: {
+                [key: string]: "YES" | "NO" | "NOT_INFORMED";
+            };
+            reason: string;
+        };
+        DietaryRestriction: {
+            /** @enum {string} */
+            status: "YES" | "NO" | "NOT_INFORMED";
+            details?: string;
+            reason: string;
+        };
+        ContributionProfile: {
+            contributionAreas: ("GAME_REFEREE" | "CRAFTS" | "MUSIC" | "PRAYER_LEADERSHIP" | "BOA_TARDE_STORYTELLING" | "DANCE" | "BALLOON_SCULPTURE" | "FOOTBALL" | "VOLLEYBALL" | "BASKETBALL" | "HANDBALL" | "PHOTOGRAPHY_AND_VIDEO" | "PUBLIC_READING" | "FACE_PAINTING" | "FIRST_AID" | "GINCANA_LEADERSHIP" | "TECHNOLOGY" | "TERERE")[];
+            otherContributionAreas: string[];
+            reason: string;
         };
         GamLocationMutationDTO: {
             name: string;
@@ -1758,7 +1995,11 @@ export interface components {
             surname: string;
             /** Format: date */
             birthDate: string;
+            /** Format: date */
+            gamEntryDate: string;
+            residentialCity: string;
             phoneNumber: string;
+            contactEmail: string;
             justification: string;
         };
         AccountSummaryRDTO: {
@@ -1775,7 +2016,11 @@ export interface components {
             surname?: string;
             /** Format: date */
             birthDate?: string;
+            /** Format: date */
+            gamEntryDate?: string;
+            residentialCity?: string;
             phoneNumber?: string;
+            contactEmail?: string;
             justification?: string;
             /** @enum {string} */
             status?: "PENDING" | "APPROVED" | "REJECTED";
@@ -1808,9 +2053,18 @@ export interface components {
             surname: string;
             /** Format: date */
             birthDate: string;
+            /** Format: date */
+            gamEntryDate: string;
+            residentialCity: string;
             phoneNumber: string;
+            contactEmail: string;
             /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
+        };
+        DietaryRestrictionRDTO: {
+            /** @enum {string} */
+            status?: "YES" | "NO" | "NOT_INFORMED";
+            details?: string;
         };
         MemberRDTO: {
             /** Format: uuid */
@@ -1820,7 +2074,12 @@ export interface components {
             surname?: string;
             /** Format: date */
             birthDate?: string;
+            /** Format: date */
+            gamEntryDate?: string;
+            residentialCity?: string;
             phoneNumber?: string;
+            contactEmail?: string;
+            dietaryRestriction?: components["schemas"]["DietaryRestrictionRDTO"];
             /** @enum {string} */
             status?: "ACTIVE" | "INACTIVE";
         };
@@ -1983,6 +2242,12 @@ export interface components {
             /** @description Trimmed by removing only leading and trailing Unicode White_Space code points before validation; the normalized reason must not be blank and must contain from 1 through 2,000 Unicode code points. */
             reason: string;
         };
+        LinkMemberAccountDTO: {
+            /** Format: uuid */
+            accountId: string;
+            /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
+            reason: string;
+        };
         DeactivateMemberDTO: {
             /** @description Leading and trailing Unicode White_Space code points are removed before validation; the normalized reason must contain from 1 through 2,000 Unicode code points. */
             reason: string;
@@ -2043,27 +2308,27 @@ export interface components {
         };
         FormHistoryRDTO: {
             /** Format: uuid */
-            id?: string;
+            id: string;
             /** Format: int32 */
-            version?: number;
+            version: number;
             /** @enum {string} */
-            status?: "DRAFT" | "COMPLETED" | "SUPERSEDED" | "REVOKED";
+            status: "DRAFT" | "COMPLETED" | "SUPERSEDED" | "REVOKED";
             /** @enum {string} */
-            origin?: "PAPER_TRANSCRIPTION" | "DIRECT_SYSTEM_ENTRY";
+            origin: "PAPER_TRANSCRIPTION" | "DIRECT_SYSTEM_ENTRY";
             /** Format: date */
-            signedOn?: string;
+            signedOn: string | null;
             /** Format: date-time */
-            createdAt?: string;
-            createdBy?: components["schemas"]["AccountReferenceRDTO"];
+            createdAt: string;
+            createdBy: components["schemas"]["AccountReferenceRDTO"] | null;
             /** Format: date-time */
-            completedAt?: string;
-            completedBy?: components["schemas"]["AccountReferenceRDTO"];
+            completedAt: string | null;
+            completedBy: components["schemas"]["AccountReferenceRDTO"] | null;
             /** Format: date-time */
-            revokedAt?: string;
-            revokedBy?: components["schemas"]["AccountReferenceRDTO"];
-            attachmentExists?: boolean;
+            revokedAt: string | null;
+            revokedBy: components["schemas"]["AccountReferenceRDTO"] | null;
+            attachmentExists: boolean;
             /** Format: int32 */
-            attachmentPageCount?: number;
+            attachmentPageCount: number;
         };
         PagedResponseFormHistoryRDTO: {
             items?: components["schemas"]["FormHistoryRDTO"][];
@@ -2077,6 +2342,32 @@ export interface components {
             totalPages?: number;
             first?: boolean;
             last?: boolean;
+        };
+        PagedResponsePrintSnapshotMetadataRDTO: {
+            items?: components["schemas"]["PrintSnapshotMetadataRDTO"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PrintSnapshotMetadataRDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int64 */
+            draftRevision: number;
+            /** @enum {string} */
+            mode: "IDENTIFIED_BLANK" | "PREFILLED";
+            /** Format: date-time */
+            generatedAt: string;
+            templateVersion: string;
+            /** Format: int32 */
+            pageCount: number;
         };
         AttendanceHistoryItemRDTO: {
             /** Format: uuid */
@@ -2124,6 +2415,63 @@ export interface components {
             totalPages?: number;
             first?: boolean;
             last?: boolean;
+        };
+        ExperiencesAndSacraments: {
+            experiences: {
+                /** @enum {string} */
+                JORNADA_MISSIONARIA: "YES" | "NO" | "NOT_INFORMED";
+                /** @enum {string} */
+                CURSO_DE_LIDERANCA: "YES" | "NO" | "NOT_INFORMED";
+                /** @enum {string} */
+                PASCOA_JUVENIL: "YES" | "NO" | "NOT_INFORMED";
+                /** @enum {string} */
+                ACAMPABOSCO: "YES" | "NO" | "NOT_INFORMED";
+            };
+            sacraments: {
+                /** @enum {string} */
+                BATISMO: "YES" | "NO" | "NOT_INFORMED";
+                /** @enum {string} */
+                PRIMEIRA_COMUNHAO: "YES" | "NO" | "NOT_INFORMED";
+                /** @enum {string} */
+                CRISMA: "YES" | "NO" | "NOT_INFORMED";
+            };
+        };
+        ContributionProfileResponse: {
+            contributionProfile: components["schemas"]["MemberContributionProfileRead"];
+        };
+        MemberContributionProfileRead: {
+            contributionAreas: ("GAME_REFEREE" | "CRAFTS" | "MUSIC" | "PRAYER_LEADERSHIP" | "BOA_TARDE_STORYTELLING" | "DANCE" | "BALLOON_SCULPTURE" | "FOOTBALL" | "VOLLEYBALL" | "BASKETBALL" | "HANDBALL" | "PHOTOGRAPHY_AND_VIDEO" | "PUBLIC_READING" | "FACE_PAINTING" | "FIRST_AID" | "GINCANA_LEADERSHIP" | "TECHNOLOGY" | "TERERE")[];
+            otherContributionAreas: string[];
+        };
+        AnnualMemberInformationRDTO: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            surveyCycle: number;
+            /** Format: date-time */
+            submittedAt: string | null;
+            occupations: components["schemas"]["Occupations"];
+            healthCondition: components["schemas"]["StatusDetails"];
+            /** @enum {string} */
+            religiousVocationConsidered: "YES" | "NO" | "NOT_INFORMED";
+            /** @enum {string} */
+            massAttendanceFrequency: "WEEKLY" | "THREE_TIMES_PER_MONTH" | "TWICE_PER_MONTH" | "MONTHLY" | "NOT_INFORMED";
+            saturdayOratorioImpediment: components["schemas"]["StatusDetails"];
+            formationAndMeetingInterests: string | null;
+            /** @enum {string} */
+            coordinationInterest: "YES" | "NO" | "MAYBE" | "NOT_INFORMED";
+            additionalComments: string | null;
+            oratorioActivitySuggestions: string | null;
+            instagramPostSuggestions: string | null;
+        };
+        Occupations: {
+            values: ("WORK" | "UNIVERSITY" | "PREP_COURSE" | "OTHER")[];
+            details: string | null;
+        };
+        StatusDetails: {
+            /** @enum {string} */
+            status: "YES" | "NO" | "NOT_INFORMED";
+            details: string | null;
         };
         PagedResponseGamLocationRDTO: {
             items?: components["schemas"]["GamLocationRDTO"][];
@@ -2220,7 +2568,7 @@ export interface components {
             /** Format: int32 */
             status: number;
             /** @enum {string} */
-            code: "VALIDATION_ERROR" | "MALFORMED_JSON" | "INVALID_PARAMETER_TYPE" | "AUTHENTICATION_REQUIRED" | "INVALID_CREDENTIALS" | "INVALID_REFRESH_TOKEN" | "ACCESS_DENIED" | "FORBIDDEN_OPERATION" | "REQUEST_SECURITY_REJECTED" | "RESOURCE_NOT_FOUND" | "INVALID_SEARCH_FILTER" | "CONFLICT" | "RESOURCE_CONFLICT" | "EVENT_AUDIENCE_PERMISSION_INVALID" | "EVENT_HAS_PRESENCES" | "EVENT_STATUS_TRANSITION_NOT_ALLOWED" | "EVENT_TYPE_NOT_MANAGEABLE" | "GAM_LOCATION_ALREADY_EXISTS" | "GAM_LOCATION_IN_USE" | "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED" | "ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER" | "ORATORIO_DATE_ALREADY_EXISTS" | "PRESENCE_ALREADY_REGISTERED" | "PRESENCE_EDIT_NOT_ALLOWED" | "PRESENCE_REGISTRATION_NOT_ALLOWED" | "PRESENCE_REMOVAL_NOT_ALLOWED";
+            code: "VALIDATION_ERROR" | "MALFORMED_JSON" | "INVALID_PARAMETER_TYPE" | "AUTHENTICATION_REQUIRED" | "INVALID_CREDENTIALS" | "INVALID_REFRESH_TOKEN" | "ACCESS_DENIED" | "FORBIDDEN_OPERATION" | "REQUEST_SECURITY_REJECTED" | "RESOURCE_NOT_FOUND" | "INVALID_SEARCH_FILTER" | "CONFLICT" | "RESOURCE_CONFLICT" | "PRECONDITION_REQUIRED" | "PRECONDITION_FAILED" | "INVALID_PRECONDITION" | "EVENT_AUDIENCE_PERMISSION_INVALID" | "EVENT_HAS_PRESENCES" | "EVENT_STATUS_TRANSITION_NOT_ALLOWED" | "EVENT_TYPE_NOT_MANAGEABLE" | "GAM_LOCATION_ALREADY_EXISTS" | "GAM_LOCATION_IN_USE" | "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED" | "ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER" | "ORATORIO_DATE_ALREADY_EXISTS" | "PRESENCE_ALREADY_REGISTERED" | "PRESENCE_EDIT_NOT_ALLOWED" | "PRESENCE_REGISTRATION_NOT_ALLOWED" | "PRESENCE_REMOVAL_NOT_ALLOWED";
             message: string;
             details: components["schemas"]["ApiValidationErrorDetails"] | components["schemas"]["ApiMalformedJsonDetails"] | components["schemas"]["ApiInvalidParameterTypeDetails"] | components["schemas"]["ApiResourceNotFoundDetails"] | components["schemas"]["ApiInvalidSearchFilterDetails"] | components["schemas"]["ApiEmptyErrorDetails"] | components["schemas"]["ApiFeatureErrorDetails"];
         };
@@ -2282,11 +2630,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2304,11 +2652,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2326,14 +2674,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2351,11 +2699,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2412,11 +2760,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2434,11 +2782,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2456,14 +2804,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2481,11 +2829,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2616,11 +2964,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2638,11 +2986,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2660,14 +3008,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2685,11 +3033,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2760,11 +3108,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2782,11 +3130,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2804,14 +3152,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2829,11 +3177,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2898,11 +3246,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2920,11 +3268,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2942,14 +3290,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -2967,11 +3315,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3042,11 +3390,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3064,11 +3412,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3086,14 +3434,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3111,11 +3459,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3180,11 +3528,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3202,11 +3550,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3224,14 +3572,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3249,11 +3597,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3319,11 +3667,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3341,11 +3689,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3363,14 +3711,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Oratoriano not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Oratoriano",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Oratoriano"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3388,11 +3736,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3471,11 +3819,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3493,11 +3841,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3515,14 +3863,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3540,11 +3888,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3608,11 +3956,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3630,11 +3978,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3652,14 +4000,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3677,11 +4025,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3717,12 +4065,111 @@ export interface operations {
                      *       "status": "DRAFT",
                      *       "origin": "PAPER_TRANSCRIPTION",
                      *       "draftRevision": 1,
-                     *       "data": {},
+                     *       "data": {
+                     *         "firstName": "Synthetic GAM value",
+                     *         "surname": "Synthetic GAM value",
+                     *         "birthDate": "2026-07-15",
+                     *         "cpf": "Synthetic GAM value",
+                     *         "rg": "Synthetic GAM value",
+                     *         "address": {
+                     *           "addressLine": "Synthetic GAM value",
+                     *           "addressNumber": "Synthetic GAM value",
+                     *           "neighborhood": "Synthetic GAM value",
+                     *           "cep": "Synthetic GAM value",
+                     *           "city": "Synthetic GAM value"
+                     *         },
+                     *         "phoneNumber": "Synthetic GAM value",
+                     *         "schoolName": "Synthetic GAM value",
+                     *         "schoolGrade": "Synthetic GAM value",
+                     *         "responsible": {
+                     *           "relationship": "SELF",
+                     *           "relationshipComplement": "Synthetic GAM value",
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value",
+                     *           "phoneNumber": "Synthetic GAM value",
+                     *           "email": "developer@example.test",
+                     *           "atLeast18": true
+                     *         },
+                     *         "father": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "mother": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "health": {
+                     *           "medicalFollowUp": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "physicalActivityRestriction": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "medicineUse": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "allergies": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "convulsions": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "frequentFainting": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "heartCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherHealthCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherCare": "Synthetic GAM value"
+                     *         },
+                     *         "declarations": {
+                     *           "signerRelationshipConfirmed": true,
+                     *           "informationTruthConfirmed": true,
+                     *           "healthInformationCurrentConfirmed": true,
+                     *           "informationUseUnderstood": true,
+                     *           "formReviewed": true,
+                     *           "imageAndVoiceAuthorizationAccepted": true
+                     *         },
+                     *         "signedOn": "2026-07-15"
+                     *       },
                      *       "signedOn": "2026-07-15",
                      *       "createdBy": {
-                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
                      *       },
-                     *       "createdAt": "2026-07-15T12:00:00Z"
+                     *       "createdAt": "2026-07-15T12:00:00Z",
+                     *       "completedAt": "2026-07-15T12:00:00Z",
+                     *       "completedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       },
+                     *       "revokedAt": "2026-07-15T12:00:00Z",
+                     *       "revokedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       }
                      *     }
                      */
                     "*/*": components["schemas"]["FormRDTO"];
@@ -3755,11 +4202,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3777,11 +4224,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3799,14 +4246,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3824,11 +4271,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -3959,12 +4406,111 @@ export interface operations {
                      *       "status": "DRAFT",
                      *       "origin": "PAPER_TRANSCRIPTION",
                      *       "draftRevision": 1,
-                     *       "data": {},
+                     *       "data": {
+                     *         "firstName": "Synthetic GAM value",
+                     *         "surname": "Synthetic GAM value",
+                     *         "birthDate": "2026-07-15",
+                     *         "cpf": "Synthetic GAM value",
+                     *         "rg": "Synthetic GAM value",
+                     *         "address": {
+                     *           "addressLine": "Synthetic GAM value",
+                     *           "addressNumber": "Synthetic GAM value",
+                     *           "neighborhood": "Synthetic GAM value",
+                     *           "cep": "Synthetic GAM value",
+                     *           "city": "Synthetic GAM value"
+                     *         },
+                     *         "phoneNumber": "Synthetic GAM value",
+                     *         "schoolName": "Synthetic GAM value",
+                     *         "schoolGrade": "Synthetic GAM value",
+                     *         "responsible": {
+                     *           "relationship": "SELF",
+                     *           "relationshipComplement": "Synthetic GAM value",
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value",
+                     *           "phoneNumber": "Synthetic GAM value",
+                     *           "email": "developer@example.test",
+                     *           "atLeast18": true
+                     *         },
+                     *         "father": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "mother": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "health": {
+                     *           "medicalFollowUp": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "physicalActivityRestriction": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "medicineUse": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "allergies": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "convulsions": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "frequentFainting": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "heartCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherHealthCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherCare": "Synthetic GAM value"
+                     *         },
+                     *         "declarations": {
+                     *           "signerRelationshipConfirmed": true,
+                     *           "informationTruthConfirmed": true,
+                     *           "healthInformationCurrentConfirmed": true,
+                     *           "informationUseUnderstood": true,
+                     *           "formReviewed": true,
+                     *           "imageAndVoiceAuthorizationAccepted": true
+                     *         },
+                     *         "signedOn": "2026-07-15"
+                     *       },
                      *       "signedOn": "2026-07-15",
                      *       "createdBy": {
-                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
                      *       },
-                     *       "createdAt": "2026-07-15T12:00:00Z"
+                     *       "createdAt": "2026-07-15T12:00:00Z",
+                     *       "completedAt": "2026-07-15T12:00:00Z",
+                     *       "completedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       },
+                     *       "revokedAt": "2026-07-15T12:00:00Z",
+                     *       "revokedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       }
                      *     }
                      */
                     "*/*": components["schemas"]["FormRDTO"];
@@ -3997,11 +4543,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4019,11 +4565,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4041,14 +4587,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4066,11 +4612,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4135,11 +4681,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4157,11 +4703,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4179,14 +4725,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4204,11 +4750,154 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getOratorianoFormSignedAttachments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                oratorianoId: string;
+                formId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example [
+                     *       {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "originalFilename": "Synthetic GAM value",
+                     *         "verifiedMimeType": "Synthetic GAM value",
+                     *         "byteLength": 1,
+                     *         "pageOrder": 1,
+                     *         "pageCount": 1
+                     *       }
+                     *     ]
+                     */
+                    "*/*": components["schemas"]["AttachmentRDTO"][];
+                };
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4256,7 +4945,8 @@ export interface operations {
                      *         "originalFilename": "Synthetic GAM value",
                      *         "verifiedMimeType": "Synthetic GAM value",
                      *         "byteLength": 1,
-                     *         "pageOrder": 1
+                     *         "pageOrder": 1,
+                     *         "pageCount": 1
                      *       }
                      *     ]
                      */
@@ -4290,11 +4980,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4312,11 +5002,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4334,14 +5024,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4359,11 +5049,1288 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberProfile: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "firstName": "Synthetic GAM value",
+                 *       "surname": "Synthetic GAM value",
+                 *       "birthDate": "2026-07-15",
+                 *       "residentialCity": "Synthetic GAM value",
+                 *       "phoneNumber": "Synthetic GAM value",
+                 *       "contactEmail": "developer@example.test",
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["Core"];
+            };
+        };
+        responses: {
+            /** @description Member profile replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberSacraments: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "sacraments": {},
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["Sacraments"];
+            };
+        };
+        responses: {
+            /** @description Sacraments replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberGamEntryDate: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "gamEntryDate": "2026-07-15",
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["GamEntryDate"];
+            };
+        };
+        responses: {
+            /** @description GAM entry date replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberExperiences: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "experiences": {},
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["Experiences"];
+            };
+        };
+        responses: {
+            /** @description Experiences replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberDietaryRestriction: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "status": "YES",
+                 *       "details": "Synthetic GAM value",
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["DietaryRestriction"];
+            };
+        };
+        responses: {
+            /** @description Dietary restriction replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getMemberContributionProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "contributionProfile": {
+                     *         "contributionAreas": [
+                     *           "FOOTBALL"
+                     *         ],
+                     *         "otherContributionAreas": [
+                     *           "Synthetic event cooking"
+                     *         ]
+                     *       }
+                     *     }
+                     */
+                    "*/*": components["schemas"]["ContributionProfileResponse"];
+                };
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    updateMemberContributionProfile: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Exactly one strong ETag previously returned for this Member. */
+                "If-Match": string;
+            };
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "contributionAreas": [
+                 *         "GAME_REFEREE"
+                 *       ],
+                 *       "otherContributionAreas": [
+                 *         "Synthetic GAM value"
+                 *       ],
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["ContributionProfile"];
+            };
+        };
+        responses: {
+            /** @description Contribution profile replaced */
+            204: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The supplied Member representation is stale. */
+            412: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_FAILED",
+                     *       "message": "The supplied Member representation is stale.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 412
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Exactly one current strong Member If-Match value is required. */
+            428: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "PRECONDITION_REQUIRED",
+                     *       "message": "Exactly one current strong Member If-Match value is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 428
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4435,11 +6402,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4457,11 +6424,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4479,14 +6446,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "GamLocation not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "GamLocation",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "GamLocation"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4504,11 +6471,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4596,11 +6563,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4631,14 +6598,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4656,11 +6623,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "GAM_LOCATION_ALREADY_EXISTS",
                      *       "message": "The request conflicts with an existing GamLocation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "GAM_LOCATION_ALREADY_EXISTS"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4724,11 +6691,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4759,14 +6726,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4784,15 +6751,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "GAM_LOCATION_IN_USE",
                      *       "message": "The GamLocation has historical Event references.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventReferenceCount": 2,
                      *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
-                     *         "resource": "GamLocation",
-                     *         "eventReferenceCount": 2
+                     *         "resource": "GamLocation"
                      *       },
-                     *       "status": 409,
-                     *       "code": "GAM_LOCATION_IN_USE"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4879,14 +6846,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Event not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Event",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Event"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -4990,11 +6957,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5012,11 +6979,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5034,14 +7001,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5059,15 +7026,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "currentStatus": "SCHEDULED"
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5131,11 +7098,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5153,11 +7120,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5175,14 +7142,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5200,14 +7167,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_HAS_PRESENCES",
                      *       "message": "Possible codes: EVENT_HAS_PRESENCES, EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Details include eventId, activePresenceCount, currentStatus, and requestedStatus as applicable.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "activePresenceCount": 2,
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "activePresenceCount": 2
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_HAS_PRESENCES"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5335,11 +7302,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5357,11 +7324,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5379,14 +7346,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5404,14 +7371,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ORATORIO_DATE_ALREADY_EXISTS",
                      *       "message": "An active Oratorio occurrence already uses the supplied local date.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Oratorio",
-                     *         "identifier": "2026-07-25"
+                     *         "identifier": "2026-07-25",
+                     *         "resource": "Oratorio"
                      *       },
-                     *       "status": 409,
-                     *       "code": "ORATORIO_DATE_ALREADY_EXISTS"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5500,11 +7467,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5522,11 +7489,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5544,14 +7511,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5569,11 +7536,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5649,11 +7616,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5671,11 +7638,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5693,14 +7660,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5718,11 +7685,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5765,15 +7732,18 @@ export interface operations {
                      *           "signedOn": "2026-07-15",
                      *           "createdAt": "2026-07-15T12:00:00Z",
                      *           "createdBy": {
-                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *             "displayName": "Synthetic GAM value"
                      *           },
                      *           "completedAt": "2026-07-15T12:00:00Z",
                      *           "completedBy": {
-                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *             "displayName": "Synthetic GAM value"
                      *           },
                      *           "revokedAt": "2026-07-15T12:00:00Z",
                      *           "revokedBy": {
-                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *             "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *             "displayName": "Synthetic GAM value"
                      *           },
                      *           "attachmentExists": true,
                      *           "attachmentPageCount": 1
@@ -5817,11 +7787,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5839,11 +7809,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5861,14 +7831,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5886,11 +7856,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5936,12 +7906,111 @@ export interface operations {
                      *       "status": "DRAFT",
                      *       "origin": "PAPER_TRANSCRIPTION",
                      *       "draftRevision": 1,
-                     *       "data": {},
+                     *       "data": {
+                     *         "firstName": "Synthetic GAM value",
+                     *         "surname": "Synthetic GAM value",
+                     *         "birthDate": "2026-07-15",
+                     *         "cpf": "Synthetic GAM value",
+                     *         "rg": "Synthetic GAM value",
+                     *         "address": {
+                     *           "addressLine": "Synthetic GAM value",
+                     *           "addressNumber": "Synthetic GAM value",
+                     *           "neighborhood": "Synthetic GAM value",
+                     *           "cep": "Synthetic GAM value",
+                     *           "city": "Synthetic GAM value"
+                     *         },
+                     *         "phoneNumber": "Synthetic GAM value",
+                     *         "schoolName": "Synthetic GAM value",
+                     *         "schoolGrade": "Synthetic GAM value",
+                     *         "responsible": {
+                     *           "relationship": "SELF",
+                     *           "relationshipComplement": "Synthetic GAM value",
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value",
+                     *           "phoneNumber": "Synthetic GAM value",
+                     *           "email": "developer@example.test",
+                     *           "atLeast18": true
+                     *         },
+                     *         "father": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "mother": {
+                     *           "firstName": "Synthetic GAM value",
+                     *           "surname": "Synthetic GAM value",
+                     *           "cpf": "Synthetic GAM value"
+                     *         },
+                     *         "health": {
+                     *           "medicalFollowUp": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "physicalActivityRestriction": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "medicineUse": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "allergies": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "convulsions": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "frequentFainting": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "heartCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherHealthCondition": {
+                     *             "answer": "YES",
+                     *             "explanation": "Synthetic GAM value",
+                     *             "importantInstructions": "Synthetic GAM value"
+                     *           },
+                     *           "otherCare": "Synthetic GAM value"
+                     *         },
+                     *         "declarations": {
+                     *           "signerRelationshipConfirmed": true,
+                     *           "informationTruthConfirmed": true,
+                     *           "healthInformationCurrentConfirmed": true,
+                     *           "informationUseUnderstood": true,
+                     *           "formReviewed": true,
+                     *           "imageAndVoiceAuthorizationAccepted": true
+                     *         },
+                     *         "signedOn": "2026-07-15"
+                     *       },
                      *       "signedOn": "2026-07-15",
                      *       "createdBy": {
-                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
                      *       },
-                     *       "createdAt": "2026-07-15T12:00:00Z"
+                     *       "createdAt": "2026-07-15T12:00:00Z",
+                     *       "completedAt": "2026-07-15T12:00:00Z",
+                     *       "completedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       },
+                     *       "revokedAt": "2026-07-15T12:00:00Z",
+                     *       "revokedBy": {
+                     *         "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "displayName": "Synthetic GAM value"
+                     *       }
                      *     }
                      */
                     "*/*": components["schemas"]["FormRDTO"];
@@ -5974,11 +8043,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -5996,11 +8065,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6018,14 +8087,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6043,11 +8112,169 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getOratorianoFormPrintSnapshots: {
+        parameters: {
+            query?: {
+                /** @description Zero-based page index. */
+                page?: number;
+                /** @description Page size, from 1 through 100. */
+                size?: number;
+                /** @description Repeat this parameter as field,direction. Allowed fields: generatedAt. Directions: asc, desc. The default is generatedAt descending, then snapshot UUID descending. */
+                sort?: string[];
+            };
+            header?: never;
+            path: {
+                oratorianoId: string;
+                formId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "items": [
+                     *         {
+                     *           "id": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *           "draftRevision": 2,
+                     *           "mode": "PREFILLED",
+                     *           "generatedAt": "2026-07-15T12:00:00Z",
+                     *           "templateVersion": "oratoriano-additional-form-v1",
+                     *           "pageCount": 1
+                     *         }
+                     *       ],
+                     *       "page": 0,
+                     *       "size": 20,
+                     *       "totalElements": 1,
+                     *       "totalPages": 1,
+                     *       "first": true,
+                     *       "last": true
+                     *     }
+                     */
+                    "*/*": components["schemas"]["PagedResponsePrintSnapshotMetadataRDTO"];
+                };
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6117,11 +8344,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6139,11 +8366,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6161,14 +8388,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6186,11 +8413,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6219,9 +8446,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
+                 *           "value": "Ana Silva",
                  *           "comparisonMethod": "LIKE",
-                 *           "field": "name",
-                 *           "value": "Ana Silva"
+                 *           "field": "name"
                  *         }
                  *       ]
                  *     }
@@ -6287,11 +8514,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6309,11 +8536,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6335,7 +8562,10 @@ export interface operations {
                  *       "firstName": "Synthetic GAM value",
                  *       "surname": "Synthetic GAM value",
                  *       "birthDate": "2026-07-15",
+                 *       "gamEntryDate": "2026-07-15",
+                 *       "residentialCity": "Synthetic GAM value",
                  *       "phoneNumber": "Synthetic GAM value",
+                 *       "contactEmail": "developer@example.test",
                  *       "justification": "Synthetic GAM value"
                  *     }
                  */
@@ -6362,7 +8592,10 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
                      *       "justification": "Synthetic GAM value",
                      *       "status": "PENDING",
                      *       "submittedAt": "2026-07-15T12:00:00Z",
@@ -6406,11 +8639,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6428,11 +8661,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6450,14 +8683,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6475,11 +8708,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6507,9 +8740,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
+                 *           "value": "PENDING",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "status",
-                 *           "value": "PENDING"
+                 *           "field": "status"
                  *         }
                  *       ]
                  *     }
@@ -6539,7 +8772,10 @@ export interface operations {
                      *           "firstName": "Synthetic GAM value",
                      *           "surname": "Synthetic GAM value",
                      *           "birthDate": "2026-07-15",
+                     *           "gamEntryDate": "2026-07-15",
+                     *           "residentialCity": "Synthetic GAM value",
                      *           "phoneNumber": "Synthetic GAM value",
+                     *           "contactEmail": "developer@example.test",
                      *           "justification": "Synthetic GAM value",
                      *           "status": "PENDING",
                      *           "submittedAt": "2026-07-15T12:00:00Z",
@@ -6591,11 +8827,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6613,11 +8849,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6640,7 +8876,10 @@ export interface operations {
                  *       "firstName": "Synthetic GAM value",
                  *       "surname": "Synthetic GAM value",
                  *       "birthDate": "2026-07-15",
+                 *       "gamEntryDate": "2026-07-15",
+                 *       "residentialCity": "Synthetic GAM value",
                  *       "phoneNumber": "Synthetic GAM value",
+                 *       "contactEmail": "developer@example.test",
                  *       "reason": "Synthetic GAM value"
                  *     }
                  */
@@ -6667,7 +8906,14 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
+                     *       "dietaryRestriction": {
+                     *         "status": "YES",
+                     *         "details": "Synthetic GAM value"
+                     *       },
                      *       "status": "ACTIVE"
                      *     }
                      */
@@ -6701,11 +8947,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6723,11 +8969,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6745,14 +8991,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6770,11 +9016,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6802,9 +9048,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
+                 *           "value": "ACTIVE",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "status",
-                 *           "value": "ACTIVE"
+                 *           "field": "status"
                  *         }
                  *       ]
                  *     }
@@ -6834,7 +9080,14 @@ export interface operations {
                      *           "firstName": "Synthetic GAM value",
                      *           "surname": "Synthetic GAM value",
                      *           "birthDate": "2026-07-15",
+                     *           "gamEntryDate": "2026-07-15",
+                     *           "residentialCity": "Synthetic GAM value",
                      *           "phoneNumber": "Synthetic GAM value",
+                     *           "contactEmail": "developer@example.test",
+                     *           "dietaryRestriction": {
+                     *             "status": "YES",
+                     *             "details": "Synthetic GAM value"
+                     *           },
                      *           "status": "ACTIVE"
                      *         }
                      *       ],
@@ -6876,11 +9129,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6898,11 +9151,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -6989,11 +9242,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7011,11 +9264,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7103,11 +9356,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7125,11 +9378,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7147,14 +9400,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7172,11 +9425,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "GAM_LOCATION_ALREADY_EXISTS",
                      *       "message": "The request conflicts with an existing GamLocation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "GAM_LOCATION_ALREADY_EXISTS"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7279,11 +9532,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7301,11 +9554,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7323,14 +9576,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7348,11 +9601,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7449,11 +9702,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7471,11 +9724,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7493,14 +9746,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7518,11 +9771,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7612,11 +9865,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7634,11 +9887,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7656,14 +9909,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7681,15 +9934,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "PRESENCE_ALREADY_REGISTERED",
                      *       "message": "Possible codes: PRESENCE_ALREADY_REGISTERED, PRESENCE_REGISTRATION_NOT_ALLOWED. Duplicate details include eventId, memberId, and presenceId. Eligibility details include eventId, status, and evaluationInstant.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "memberId": "019f6343-321a-7c90-a096-a551e8f88eb5",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
                      *       },
-                     *       "status": 409,
-                     *       "code": "PRESENCE_ALREADY_REGISTERED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7717,9 +9970,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
+                 *           "value": "Synthetic event",
                  *           "comparisonMethod": "LIKE",
-                 *           "field": "title",
-                 *           "value": "Synthetic event"
+                 *           "field": "title"
                  *         }
                  *       ]
                  *     }
@@ -7808,11 +10061,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7830,11 +10083,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7903,11 +10156,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7960,11 +10213,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "INVALID_REFRESH_TOKEN",
                      *       "message": "The refresh token is invalid. Please sign in again.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "INVALID_REFRESH_TOKEN"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -7982,11 +10235,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "REQUEST_SECURITY_REJECTED",
                      *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "REQUEST_SECURITY_REJECTED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8035,11 +10288,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "REQUEST_SECURITY_REJECTED",
                      *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "REQUEST_SECURITY_REJECTED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8112,11 +10365,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "INVALID_CREDENTIALS",
                      *       "message": "The supplied credentials are invalid.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "INVALID_CREDENTIALS"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8134,11 +10387,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "REQUEST_SECURITY_REJECTED",
                      *       "message": "Required request security proof was rejected.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "REQUEST_SECURITY_REJECTED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8207,11 +10460,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8229,11 +10482,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8251,14 +10504,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Account",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Account"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8276,11 +10529,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8373,11 +10626,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8408,14 +10661,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8433,11 +10686,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8465,9 +10718,9 @@ export interface operations {
                  * @example {
                  *       "filters": [
                  *         {
+                 *           "value": "Synthetic Member",
                  *           "comparisonMethod": "EQUALS",
-                 *           "field": "displayName",
-                 *           "value": "Synthetic Member"
+                 *           "field": "displayName"
                  *         }
                  *       ]
                  *     }
@@ -8541,11 +10794,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8563,11 +10816,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8632,11 +10885,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8654,11 +10907,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8676,14 +10929,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8701,11 +10954,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8760,11 +11013,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8782,11 +11035,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8804,14 +11057,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8829,11 +11082,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8888,11 +11141,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8910,11 +11163,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8932,14 +11185,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -8957,11 +11210,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9025,11 +11278,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9047,11 +11300,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9069,14 +11322,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9094,11 +11347,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9162,11 +11415,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9184,11 +11437,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9206,14 +11459,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9231,11 +11484,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9300,11 +11553,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9322,11 +11575,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9344,14 +11597,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9369,11 +11622,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9439,11 +11692,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9461,11 +11714,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9483,14 +11736,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9508,14 +11761,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED",
                      *       "message": "Possible codes: ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED, ORATORIANO_FORM_PROFILE_SOURCE_IS_NEWER. Completion requires an explicit authorized overwrite choice when values recorded after the form was signed would be replaced, and rejects a source form that is older than the current form-backed profile source.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "OratorianoForm",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "OratorianoForm"
                      *       },
-                     *       "status": 409,
-                     *       "code": "ORATORIANO_FORM_PROFILE_OVERWRITE_CHOICE_REQUIRED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9562,7 +11815,10 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
                      *       "justification": "Synthetic GAM value",
                      *       "status": "PENDING",
                      *       "submittedAt": "2026-07-15T12:00:00Z",
@@ -9606,11 +11862,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9628,11 +11884,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9650,14 +11906,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9675,11 +11931,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9726,7 +11982,10 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
                      *       "justification": "Synthetic GAM value",
                      *       "status": "PENDING",
                      *       "submittedAt": "2026-07-15T12:00:00Z",
@@ -9770,11 +12029,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9792,11 +12051,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9814,14 +12073,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9839,11 +12098,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9907,11 +12166,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9929,11 +12188,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9951,14 +12210,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -9976,11 +12235,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10044,11 +12303,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10066,11 +12325,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10088,14 +12347,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10113,11 +12372,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10181,11 +12440,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10203,11 +12462,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10225,14 +12484,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10250,11 +12509,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10318,11 +12577,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10340,11 +12599,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10362,14 +12621,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10387,11 +12646,152 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    linkMemberAccount: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                /**
+                 * @example {
+                 *       "accountId": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                 *       "reason": "Synthetic GAM value"
+                 *     }
+                 */
+                "application/json": components["schemas"]["LinkMemberAccountDTO"];
+            };
+        };
+        responses: {
+            /** @description No content */
+            204: {
+                headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The Member or Account is already linked, the Account has a pending Membership Solicitation, or its lifecycle Role projection is not eligible for linking. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_CONFLICT",
+                     *       "message": "The Member or Account is already linked, the Account has a pending Membership Solicitation, or its lifecycle Role projection is not eligible for linking.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Member"
+                     *       },
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10455,11 +12855,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10477,11 +12877,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10499,14 +12899,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10524,11 +12924,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10592,11 +12992,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10614,11 +13014,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10636,14 +13036,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10661,11 +13061,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10764,11 +13164,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10786,11 +13186,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10808,14 +13208,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10833,15 +13233,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "currentStatus": "SCHEDULED"
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10930,11 +13330,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10952,11 +13352,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10974,14 +13374,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -10999,15 +13399,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "currentStatus": "SCHEDULED"
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11096,11 +13496,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11118,11 +13518,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11140,14 +13540,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11165,15 +13565,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "currentStatus": "SCHEDULED"
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11271,11 +13671,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11293,11 +13693,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11315,14 +13715,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11340,15 +13740,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED",
                      *       "message": "Possible codes: EVENT_STATUS_TRANSITION_NOT_ALLOWED, EVENT_TYPE_NOT_MANAGEABLE. Transition details include eventId, currentStatus, and requestedStatus.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "requestedStatus": "LOCKED",
-                     *         "currentStatus": "SCHEDULED",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "currentStatus": "SCHEDULED"
                      *       },
-                     *       "status": 409,
-                     *       "code": "EVENT_STATUS_TRANSITION_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11427,11 +13827,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11449,11 +13849,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11471,14 +13871,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11496,11 +13896,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11565,11 +13965,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11587,11 +13987,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11609,14 +14009,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11634,15 +14034,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "PRESENCE_REMOVAL_NOT_ALLOWED",
                      *       "message": "Removal is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "status": "LOCKED",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
                      *       },
-                     *       "status": 409,
-                     *       "code": "PRESENCE_REMOVAL_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11730,11 +14130,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11752,11 +14152,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11774,14 +14174,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11799,15 +14199,15 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "PRESENCE_EDIT_NOT_ALLOWED",
                      *       "message": "Editing is not allowed while the Event is LOCKED or FINALIZED. Details include eventId, presenceId, and effective status.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
+                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4",
                      *         "status": "LOCKED",
-                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6",
-                     *         "eventId": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "presenceId": "019f6343-321a-7c90-a096-a551e8f88eb6"
                      *       },
-                     *       "status": 409,
-                     *       "code": "PRESENCE_EDIT_NOT_ALLOWED"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11872,11 +14272,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11907,14 +14307,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -11932,11 +14332,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12006,11 +14406,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12028,11 +14428,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12097,11 +14497,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12119,11 +14519,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12141,14 +14541,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Role not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Role",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Role"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12218,11 +14618,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12240,11 +14640,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12262,14 +14662,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Role not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Role",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Role"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12287,11 +14687,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12357,11 +14757,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12379,11 +14779,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12401,14 +14801,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Permission not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Permission",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Permission"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12426,11 +14826,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12549,11 +14949,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12571,11 +14971,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12593,14 +14993,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12618,11 +15018,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12686,11 +15086,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12708,11 +15108,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12730,14 +15130,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12755,11 +15155,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12846,11 +15246,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12868,11 +15268,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12890,14 +15290,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -12915,11 +15315,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13011,11 +15411,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13033,11 +15433,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13055,14 +15455,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13080,11 +15480,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13176,11 +15576,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13198,11 +15598,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13220,14 +15620,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13245,11 +15645,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13309,11 +15709,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13331,11 +15731,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13353,14 +15753,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13378,11 +15778,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13442,11 +15842,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13464,11 +15864,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13486,14 +15886,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13511,11 +15911,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13592,11 +15992,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13614,11 +16014,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13636,14 +16036,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13661,11 +16061,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13735,11 +16135,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13757,11 +16157,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13779,14 +16179,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Resource not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Resource",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13824,7 +16224,10 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
                      *       "justification": "Synthetic GAM value",
                      *       "status": "PENDING",
                      *       "submittedAt": "2026-07-15T12:00:00Z",
@@ -13868,11 +16271,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13890,11 +16293,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13912,14 +16315,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "MembershipSolicitation not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "MembershipSolicitation",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "MembershipSolicitation"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -13937,11 +16340,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14036,11 +16439,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14058,11 +16461,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14080,14 +16483,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Member not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Member",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Member"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14105,11 +16508,317 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getMemberExperiencesAndSacraments: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "experiences": {
+                     *         "JORNADA_MISSIONARIA": "NOT_INFORMED",
+                     *         "CURSO_DE_LIDERANCA": "NOT_INFORMED",
+                     *         "PASCOA_JUVENIL": "NOT_INFORMED",
+                     *         "ACAMPABOSCO": "NOT_INFORMED"
+                     *       },
+                     *       "sacraments": {
+                     *         "BATISMO": "NOT_INFORMED",
+                     *         "PRIMEIRA_COMUNHAO": "NOT_INFORMED",
+                     *         "CRISMA": "NOT_INFORMED"
+                     *       }
+                     *     }
+                     */
+                    "*/*": components["schemas"]["ExperiencesAndSacraments"];
+                };
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+        };
+    };
+    getAnnualMemberInformation: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                memberId: string;
+                surveyCycle: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "id": "01960000-0002-7000-8000-000000000001",
+                     *       "surveyCycle": 2026,
+                     *       "submittedAt": null,
+                     *       "occupations": {
+                     *         "values": [
+                     *           "WORK"
+                     *         ],
+                     *         "details": null
+                     *       },
+                     *       "healthCondition": {
+                     *         "status": "NO",
+                     *         "details": null
+                     *       },
+                     *       "religiousVocationConsidered": "NO",
+                     *       "massAttendanceFrequency": "WEEKLY",
+                     *       "saturdayOratorioImpediment": {
+                     *         "status": "NO",
+                     *         "details": null
+                     *       },
+                     *       "formationAndMeetingInterests": null,
+                     *       "coordinationInterest": "NO",
+                     *       "additionalComments": null,
+                     *       "oratorioActivitySuggestions": null,
+                     *       "instagramPostSuggestions": null
+                     *     }
+                     */
+                    "*/*": components["schemas"]["AnnualMemberInformationRDTO"];
+                };
+            };
+            /** @description Malformed JSON, validation, or public parameter conversion failure. */
+            400: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Bearer authentication is required. */
+            401: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description Bearer authentication challenge. */
+                    "WWW-Authenticate"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
+                     *       "message": "Bearer authentication is required.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 401
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The authenticated Account lacks authority for this operation. */
+            403: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "ACCESS_DENIED",
+                     *       "message": "The authenticated Account lacks authority for this operation.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 403
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description Resource not found with the supplied identifier. */
+            404: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
+                     *       "message": "Resource not found with the supplied identifier.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Resource"
+                     *       },
+                     *       "status": 404
+                     *     }
+                     */
+                    "application/json": components["schemas"]["ApiErrorDTO"];
+                };
+            };
+            /** @description The request conflicts with the current resource state. */
+            409: {
+                headers: {
+                    /** @description Prevents storage of the error response. */
+                    "Cache-Control"?: string;
+                    /** @description UUID correlating this response with activity entries produced by the request. */
+                    "X-Request-Id"?: string;
+                    [name: string]: unknown;
+                };
+                content: {
+                    /**
+                     * @example {
+                     *       "code": "CONFLICT",
+                     *       "message": "The request conflicts with the current resource state.",
+                     *       "timestamp": "2026-07-15T12:00:00Z",
+                     *       "details": {},
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14131,6 +16840,8 @@ export interface operations {
             /** @description OK */
             200: {
                 headers: {
+                    /** @description Strong opaque consistency token for the complete Member aggregate. */
+                    ETag?: string;
                     /** @description UUID correlating this response with activity entries produced by the request. */
                     "X-Request-Id"?: string;
                     [name: string]: unknown;
@@ -14147,7 +16858,14 @@ export interface operations {
                      *       "firstName": "Synthetic GAM value",
                      *       "surname": "Synthetic GAM value",
                      *       "birthDate": "2026-07-15",
+                     *       "gamEntryDate": "2026-07-15",
+                     *       "residentialCity": "Synthetic GAM value",
                      *       "phoneNumber": "Synthetic GAM value",
+                     *       "contactEmail": "developer@example.test",
+                     *       "dietaryRestriction": {
+                     *         "status": "YES",
+                     *         "details": "Synthetic GAM value"
+                     *       },
                      *       "status": "ACTIVE"
                      *     }
                      */
@@ -14181,11 +16899,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14203,11 +16921,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14225,14 +16943,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Member not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Member",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Member"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14250,11 +16968,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14362,11 +17080,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14384,11 +17102,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14406,14 +17124,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Account",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Account"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14431,11 +17149,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14519,11 +17237,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14541,11 +17259,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "ACCESS_DENIED",
                      *       "message": "The authenticated Account lacks authority for this operation.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 403,
-                     *       "code": "ACCESS_DENIED"
+                     *       "status": 403
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14563,14 +17281,14 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "RESOURCE_NOT_FOUND",
                      *       "message": "Account not found with the supplied identifier.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {
-                     *         "resource": "Account",
-                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4"
+                     *         "identifier": "019f6343-321a-7c90-a096-a551e8f88eb4",
+                     *         "resource": "Account"
                      *       },
-                     *       "status": 404,
-                     *       "code": "RESOURCE_NOT_FOUND"
+                     *       "status": 404
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14588,11 +17306,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "CONFLICT",
                      *       "message": "The request conflicts with the current resource state.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 409,
-                     *       "code": "CONFLICT"
+                     *       "status": 409
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];
@@ -14653,11 +17371,11 @@ export interface operations {
                 content: {
                     /**
                      * @example {
+                     *       "code": "AUTHENTICATION_REQUIRED",
                      *       "message": "Bearer authentication is required.",
                      *       "timestamp": "2026-07-15T12:00:00Z",
                      *       "details": {},
-                     *       "status": 401,
-                     *       "code": "AUTHENTICATION_REQUIRED"
+                     *       "status": 401
                      *     }
                      */
                     "application/json": components["schemas"]["ApiErrorDTO"];

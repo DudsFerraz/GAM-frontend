@@ -67,6 +67,13 @@ describe('SearchAndFilter', () => {
       { target: { value: JSON.stringify(['ACTIVE', 'INACTIVE']) } },
     )
     fireEvent.click(screen.getByRole('button', { name: 'Adicionar filtro' }))
+
+    const activeFilter = screen.getByRole('button', {
+      name: 'Remover filtro de Situação',
+    }).parentElement
+    expect(activeFilter).toHaveTextContent('Ativos e inativos')
+    expect(activeFilter).not.toHaveTextContent('Valor não disponível')
+
     act(() => {
       vi.advanceTimersByTime(500)
     })
