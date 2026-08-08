@@ -31,6 +31,12 @@ quando há um termo preenchido. Ações como `Conferir nome` permanecem
 explícitas quando representam uma verificação necessária antes de criar,
 enviar ou alterar dados.
 
+Quando o contrato de busca impõe um limite ou formato que não é evidente pelo
+controle, a configuração do campo valida o valor antes da API. A interface
+mantém o texto digitado, apresenta uma orientação em português associada ao
+campo e não substitui resultados válidos por um erro de carregamento. A
+mensagem desaparece assim que o valor satisfaz a regra.
+
 ## Current implementation
 
 - [`src/lib/presentation.ts`](../../src/lib/presentation.ts) provides the shared safe-label resolver. An unmapped value returns an explicit Portuguese fallback and never the raw value.
@@ -46,6 +52,7 @@ enviar ou alterar dados.
 - Direct Member registration selects an Account by name instead of asking for an Account UUID.
 - The membership-solicitation submission dialog presents Brazilian phone numbers with the `+55` prefix and a local mask, converting them to the API's international format only at the request boundary.
 - Current forms mark required fields with a visual `*`. The shared form primitives also expose `required`/`aria-required` semantics and the Portuguese assistive description `obrigatório`; optional inputs, searches, and filters remain unmarked when empty input is valid. Conditional reasons update their marker from the active form state without changing the validation schema.
+- Shared search fields declare accessible Portuguese validation when the contract has non-obvious length or format rules. Invalid values remain local and are not sent to the API; current coverage includes Member phone/e-mail, Account e-mail/display-name length, and Event title length.
 - Location creation currently presents `Brasil` and keeps `BR` as an internal request value. Supporting additional countries requires a business-facing country selector; it must not reintroduce a free-form region-code field.
 - Router developer tools render only in the development build. The root route owns Portuguese not-found and unexpected-error states so library defaults cannot leak into production UI.
 - The base HTML declares `pt-BR` and uses product-facing GAM title, description, and icon metadata rather than starter-tool defaults.
@@ -143,6 +150,7 @@ Before completion, verify all of the following:
 - Form schemas supply Portuguese messages for every reachable validation failure.
 - Required fields use the shared form marker and semantic attributes; optional searches and filters do not receive a misleading marker.
 - Forms with explicit Zod/RHF validation keep `noValidate` so browser defaults do not replace Portuguese feedback.
+- Search filters with non-obvious contract rules provide an associated Portuguese message and do not send invalid values to the API.
 - Permission codes are used only for visibility and affordances, never as explanatory text.
 - Entity relationships use names and selectors instead of identifier entry.
 - Loading, empty, error, forbidden, not-found, retry, and success states use business language.

@@ -1,10 +1,17 @@
-import type {
-  FieldConfig,
-  SearchFilter,
-  SortCriteria,
+import {
+  createTrimmedTextMaxLengthValidator,
+  validateEmailSearchValue,
+  type FieldConfig,
+  type SearchFilter,
+  type SortCriteria,
 } from '@/components/SearchAndFilter'
 
 import type { AccountSearch } from './api/accounts'
+
+const validateDisplayNameSearch = createTrimmedTextMaxLengthValidator(
+  50,
+  'Digite no máximo 50 caracteres para pesquisar por nome de exibição.',
+)
 
 export const ACCOUNT_SEARCH_CONFIG: FieldConfig[] = [
   {
@@ -14,6 +21,7 @@ export const ACCOUNT_SEARCH_CONFIG: FieldConfig[] = [
     allowedOperators: ['LIKE'],
     filterable: false,
     sortable: true,
+    validateValue: validateDisplayNameSearch,
   },
   {
     key: 'email',
@@ -21,6 +29,7 @@ export const ACCOUNT_SEARCH_CONFIG: FieldConfig[] = [
     inputType: 'text',
     allowedOperators: ['LIKE', 'EQUALS'],
     sortable: true,
+    validateValue: validateEmailSearchValue,
   },
   {
     key: 'createdAt',

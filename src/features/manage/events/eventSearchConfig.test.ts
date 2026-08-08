@@ -39,4 +39,17 @@ describe('configuração da busca de eventos', () => {
     expect(ORATORIO_SEARCH_CONFIG.find((field) => field.key === 'beginDate'))
       .toMatchObject({ label: 'Data' })
   })
+
+  it('limita o título ao tamanho aceito pelo contrato', () => {
+    const titleField = ORATORIO_SEARCH_CONFIG.find(
+      (field) => field.key === 'title',
+    )
+    if (!titleField) {
+      throw new Error('Configuração de título ausente')
+    }
+
+    expect(titleField.validateValue?.('a'.repeat(255), 'LIKE')).toBeUndefined()
+    expect(titleField.validateValue?.('a'.repeat(256), 'LIKE'))
+      .toBe('Digite no máximo 255 caracteres para pesquisar por título.')
+  })
 })

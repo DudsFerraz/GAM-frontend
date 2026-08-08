@@ -4,9 +4,14 @@ export type {
   FieldConfig,
   FilterInputType,
   FilterOption,
+  FilterValueValidator,
   SearchAndFilterProps,
   SearchFilter,
   SearchFilterValue,
   SortCriteria,
   SortDirection,
 } from './types'
+export {
+  createTrimmedTextMaxLengthValidator,
+  validateEmailSearchValue,
+} from './searchValidation'

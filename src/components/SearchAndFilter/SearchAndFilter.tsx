@@ -48,9 +48,32 @@ export function SearchAndFilter({
     filterableFields[0] ? getDefaultOperator(filterableFields[0]) : 'LIKE',
   )
   const [filterValue, setFilterValue] = useState<SearchFilterValue>('')
+  const [hasAttemptedFilterValidation, setHasAttemptedFilterValidation] =
+    useState(false)
   const filterPanelId = useId()
   const sortPanelId = useId()
+  const filterValueErrorId = useId()
+  const mainSearchErrorId = useId()
   const onSearchRef = useRef(onSearch)
+  const mainFieldConfig = useMemo(
+    () => config.find((field) => field.key === mainFilterField),
+    [config, mainFilterField],
+  )
+  const mainFilterOperator = useMemo(
+    () => mainFieldConfig ? getDefaultOperator(mainFieldConfig) : 'LIKE',
+    [mainFieldConfig],
+  )
+  const mainFilterValidator = mainFieldConfig?.validateValue
+  const mainFilterValidationRef = useRef({
+    comparisonMethod: mainFilterOperator,
+    validateValue: mainFilterValidator,
+  })
+  const mainSearchValidationMessage = useMemo(() => {
+    const normalizedValue = mainSearchValue.trim()
+    return normalizedValue
+      ? mainFilterValidator?.(normalizedValue, mainFilterOperator)
+      : undefined
+  }, [mainFilterOperator, mainFilterValidator, mainSearchValue])
   const searchState = useMemo(
     () => ({ activeFilters, activeSorts, mainSearchValue }),
     [activeFilters, activeSorts, mainSearchValue],
@@ -63,6 +86,13 @@ export function SearchAndFilter({
   }, [onSearch])
 
   useEffect(() => {
+    mainFilterValidationRef.current = {
+      comparisonMethod: mainFilterOperator,
+      validateValue: mainFilterValidator,
+    }
+  }, [mainFilterOperator, mainFilterValidator])
+
+  useEffect(() => {
     if (!hasMountedSearchState.current) {
       hasMountedSearchState.current = true
       return
@@ -70,8 +100,12 @@ export function SearchAndFilter({
 
     const filters = [...debouncedSearchState.activeFilters]
     const normalizedMainSearch = debouncedSearchState.mainSearchValue.trim()
+    const { comparisonMethod, validateValue } = mainFilterValidationRef.current
+    const validationMessage = normalizedMainSearch
+      ? validateValue?.(normalizedMainSearch, comparisonMethod)
+      : undefined
 
-    if (normalizedMainSearch) {
+    if (normalizedMainSearch && !validationMessage) {
       filters.push({
         field: mainFilterField,
         value: normalizedMainSearch,
@@ -92,15 +126,19 @@ export function SearchAndFilter({
     [currentFieldConfig],
   )
   const mainFilterLabel = useMemo(
-    () => config.find((field) => field.key === mainFilterField)?.label ?? 'termo',
-    [config, mainFilterField],
+    () => mainFieldConfig?.label ?? 'termo',
+    [mainFieldConfig],
   )
+  const filterValidationMessage = hasAttemptedFilterValidation
+    ? currentFieldConfig?.validateValue?.(filterValue, selectedOperator)
+    : undefined
 
   const handleFieldChange = (fieldKey: string) => {
     const nextField = config.find((field) => field.key === fieldKey)
     setSelectedFieldKey(fieldKey)
     setSelectedOperator(nextField ? getDefaultOperator(nextField) : 'LIKE')
     setFilterValue('')
+    setHasAttemptedFilterValidation(false)
   }
 
   const handleFilterValueChange = (value: string) => {
@@ -115,6 +153,11 @@ export function SearchAndFilter({
       return
     }
 
+    if (currentFieldConfig?.validateValue?.(filterValue, selectedOperator)) {
+      setHasAttemptedFilterValidation(true)
+      return
+    }
+
     setActiveFilters((previous) => [
       ...previous,
       {
@@ -124,6 +167,12 @@ export function SearchAndFilter({
       },
     ])
     setFilterValue('')
+    setHasAttemptedFilterValidation(false)
+  }
+
+  const handleOperatorChange = (operator: ComparisonMethod) => {
+    setSelectedOperator(operator)
+    setHasAttemptedFilterValidation(false)
   }
 
   const handleRemoveFilter = (index: number) => {
@@ -156,22 +205,35 @@ export function SearchAndFilter({
 
   return (
     <div className={cn('w-full space-y-4', className)}>
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <div className="relative flex-1">
-          <Search
-            aria-hidden="true"
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            aria-label={`Pesquisa rápida por ${mainFilterLabel}`}
-            className={cn('w-full pl-9', mainSearchValue && 'pr-10')}
-            onChange={(event) => setMainSearchValue(event.target.value)}
-            placeholder={`Pesquisa rápida por ${mainFilterLabel}...`}
-            type="search"
-            value={mainSearchValue}
-          />
-          {mainSearchValue && (
-            <SearchClearButton onClear={() => setMainSearchValue('')} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <div className="flex-1">
+          <div className="relative">
+            <Search
+              aria-hidden="true"
+              className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+            />
+            <Input
+              aria-describedby={mainSearchValidationMessage ? mainSearchErrorId : undefined}
+              aria-invalid={mainSearchValidationMessage ? true : undefined}
+              aria-label={`Pesquisa rápida por ${mainFilterLabel}`}
+              className={cn('w-full pl-9', mainSearchValue && 'pr-10')}
+              onChange={(event) => setMainSearchValue(event.target.value)}
+              placeholder={`Pesquisa rápida por ${mainFilterLabel}...`}
+              type="search"
+              value={mainSearchValue}
+            />
+            {mainSearchValue && (
+              <SearchClearButton onClear={() => setMainSearchValue('')} />
+            )}
+          </div>
+          {mainSearchValidationMessage && (
+            <p
+              className="mt-1 text-xs text-destructive"
+              id={mainSearchErrorId}
+              role="alert"
+            >
+              {mainSearchValidationMessage}
+            </p>
           )}
         </div>
 
@@ -240,10 +302,12 @@ export function SearchAndFilter({
             onAddFilter={handleAddFilter}
             onFieldChange={handleFieldChange}
             onFilterValueChange={handleFilterValueChange}
-            onOperatorChange={setSelectedOperator}
+            onOperatorChange={handleOperatorChange}
             onRemoveFilter={handleRemoveFilter}
             selectedFieldKey={selectedFieldKey}
             selectedOperator={selectedOperator}
+            validationMessage={filterValidationMessage}
+            validationMessageId={filterValueErrorId}
           />
         </div>
       )}

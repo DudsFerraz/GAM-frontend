@@ -5,6 +5,10 @@ export type SearchFilter =
 
 export type SearchFilterValue = SearchFilter['value']
 export type ComparisonMethod = SearchFilter['comparisonMethod']
+export type FilterValueValidator = (
+  value: SearchFilterValue,
+  comparisonMethod: ComparisonMethod,
+) => string | undefined
 
 export type SortDirection = 'ASC' | 'DESC'
 
@@ -28,6 +32,7 @@ export interface FieldConfig {
   allowedOperators?: ComparisonMethod[]
   filterable?: boolean
   sortable?: boolean
+  validateValue?: FilterValueValidator
 }
 
 export interface SearchAndFilterProps {

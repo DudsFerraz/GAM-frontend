@@ -30,6 +30,8 @@ type SearchFilterPanelProps = {
   onFilterValueChange: (value: string) => void
   onOperatorChange: (operator: ComparisonMethod) => void
   onRemoveFilter: (index: number) => void
+  validationMessage?: string
+  validationMessageId: string
 }
 
 export function SearchFilterPanel({
@@ -44,6 +46,8 @@ export function SearchFilterPanel({
   onFilterValueChange,
   onOperatorChange,
   onRemoveFilter,
+  validationMessage,
+  validationMessageId,
 }: SearchFilterPanelProps) {
   const filterableFields = config.filter((field) => field.filterable !== false)
   const currentFieldConfig = config.find((field) => field.key === selectedFieldKey)
@@ -51,7 +55,7 @@ export function SearchFilterPanel({
   return (
     <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
       <h4 className="mb-3 text-sm font-medium text-foreground">Novo filtro</h4>
-      <div className="mb-4 flex flex-col items-end gap-2 sm:flex-row">
+      <div className="mb-4 flex flex-col items-start gap-2 sm:flex-row">
         <div className="w-full sm:w-1/3">
           <label className="mb-1 block text-xs text-muted-foreground">
             Campo
@@ -95,12 +99,23 @@ export function SearchFilterPanel({
             value={filterValue}
             onChange={onFilterValueChange}
             onSubmit={onAddFilter}
+            validationMessage={validationMessage}
+            validationMessageId={validationMessageId}
           />
+          {validationMessage && (
+            <p
+              className="mt-1 text-xs text-destructive"
+              id={validationMessageId}
+              role="alert"
+            >
+              {validationMessage}
+            </p>
+          )}
         </div>
 
         <Button
           aria-label="Adicionar filtro"
-          className="shrink-0"
+          className="shrink-0 self-end sm:mt-5 sm:self-auto"
           onClick={onAddFilter}
           size="icon"
           type="button"
@@ -148,11 +163,15 @@ function FilterValueInput({
   field,
   onChange,
   onSubmit,
+  validationMessage,
+  validationMessageId,
   value,
 }: {
   field?: FieldConfig
   onChange: (value: string) => void
   onSubmit: () => void
+  validationMessage?: string
+  validationMessageId: string
   value: SearchFilterValue
 }) {
   if (!field) {
@@ -162,6 +181,8 @@ function FilterValueInput({
   if (field.inputType === 'select') {
     return (
       <Select
+        aria-describedby={validationMessage ? validationMessageId : undefined}
+        aria-invalid={validationMessage ? true : undefined}
         aria-label="Valor do filtro"
         onChange={(event) => onChange(event.target.value)}
         value={isEmptyValue(value) ? '' : getOptionKey(value)}
@@ -180,6 +201,8 @@ function FilterValueInput({
 
   return (
     <Input
+      aria-describedby={validationMessage ? validationMessageId : undefined}
+      aria-invalid={validationMessage ? true : undefined}
       aria-label="Valor do filtro"
       onChange={(event) => onChange(event.target.value)}
       onKeyDown={(event) => {

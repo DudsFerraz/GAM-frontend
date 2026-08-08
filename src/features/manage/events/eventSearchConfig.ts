@@ -1,7 +1,8 @@
-import type {
-  FieldConfig,
-  SearchFilter,
-  SortCriteria,
+import {
+  createTrimmedTextMaxLengthValidator,
+  type FieldConfig,
+  type SearchFilter,
+  type SortCriteria,
 } from '@/components/SearchAndFilter'
 
 import type {
@@ -21,6 +22,11 @@ const INITIAL_EVENT_FILTERS: EventFilters = {
   type: 'ALL',
 }
 
+const validateEventTitleSearch = createTrimmedTextMaxLengthValidator(
+  255,
+  'Digite no máximo 255 caracteres para pesquisar por título.',
+)
+
 export const EVENT_SEARCH_CONFIG: FieldConfig[] = [
   {
     key: 'title',
@@ -29,6 +35,7 @@ export const EVENT_SEARCH_CONFIG: FieldConfig[] = [
     allowedOperators: ['LIKE'],
     filterable: false,
     sortable: true,
+    validateValue: validateEventTitleSearch,
   },
   {
     key: 'status',
